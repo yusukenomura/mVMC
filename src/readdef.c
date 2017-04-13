@@ -492,7 +492,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
   char ctmp[D_FileNameMax], ctmp2[256];
   int itmp;
   int iKWidx=0;
-
+  
   int i,j,n,idx,idx0,idx1,info=0;
   int fidx=0; /* index for OptFlag */
     int count_idx=0;
