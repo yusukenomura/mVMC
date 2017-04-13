@@ -119,12 +119,12 @@ int NOrbitalIdx, **OrbitalIdx; /* [Nsite][Nsite] */
 int **OrbitalSgn; /* OrbitalSgn[Nsite][Nsite] = +1 or -1 */
 
 /* added by YN */
-/* hidden variables */
+/* variables for neural network */
 int NSetHidden;          /* Number of the set of Hidden variables = Hidden neuron density */
-                         /* A set consists of magnetic field and hidden-phys. interaction */
-int NHiddenMagField;     /* Number of magnetic-field variabls in hidden layers */
-int NHiddenPhysInt;      /* Number of hidden-phys interactions                */
-int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron */
+                         /* A set consists of magnetic field and hidden-phys interaction  */
+int NHiddenMagField;     /* Total number of magnetic-field variabls in hidden layers      */
+int NHiddenPhysInt;      /* Total number of (hidden layer)-(physical layer) interactions  */
+int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron             */
 int NHiddenVariable;     /* Total number of Hidden variables = NHiddenMagField+ NHiddenPhysInt */  
 int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*(Nsite*2)][NIntPerNeuron]                           */
                          /* i-th neuron in f-th set has NIntPerNeuron interaction; through j-th interaction,*/ 

@@ -183,6 +183,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
               NStoreO = 0;/*debug*/
 	    }
             /* added by YN */
+            /* TBC */ 
 	    else if(CheckWords(ctmp, "NSetHidden")==0){ 
 	      bufInt[IdxNSetHidden]=(int)dtmp;
 	    }
@@ -437,10 +438,12 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
     + 2*5*NDoublonHolon4siteIdx;
   /* added by YN */
   NHiddenMagField = NSetHidden; 
-  NHiddenPhysInt  = NSetHidden*Nsite2; 
+  NIntPerNeuron   = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
+  NHiddenPhysInt  = NSetHidden*NIntPerNeuron; 
+  NHiddenVariable = NHiddenMagField+NHiddenPhysInt; 
   /* added by YN */ 
   NOptTrans = (FlagOptTrans>0) ? NQPOptTrans : 0;
-  NPara   = NProj + NSlater + NOptTrans ; 
+  NPara   = NProj + NHiddenVariable + NSlater + NOptTrans ;  /* modified by YN */
   NQPFix = NSPGaussLeg * NMPTrans;
   NQPFull = NQPFix * NQPOptTrans;
   SROptSize = NPara+1;
@@ -489,7 +492,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
   char ctmp[D_FileNameMax], ctmp2[256];
   int itmp;
   int iKWidx=0;
-  
+
   int i,j,n,idx,idx0,idx1,info=0;
   int fidx=0; /* index for OptFlag */
     int count_idx=0;
@@ -503,7 +506,23 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
     for(iKWidx=KWLocSpin; iKWidx< KWIdxInt_end; iKWidx++){     
       strcpy(defname, cFileNameListFile[iKWidx]);
 
-      if(strcmp(defname,"")==0) continue;   
+      /* modified by YN */
+      /* TBC */ 
+      if(strcmp(defname,"")==0) { 
+	switch (iKWidx){
+	case KWHiddenPhysInt: 
+	  if( NSetHidden == 0 ) {
+            continue;   
+          } else {
+            fprintf(stderr, "  Error: Need to make a def file for %s.\n", cKWListOfFileNameList[iKWidx]);
+	    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+          } 
+	default:
+          continue;   
+	}
+      }
+      /* modified by YN */ 
+
 
       fp = fopen(defname, "r");
       if(fp==NULL){
@@ -744,6 +763,25 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
 	}
 	fclose(fp);
 	break;
+
+      /* added by YN */
+      /* TBC */
+      case KWHiddenPhysInt:
+	/*hidden-phys_int_idx.def---------------------------*/
+	if(NIntPerNeuron>0){
+          idx0 = 0; 
+   printf("%d %d   \n", NIntPerNeuron, Nsite2 ); 
+	  while( fscanf(fp, "%d %d ", &j, &i ) != EOF){
+	    fscanf(fp, "%d \n", &(HiddenPhysIntIdx2[j][i]));
+	    idx0++;
+   printf("%d %d %d %d  \n", j, i, HiddenPhysIntIdx2[j][i] ,idx0 ); 
+	  }
+   printf("%d %d   \n", idx0, NIntPerNeuron*Nsite2 ); 
+	  if(idx0!=NIntPerNeuron*Nsite2) info = ReadDefFileError(defname);
+	}
+	fclose(fp);
+	break;
+      /* added by YN */
 
       case KWOrbital:
 	/*orbitalidx.def------------------------------------*/

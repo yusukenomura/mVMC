@@ -35,7 +35,7 @@ static char cKWListOfFileNameList[][D_CharTmpReadDef]={
   "Trans", "CoulombIntra", "CoulombInter",
   "Hund", "PairHop", "Exchange",
   "Gutzwiller", "Jastrow",
-  "DH2", "DH4", "Orbital",
+  "DH2", "DH4", "Orbital", "HiddenPhysInt", /* modified by YN */
   "TransSym", "InGutzwiller", "InJastrow",
   "InDH2", "InDH4", "InOrbital",
   "OneBodyG", "TwoBodyG", "TwoBodyGEx",
@@ -50,7 +50,7 @@ enum KWIdxInt{
   KWTrans, KWCoulombIntra,KWCoulombInter,
   KWHund, KWPairHop, KWExchange,
   KWGutzwiller, KWJastrow,
-  KWDH2, KWDH4, KWOrbital,
+  KWDH2, KWDH4, KWOrbital, KWHiddenPhysInt, /* modified by YN */
   KWTransSym, KWInGutzwiller, KWInJastrow,
   KWInDH2, KWInDH4, KWInOrbital,
   KWOneBodyG, KWTwoBodyG, KWTwoBodyGEx,
