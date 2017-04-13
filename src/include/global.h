@@ -183,8 +183,8 @@ int *EleIdx; /* EleIdx[sample][mi+si*Ne] */
 int *EleCfg; /* EleCfg[sample][ri+si*Nsite] */
 int *EleNum; /* EleIdx[sample][ri+si*Nsite] */
 int *EleProjCnt; /* EleProjCnt[sample][proj] */
-double **ThetaHidden; /* = theta in Eq.(C2) in Carleo-Troyer Science */
-                      /* ThetaHidden[sample][NSetHidden][Nsite*2]    */
+double *ThetaHidden; /* = theta in Eq.(C2) in Carleo-Troyer Science */
+                     /* ThetaHidden[sample][NSetHidden*Nsite2]      */
 double *logSqPfFullSlater; /* logSqPfFullSlater[sample] */
 
 int *TmpEleIdx;

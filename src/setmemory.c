@@ -96,7 +96,7 @@ void SetMemoryDef() {
 
   /* added by YN */
   HiddenPhysIntIdx = pInt;
-  pInt += NsetHidden*Nsite2;
+  pInt += NSetHidden*Nsite2;
   /* added by YN */ 
 
   OrbitalIdx = (int**)malloc(sizeof(int*)*Nsite);

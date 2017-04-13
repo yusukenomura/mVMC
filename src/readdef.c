@@ -182,6 +182,11 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
 	      NStoreO=(int)dtmp;
               NStoreO = 0;/*debug*/
 	    }
+            /* added by YN */
+	    else if(CheckWords(ctmp, "NSetHidden")==0){ 
+	      bufInt[IdxNSetHidden]=(int)dtmp;
+	    }
+            /* added by YN */
 	    else{
 	      fprintf(stderr, "  Error: keyword \" %s \" is incorrect. \n", ctmp);
 	      info = ReadDefFileError(defname);
@@ -397,6 +402,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NJastrowIdx            =  bufInt[IdxNJast];
   NDoublonHolon2siteIdx  =  bufInt[IdxNDH2];
   NDoublonHolon4siteIdx  =  bufInt[IdxNDH4];
+  NSetHidden             =  bufInt[IdxNSetHidden]; /* added by YN */
   NOrbitalIdx            =  bufInt[IdxNOrbit];
   NQPTrans               =  bufInt[IdxNQPTrans];
   NCisAjs                =  bufInt[IdxNOneBodyG];
@@ -429,6 +435,10 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NProj   = NGutzwillerIdx + NJastrowIdx
     + 2*3*NDoublonHolon2siteIdx
     + 2*5*NDoublonHolon4siteIdx;
+  /* added by YN */
+  NHiddenMagField = NSetHidden; 
+  NHiddenPhysInt  = NSetHidden*Nsite2; 
+  /* added by YN */ 
   NOptTrans = (FlagOptTrans>0) ? NQPOptTrans : 0;
   NPara   = NProj + NSlater + NOptTrans ; 
   NQPFix = NSPGaussLeg * NMPTrans;
@@ -1340,6 +1350,7 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufInt[IdxNJast]=0;
   bufInt[IdxNDH2]=0;
   bufInt[IdxNDH4]=0;
+  bufInt[IdxNSetHidden]=0; /* added by YN */
   bufInt[IdxNOrbit]=0;
   bufInt[IdxNQPTrans]=0;
   bufInt[IdxNOneBodyG]=0;
