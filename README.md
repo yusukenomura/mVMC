@@ -50,3 +50,5 @@ URL: [https://github.com/issp-center-dev/mVMC](https://github.com/issp-center-de
 
 ## Authors
 Takahiro Misawa, Satoshi Morita, Takahiro Ohgoe, Kota Ido,  Mitsuaki Kawamura, Kazuyoshi Yoshimi, Takeo Kato, Masatoshi Imada.
+
+This folk will add neural network functionality.
