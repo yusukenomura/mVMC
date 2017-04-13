@@ -95,8 +95,17 @@ void SetMemoryDef() {
   }
 
   /* added by YN */
-  HiddenPhysIntIdx = pInt;
-  pInt += NSetHidden*Nsite2;
+  HiddenPhysIntIdx1 = (int**)malloc(sizeof(int*)*NSetHidden*Nsite2);
+  for(i=0;i<NSetHidden*Nsite2;i++) {
+    HiddenPhysIntIdx1[i] = pInt;
+    pInt += NIntPerNeuron;
+  }
+
+  HiddenPhysIntIdx2 = (int**)malloc(sizeof(int*)*NSetHidden*NIntPerNeuron);
+  for(i=0;i<NSetHidden*NIntPerNeuron;i++) {
+    HiddenPhysIntIdx2[i] = pInt;
+    pInt += Nsite2;
+  }
   /* added by YN */ 
 
   OrbitalIdx = (int**)malloc(sizeof(int*)*Nsite);

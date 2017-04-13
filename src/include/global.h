@@ -120,14 +120,19 @@ int **OrbitalSgn; /* OrbitalSgn[Nsite][Nsite] = +1 or -1 */
 
 /* added by YN */
 /* hidden variables */
-int NSetHidden; /* Number of the set of Hidden variables = Hidden neuron density */
-                /* A set consists of magnetic field and hidden-phys. interaction */
-int NHiddenMagField; /* Number of magnetic-field variabls in hidden layers */
-int NHiddenPhysInt;  /* Number of hidden-phys interactions */
-int NHiddenVariable; /* Total number of Hidden variables = NHiddenMagField+ NHiddenPhysInt */  
-int *HiddenPhysIntIdx;  /* HiddenPysIntIdx[NSetHidden*(Nsite*2)]                 */
-                        /* f-th set of i-th neuron interacts with                */ 
-                        /* HiddenPhysIntIdx[f*(Nsite*2)+i]-th physical variable. */ 
+int NSetHidden;          /* Number of the set of Hidden variables = Hidden neuron density */
+                         /* A set consists of magnetic field and hidden-phys. interaction */
+int NHiddenMagField;     /* Number of magnetic-field variabls in hidden layers */
+int NHiddenPhysInt;      /* Number of hidden-phys interactions                */
+int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron */
+int NHiddenVariable;     /* Total number of Hidden variables = NHiddenMagField+ NHiddenPhysInt */  
+int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*(Nsite*2)][NIntPerNeuron]                           */
+                         /* i-th neuron in f-th set has NIntPerNeuron interaction; through j-th interaction,*/ 
+                         /* it interacts with HiddenPhysIntIdx1[f*(Nsite*2)+i][j]-th physical variable.     */ 
+int **HiddenPhysIntIdx2; /* HiddenPysIntIdx2[NSetHidden*NIntPerNeuron(=NHiddenPhysInt)][Nsite*2] */
+                         /* j-th type of interaction in f-th set connects i-th neuron with       */
+                         /* HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable.        */ 
+   /* Note that HiddenPhysIntIdx 1 and 2 have the same information but the order of data is different  */
 /* added by YN */
 
 /* zqptransidx.def */
@@ -183,7 +188,7 @@ int *EleIdx; /* EleIdx[sample][mi+si*Ne] */
 int *EleCfg; /* EleCfg[sample][ri+si*Nsite] */
 int *EleNum; /* EleIdx[sample][ri+si*Nsite] */
 int *EleProjCnt; /* EleProjCnt[sample][proj] */
-double *ThetaHidden; /* = theta in Eq.(C2) in Carleo-Troyer Science */
+double *ThetaHidden; /* = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN */
                      /* ThetaHidden[sample][NSetHidden*Nsite2]      */
 double *logSqPfFullSlater; /* logSqPfFullSlater[sample] */
 
