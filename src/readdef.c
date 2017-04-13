@@ -446,6 +446,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
     + Nsite*Nsite /* JastrowIdx */
     + 2*Nsite*NDoublonHolon2siteIdx /* DoublonHolon2siteIdx */
     + 4*Nsite*NDoublonHolon4siteIdx /* DoublonHolon4siteIdx */
+    + NSetHidden*Nsite2  /* HiddenPhysIntIdx */    /* added by YN */
     + Nsite*Nsite /* OrbitalIdx */
     + Nsite*Nsite /* OrbitalSgn */
     + Nsite*NQPTrans /* QPTrans */

@@ -118,6 +118,18 @@ int NDoublonHolon4siteIdx, **DoublonHolon4siteIdx; /* DoublonHolon4siteIdx[idx][
 int NOrbitalIdx, **OrbitalIdx; /* [Nsite][Nsite] */
 int **OrbitalSgn; /* OrbitalSgn[Nsite][Nsite] = +1 or -1 */
 
+/* added by YN */
+/* hidden variables */
+int NSetHidden; /* Number of the set of Hidden variables = Hidden neuron density */
+                /* A set consists of magnetic field and hidden-phys. interaction */
+int NHiddenMagField; /* Number of magnetic-field variabls in hidden layers */
+int NHiddenPhysInt;  /* Number of hidden-phys interactions */
+int NHiddenVariable; /* Total number of Hidden variables = NHiddenMagField+ NHiddenPhysInt */  
+int *HiddenPhysIntIdx;  /* HiddenPysIntIdx[NSetHidden*(Nsite*2)]                 */
+                        /* f-th set of i-th neuron interacts with                */ 
+                        /* HiddenPhysIntIdx[f*(Nsite*2)+i]-th physical variable. */ 
+/* added by YN */
+
 /* zqptransidx.def */
 int NQPTrans, **QPTrans; /* [NQPTrans][Nsite] */
 int **QPTransSgn; /* QPTransSgn[NQPTrans][NSite] = +1 or -1 */
@@ -171,17 +183,21 @@ int *EleIdx; /* EleIdx[sample][mi+si*Ne] */
 int *EleCfg; /* EleCfg[sample][ri+si*Nsite] */
 int *EleNum; /* EleIdx[sample][ri+si*Nsite] */
 int *EleProjCnt; /* EleProjCnt[sample][proj] */
+double **ThetaHidden; /* = theta in Eq.(C2) in Carleo-Troyer Science */
+                      /* ThetaHidden[sample][NSetHidden][Nsite*2]    */
 double *logSqPfFullSlater; /* logSqPfFullSlater[sample] */
 
 int *TmpEleIdx;
 int *TmpEleCfg;
 int *TmpEleNum;
 int *TmpEleProjCnt;
+double *TmpThetaHidden; /* added by YN */
 
 int *BurnEleIdx;
 int *BurnEleCfg;
 int *BurnEleNum;
 int *BurnEleProjCnt;
+double *BurnThetaHidden; /* added by YN */
 int BurnFlag=0; /* 0: off, 1: on */
 
 /***** Slater Elements ******/

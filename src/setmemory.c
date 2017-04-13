@@ -94,6 +94,11 @@ void SetMemoryDef() {
     pInt += 4*Nsite;
   }
 
+  /* added by YN */
+  HiddenPhysIntIdx = pInt;
+  pInt += NsetHidden*Nsite2;
+  /* added by YN */ 
+
   OrbitalIdx = (int**)malloc(sizeof(int*)*Nsite);
   for(i=0;i<Nsite;i++) {
     OrbitalIdx[i] = pInt;
@@ -224,16 +229,19 @@ void SetMemory() {
   EleNum            = (int*)malloc(sizeof(int)*( NVMCSample*2*Nsite ));
   EleProjCnt        = (int*)malloc(sizeof(int)*( NVMCSample*NProj ));
   logSqPfFullSlater = (double*)malloc(sizeof(double)*(NVMCSample));
+  ThetaHidden       = (double*)malloc(sizeof(double)*(NVMCSample*NSetHidden*Nsite2)); /* added by YN */
 
   TmpEleIdx         = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj));
   TmpEleCfg         = TmpEleIdx + 2*Ne;
   TmpEleNum         = TmpEleCfg + 2*Nsite;
   TmpEleProjCnt     = TmpEleNum + 2*Nsite;
+  TmpThetaHidden    = (double*)malloc(sizeof(double)*(NSetHidden*Nsite2)); /* added by YN */
 
   BurnEleIdx = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj));
   BurnEleCfg = BurnEleIdx + 2*Ne;
   BurnEleNum = BurnEleCfg + 2*Nsite;
   BurnEleProjCnt = BurnEleNum + 2*Nsite;
+  BurnThetaHidden = (double*)malloc(sizeof(double)*(NSetHidden*Nsite2)); /* added by YN */
 
   /***** Slater Elements ******/
   SlaterElm = (double complex*)malloc( sizeof(double complex)*(NQPFull*(2*Nsite)*(2*Nsite)) );
