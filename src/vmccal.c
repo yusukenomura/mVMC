@@ -59,6 +59,8 @@ void VMCMainCal(MPI_Comm comm) {
 
   /* optimazation for Kei */
   const int nProj=NProj;
+  const int offset1 = 2*NProj + 2*NHiddenVariable; /* added by YN */
+  const int offset2 = 2*NProj + 2*NHiddenVariable + 2*NSlater; /* added by YN */
   double complex *srOptO = SROptO;
   double         *srOptO_real = SROptO_real;
 
@@ -168,11 +170,11 @@ void VMCMainCal(MPI_Comm comm) {
 
       StartTimer(42);
       /* SlaterElmDiff */
-      SlaterElmDiff_fcmp(SROptO+2*NProj+2,ip,eleIdx); //TBC: using InvM not InvM_real
+      SlaterElmDiff_fcmp(SROptO+offset1+2,ip,eleIdx); //TBC: using InvM not InvM_real /* modified by YN */
       StopTimer(42);
       
       if(FlagOptTrans>0) { // this part will be not used
-        calculateOptTransDiff(SROptO+2*NProj+2*NSlater+2, ip); //TBC
+        calculateOptTransDiff(SROptO+offset2+2, ip); //TBC /* modified by YN */
       }
 //[s] this part will be used for real varaibles
       if(AllComplexFlag==0){

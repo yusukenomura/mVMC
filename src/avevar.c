@@ -145,6 +145,22 @@ void OutputOptData() {
       count_i +=2*5*NDoublonHolon4siteIdx;
     }
 
+/* added by YN */
+    if(NHiddenMagField !=0){
+      sprintf(fileName, "%s_hidden_mag_field_opt.dat", CParaFileHead);
+      Child_OutputOptData(fp, fileName, "NHiddenMagField",
+			  NHiddenMagField, NHiddenMagField, count_i, n);
+      count_i += NHiddenMagField;
+    }
+
+    if(NHiddenPhysInt !=0){
+      sprintf(fileName, "%s_hidden-phys_int_opt.dat", CParaFileHead);
+      Child_OutputOptData(fp, fileName, "NHiddenPhysInt",
+			  NHiddenPhysInt, NHiddenPhysInt, count_i, n);
+      count_i += NHiddenPhysInt;
+    }
+/* added by YN */
+
     if(NSlater != 0){
       sprintf(fileName, "%s_orbital_opt.dat", CParaFileHead);
       Child_OutputOptData(fp, fileName, "NOrbitalIdx",

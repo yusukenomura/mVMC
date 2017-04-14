@@ -39,12 +39,21 @@ double shiftDH4();
 /* initialize variational parameters */
 void InitParameter() {
   int i;
+  const int offset = 2*NProj + 2*NHiddenVariable; /* added by YN */
+  FILE *file1,*file2; /* to be deleted */
 
   #pragma omp parallel for default(shared) private(i)
   for(i=0;i<NProj;i++) Proj[i] = 0.0;
+  /* added by YN */ 
+  for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] = 0.1*(genrand_real2()-0.5);
+  for(i=0;i<NHiddenPhysInt ;i++) HiddenPhysInt [i] = 0.0001*(genrand_real2()-0.5);
+  file1 = fopen("check_OptFlag.txt","w"); // delete
+  for(i=0;i<2*NPara;i++) fprintf(file1,"%d \n", OptFlag[i]); // delete
+  fclose(file1); // delete
+  /* added by YN */ 
   if(AllComplexFlag==0){
     for(i=0;i<NSlater;i++){
-      if(OptFlag[2*i+2*NProj] > 0){ //TBC
+      if(OptFlag[2*i+offset] > 0){ //TBC  /* modified by YN */
         Slater[i] =  1*genrand_real2(); /* uniform distribution [0,1) */
         //Slater[i] += 1*I*genrand_real2(); /* uniform distribution [0,1) */
         //printf("DEBUG: i=%d slater=%lf %lf \n",i,creal(Slater[i]),cimag(Slater[i]));
@@ -55,7 +64,7 @@ void InitParameter() {
   }
   else{
     for(i=0;i<NSlater;i++){
-      if(OptFlag[2*i+2*NProj] > 0){ //TBC
+      if(OptFlag[2*i+offset] > 0){ //TBC   /* modified by YN */
         Slater[i] =  1*genrand_real2(); /* uniform distribution [0,1) */
         Slater[i] += 1*I*genrand_real2(); /* uniform distribution [0,1) */
         Slater[i] /=sqrt(2.0);
@@ -69,6 +78,12 @@ void InitParameter() {
     OptTrans[i] = ParaQPOptTrans[i];
   }
 
+  file1 = fopen("check_Slater.txt","w"); // delete
+  for(i=0;i<NSlater;i++) fprintf(file1,"%lf %lf \n", creal(Slater[i]),cimag(Slater[i])); // delete
+  fclose(file1); // delete
+  file1 = fopen("check_Para.txt","w"); // delete
+  for(i=0;i<NPara;i++) fprintf(file1,"%lf %lf \n", creal(Para[i]),cimag(Para[i])); // delete
+  fclose(file1); // delete
   return;
 }
 

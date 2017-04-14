@@ -765,7 +765,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
 	break;
 
       /* added by YN */
-      /* TBC */
+      /* TBC */ 
       case KWHiddenPhysInt:
 	/*hidden-phys_int_idx.def---------------------------*/
 	if(NSetHidden>0){
@@ -775,10 +775,16 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
 	    idx0++;
 	  }
 	  if(idx0!=NIntPerNeuron*Nsite2) info = ReadDefFileError(defname);
+          CompleteHiddenPhysIntIdx();  
 	}
 	fclose(fp);
-        CompleteHiddenPhysIntIdx();  
-        count_idx += NHiddenVariable; /* temporal treatment */
+        /* start temporal treatment */
+        for(fidx=NProj;fidx<NProj+NHiddenVariable;fidx++) {
+          count_idx++; 
+	  OptFlag[2*fidx  ] = 1; 
+	  OptFlag[2*fidx+1] = 1; // TBC imaginary   
+        }
+        /* end temporal treatment */
 	break;
       /* added by YN */
 
@@ -801,7 +807,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
 	    }
 	  }
 
-        fidx=NProj;
+        fidx = NProj + NHiddenVariable;  /* modified by YN */
         while( fscanf(fp, "%d ", &i) != EOF){
 	    fscanf(fp, "%d\n", &(OptFlag[2*fidx]));
 	    OptFlag[2*fidx+1] = iComplexFlgOrbital; //  TBC imaginary
@@ -959,7 +965,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
     case KWOptTrans:
 	/*qpopttrans.def------------------------------------*/
 	if(FlagOptTrans>0) {
-        fidx=NProj+NOrbitalIdx;
+        fidx = NProj + NHiddenVariable + NOrbitalIdx; /* modified by YN */ 
         for(i=0;i<NQPOptTrans;i++){
 	    fscanf(fp, "%d ", &itmp);
 	    fscanf(fp, "%lf\n", &(ParaQPOptTrans[itmp]));

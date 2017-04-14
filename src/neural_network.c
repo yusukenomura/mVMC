@@ -47,6 +47,8 @@ void CalcTheta(double *tmpThetaHidden, const int *eleNum) {
 void CompleteHiddenPhysIntIdx() {
   int i,j,f; 
   int offset1,offset2; 
+  int *int_chk; /* just for check */ 
+  FILE *file1,*file2; /* to be deleted */
 
 /* 
   j-th type of interaction in f-th set connects i-th neuron with 
@@ -74,6 +76,71 @@ void CompleteHiddenPhysIntIdx() {
     } 
     }
   } 
+
+/* start checking */
+/* TBC */
+
+  /* Here, we assume that Nsite2 = NIntPerNeuron, i.e., every neuron interact with all the sites.
+     If we consider more general interaction, this part should be modified */
+
+  int_chk = (int*)malloc(sizeof(int)*Nsite2);
+  if( Nsite2 != NIntPerNeuron ) {
+    fprintf(stderr, "  Nsite2 != NIntPerNeuron, not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  }
+
+  for(f=0;f<NSetHidden;f++) {
+    offset1=f*Nsite2;  
+    offset2=f*NIntPerNeuron;  
+
+    /* check for HiddenPhysIntIdx1 */
+    for(i=0;i<Nsite2;i++) { 
+      for(j=0;j<NIntPerNeuron;j++) int_chk[j] = 0; 
+      for(j=0;j<NIntPerNeuron;j++) int_chk[HiddenPhysIntIdx1[offset1+i][j]] += 1;
+      for(j=0;j<NIntPerNeuron;j++) {
+        if( int_chk[j] != 1 ){ 
+          fprintf(stderr, "  HiddenPhysIntIdx1 is someting wrong .\n");
+	  MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+        }
+      }
+    }
+
+    for(j=0;j<NIntPerNeuron;j++) {
+      for(i=0;i<Nsite2;i++) int_chk[i] = 0; 
+      for(i=0;i<Nsite2;i++) int_chk[HiddenPhysIntIdx2[offset2+j][i]] += 1;
+      for(i=0;i<Nsite2;i++) { 
+        if( int_chk[i] != 1 ){ 
+          fprintf(stderr, "  HiddenPhysIntIdx2 is someting wrong .\n");
+	  MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+        }
+      }
+    }
+
+  } 
+  free(int_chk); 
+/* end checking */
+
+
+/* start writing (to be deleted) */
+  file1 = fopen("check_Idx1.txt","w");
+  file2 = fopen("check_Idx2.txt","w");
+  for(f=0;f<NSetHidden;f++) {
+    offset1=f*Nsite2;  
+    offset2=f*NIntPerNeuron;  
+    for(i=0;i<Nsite2;i++) { 
+      for(j=0;j<NIntPerNeuron;j++) fprintf(file1,"%d %d %d \n", i, j, HiddenPhysIntIdx1[offset1+i][j]);
+    }
+    for(j=0;j<NIntPerNeuron;j++) {
+      for(i=0;i<Nsite2;i++) fprintf(file2,"%d %d %d \n", j, i, HiddenPhysIntIdx2[offset2+j][i]);
+    }
+  fprintf(file1,"\n");fprintf(file2,"\n");
+  }
+  fclose(file1); fclose(file2);
+
+  file1 = fopen("check_OptFlag.txt","w");
+  for(f=0;f<2*NPara;f++) fprintf(file1,"%d \n", OptFlag[f]);
+  fclose(file1); 
+/* end writing (to be deleted) */
 
   return;
 }
