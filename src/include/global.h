@@ -126,12 +126,12 @@ int NHiddenMagField;     /* Total number of magnetic-field variabls in hidden la
 int NHiddenPhysInt;      /* Total number of (hidden layer)-(physical layer) interactions  */
 int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron             */
 int NHiddenVariable;     /* Total number of Hidden variables = NHiddenMagField+ NHiddenPhysInt */  
-int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*(Nsite*2)][NIntPerNeuron]                           */
-                         /* i-th neuron in f-th set has NIntPerNeuron interaction; through j-th interaction,*/ 
-                         /* it interacts with HiddenPhysIntIdx1[f*(Nsite*2)+i][j]-th physical variable.     */ 
-int **HiddenPhysIntIdx2; /* HiddenPysIntIdx2[NSetHidden*NIntPerNeuron(=NHiddenPhysInt)][Nsite*2] */
-                         /* j-th type of interaction in f-th set connects i-th neuron with       */
-                         /* HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable.        */ 
+int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*(Nsite*2)][NIntPerNeuron]                            
+                            i-th neuron in f-th set has NIntPerNeuron interactions; through j-th interaction, 
+                            it interacts with HiddenPhysIntIdx1[f*(Nsite*2)+i][j]-th physical variable.    */ 
+int **HiddenPhysIntIdx2; /* HiddenPysIntIdx2[NSetHidden*NIntPerNeuron(=NHiddenPhysInt)][Nsite*2] 
+                          j-th type of interaction in f-th set connects i-th neuron with       
+                          HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable.      */ 
    /* Note that HiddenPhysIntIdx 1 and 2 have the same information but the order of data is different  */
 /* added by YN */
 
@@ -180,8 +180,10 @@ int NOptTrans; /* the number of weights for OptTrans. This is used only for vari
                /* NOptTrans = 0 (not OptTrans mode) or NQPOptTrans (OptTrans mode) */
 double complex *Para;   /* variatonal parameters */
 double complex *Proj;   /* correlation factor (Proj    =Para) */
-double complex *Slater; /* pair orbital       (Slater  =Para+NProj) */
-double complex *OptTrans; /* weights          (OptTrans=Para+NProj+NSlater) */
+double complex *HiddenMagField;   /* magnetic field acting on hidden neurons           */ /* added by YN */
+double complex *HiddenPhysInt;    /* Interaction between hidden and physical variables */ /* added by YN */
+double complex *Slater; /* pair orbital (Slater  =Para+NProj+NHiddenVariable) */        /* modified by YN */
+double complex *OptTrans; /* weights    (OptTrans=Para+NProj+NHiddenVariableNSlater) */ /* modified by YN */
 
 /***** Electron Configuration ******/
 int *EleIdx; /* EleIdx[sample][mi+si*Ne] */

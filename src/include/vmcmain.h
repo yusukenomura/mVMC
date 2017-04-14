@@ -78,6 +78,7 @@ extern int omp_get_thread_num(void);
 
 #include "../parameter.c"
 #include "../projection.c"
+#include "../neural_network.c" /* added by YN */ 
 #include "../slater.c"
 #include "../qp.c"
 #include "../qp_real.c"

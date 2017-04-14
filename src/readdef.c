@@ -439,8 +439,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   /* added by YN */
   NHiddenMagField = NSetHidden; 
   NIntPerNeuron   = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
-  NHiddenPhysInt  = NSetHidden*NIntPerNeuron; 
-  NHiddenVariable = NHiddenMagField+NHiddenPhysInt; 
+  NHiddenPhysInt  = NSetHidden * NIntPerNeuron; 
+  NHiddenVariable = NHiddenMagField + NHiddenPhysInt; 
   /* added by YN */ 
   NOptTrans = (FlagOptTrans>0) ? NQPOptTrans : 0;
   NPara   = NProj + NHiddenVariable + NSlater + NOptTrans ;  /* modified by YN */
@@ -768,18 +768,17 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
       /* TBC */
       case KWHiddenPhysInt:
 	/*hidden-phys_int_idx.def---------------------------*/
-	if(NIntPerNeuron>0){
+	if(NSetHidden>0){
           idx0 = 0; 
-   printf("%d %d   \n", NIntPerNeuron, Nsite2 ); 
 	  while( fscanf(fp, "%d %d ", &j, &i ) != EOF){
 	    fscanf(fp, "%d \n", &(HiddenPhysIntIdx2[j][i]));
 	    idx0++;
-   printf("%d %d %d %d  \n", j, i, HiddenPhysIntIdx2[j][i] ,idx0 ); 
 	  }
-   printf("%d %d   \n", idx0, NIntPerNeuron*Nsite2 ); 
 	  if(idx0!=NIntPerNeuron*Nsite2) info = ReadDefFileError(defname);
 	}
 	fclose(fp);
+        CompleteHiddenPhysIntIdx();  
+        count_idx += NHiddenVariable; /* temporal treatment */
 	break;
       /* added by YN */
 

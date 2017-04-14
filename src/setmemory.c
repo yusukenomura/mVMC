@@ -229,8 +229,10 @@ void SetMemory() {
   /***** Variational Parameters *****/
   Para     = (double complex*)malloc(sizeof(double complex)*(NPara)); 
   Proj     = Para;
-  Slater   = Para + NProj; 
-  OptTrans = Para + NProj + NSlater;
+  HiddenMagField = Para + NProj;                    /* added by YN */
+  HiddenPhysInt  = Para + NProj + NHiddenMagField;  /* added by YN */
+  Slater   = Para + NProj + NHiddenVariable;           /* modified by YN */ 
+  OptTrans = Para + NProj + NHiddenVariable + NSlater; /* modified by YN */
 
   /***** Electron Configuration ******/
   EleIdx            = (int*)malloc(sizeof(int)*( NVMCSample*2*Ne ));

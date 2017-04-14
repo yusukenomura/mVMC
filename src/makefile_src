@@ -26,6 +26,7 @@ pfupdate_real.c \
 pfupdate_two_fcmp.c \
 pfupdate_two_real.c \
 projection.c \
+neural_network.c \
 qp.c \
 qp_real.c \
 readdef.c \
