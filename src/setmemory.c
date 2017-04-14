@@ -95,14 +95,14 @@ void SetMemoryDef() {
   }
 
   /* added by YN */
-  HiddenPhysIntIdx1 = (int**)malloc(sizeof(int*)*NSetHidden*Nsite2);
-  for(i=0;i<NSetHidden*Nsite2;i++) {
+  HiddenPhysIntIdx1 = (int**)malloc(sizeof(int*)*NSizeTheta);
+  for(i=0;i<NSizeTheta;i++) {
     HiddenPhysIntIdx1[i] = pInt;
     pInt += NIntPerNeuron;
   }
 
-  HiddenPhysIntIdx2 = (int**)malloc(sizeof(int*)*NSetHidden*NIntPerNeuron);
-  for(i=0;i<NSetHidden*NIntPerNeuron;i++) {
+  HiddenPhysIntIdx2 = (int**)malloc(sizeof(int*)*NHiddenPhysInt);
+  for(i=0;i<NHiddenPhysInt;i++) {
     HiddenPhysIntIdx2[i] = pInt;
     pInt += Nsite2;
   }
@@ -240,19 +240,19 @@ void SetMemory() {
   EleNum            = (int*)malloc(sizeof(int)*( NVMCSample*2*Nsite ));
   EleProjCnt        = (int*)malloc(sizeof(int)*( NVMCSample*NProj ));
   logSqPfFullSlater = (double*)malloc(sizeof(double)*(NVMCSample));
-  ThetaHidden       = (double*)malloc(sizeof(double)*(NVMCSample*NSetHidden*Nsite2)); /* added by YN */
+  ThetaHidden       = (double*)malloc(sizeof(double)*(NVMCSample*NSizeTheta)); /* added by YN */
 
   TmpEleIdx         = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj));
   TmpEleCfg         = TmpEleIdx + 2*Ne;
   TmpEleNum         = TmpEleCfg + 2*Nsite;
   TmpEleProjCnt     = TmpEleNum + 2*Nsite;
-  TmpThetaHidden    = (double*)malloc(sizeof(double)*(NSetHidden*Nsite2)); /* added by YN */
+  TmpThetaHidden    = (double*)malloc(sizeof(double)*(NSizeTheta)); /* added by YN */
 
   BurnEleIdx = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj));
   BurnEleCfg = BurnEleIdx + 2*Ne;
   BurnEleNum = BurnEleCfg + 2*Nsite;
   BurnEleProjCnt = BurnEleNum + 2*Nsite;
-  BurnThetaHidden = (double*)malloc(sizeof(double)*(NSetHidden*Nsite2)); /* added by YN */
+  BurnThetaHidden = (double*)malloc(sizeof(double)*(NSizeTheta)); /* added by YN */
 
   /***** Slater Elements ******/
   SlaterElm = (double complex*)malloc( sizeof(double complex)*(NQPFull*(2*Nsite)*(2*Nsite)) );

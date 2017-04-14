@@ -120,12 +120,13 @@ int **OrbitalSgn; /* OrbitalSgn[Nsite][Nsite] = +1 or -1 */
 
 /* added by YN */
 /* variables for neural network */
-int NSetHidden;          /* Number of the set of Hidden variables = Hidden neuron density */
-                         /* A set consists of magnetic field and hidden-phys interaction  */
-int NHiddenMagField;     /* Total number of magnetic-field variabls in hidden layers      */
-int NHiddenPhysInt;      /* Total number of (hidden layer)-(physical layer) interactions  */
-int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron             */
-int NHiddenVariable;     /* Total number of Hidden variables = NHiddenMagField+ NHiddenPhysInt */  
+int NSetHidden;          /* Number of the set of Hidden variables = Hidden neuron density      */
+                         /* A set consists of magnetic field and hidden-phys interaction       */
+int NHiddenMagField;     /* Total number of magnetic-field variabls in hidden layers           */
+int NHiddenPhysInt;      /* Total number of (hidden layer)-(physical layer) interactions       */
+int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron                  */
+int NHiddenVariable;     /* Total number of hidden variables = NHiddenMagField+ NHiddenPhysInt */  
+int NSizeTheta;          /* Number of theta angles per set =  NSetHidden * Nsite*2             */  
 int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*(Nsite*2)][NIntPerNeuron]                            
                             i-th neuron in f-th set has NIntPerNeuron interactions; through j-th interaction, 
                             it interacts with HiddenPhysIntIdx1[f*(Nsite*2)+i][j]-th physical variable.    */ 
@@ -173,17 +174,19 @@ int FlagBinary=0;
 int NFileFlushInterval=1;
 
 /***** Variational Parameters *****/
-int NPara; /* the total number of variational prameters NPara= NProj + NSlater+ NOptTrans */ 
+int NPara; /* the total number of variational prameters NPara= NProj+NHiddenVariable+NSlater+NOptTrans */ /* modified by YN */
 int NProj;    /* the number of correlation factor */
 int NSlater;  /* the number of pair orbital (f_ij) = NOrbitalIdx */
 int NOptTrans; /* the number of weights for OptTrans. This is used only for variatonal parameters */
                /* NOptTrans = 0 (not OptTrans mode) or NQPOptTrans (OptTrans mode) */
 double complex *Para;   /* variatonal parameters */
 double complex *Proj;   /* correlation factor (Proj    =Para) */
-double complex *HiddenMagField;   /* magnetic field acting on hidden neurons           */ /* added by YN */
-double complex *HiddenPhysInt;    /* Interaction between hidden and physical variables */ /* added by YN */
-double complex *Slater; /* pair orbital (Slater  =Para+NProj+NHiddenVariable) */        /* modified by YN */
-double complex *OptTrans; /* weights    (OptTrans=Para+NProj+NHiddenVariableNSlater) */ /* modified by YN */
+/* added by YN */
+double complex *HiddenMagField; /* magnetic field acting on hidden neurons (HiddenMagField=Para+NProj)  */ 
+double complex *HiddenPhysInt;  /* Interaction between hidden and physical variables (HiddenPhysInt=Para+NProj+NHiddenMagField)*/ 
+/* added by YN */
+double complex *Slater; /* pair orbital (Slater  =Para+NProj+NHiddenVariable) */         /* modified by YN */
+double complex *OptTrans; /* weights    (OptTrans=Para+NProj+NHiddenVariable+NSlater) */ /* modified by YN */
 
 /***** Electron Configuration ******/
 int *EleIdx; /* EleIdx[sample][mi+si*Ne] */

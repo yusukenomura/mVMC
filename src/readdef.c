@@ -441,6 +441,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NIntPerNeuron   = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
   NHiddenPhysInt  = NSetHidden * NIntPerNeuron; 
   NHiddenVariable = NHiddenMagField + NHiddenPhysInt; 
+  NSizeTheta      = NSetHidden * Nsite2; 
   /* added by YN */ 
   NOptTrans = (FlagOptTrans>0) ? NQPOptTrans : 0;
   NPara   = NProj + NHiddenVariable + NSlater + NOptTrans ;  /* modified by YN */
@@ -459,8 +460,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
     + Nsite*Nsite /* JastrowIdx */
     + 2*Nsite*NDoublonHolon2siteIdx /* DoublonHolon2siteIdx */
     + 4*Nsite*NDoublonHolon4siteIdx /* DoublonHolon4siteIdx */
-    + NSetHidden*Nsite2*NIntPerNeuron /* HiddenPhysIntIdx1 */    /* added by YN */
-    + NSetHidden*NIntPerNeuron*Nsite2 /* HiddenPhysIntIdx2 */    /* added by YN */
+    + NSizeTheta*NIntPerNeuron  /* HiddenPhysIntIdx1 */    /* added by YN */
+    + NHiddenPhysInt*Nsite2     /* HiddenPhysIntIdx2 */    /* added by YN */
     + Nsite*Nsite /* OrbitalIdx */
     + Nsite*Nsite /* OrbitalSgn */
     + Nsite*NQPTrans /* QPTrans */
@@ -1122,6 +1123,8 @@ int ReadInputParameters(char *xNameListFile, MPI_Comm comm)
           Proj[i]=tmp_real+I*tmp_comp;
         }        
         break;
+
+      /* To DO YN: initial parameter for hidden variables  */
         
       case KWInOrbital:
         if(idx != NOrbitalIdx){

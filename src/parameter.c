@@ -45,8 +45,8 @@ void InitParameter() {
   #pragma omp parallel for default(shared) private(i)
   for(i=0;i<NProj;i++) Proj[i] = 0.0;
   /* added by YN */ 
-  for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] = 0.1*(genrand_real2()-0.5);
-  for(i=0;i<NHiddenPhysInt ;i++) HiddenPhysInt [i] = 0.0001*(genrand_real2()-0.5);
+  for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] = 0.1*(genrand_real2()-0.5);     /* TBC */
+  for(i=0;i<NHiddenPhysInt ;i++) HiddenPhysInt [i] = 0.0001*(genrand_real2()-0.5);  /* TBC */
   file1 = fopen("check_OptFlag.txt","w"); // delete
   for(i=0;i<2*NPara;i++) fprintf(file1,"%d \n", OptFlag[i]); // delete
   fclose(file1); // delete

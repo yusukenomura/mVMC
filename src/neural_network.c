@@ -27,10 +27,30 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 
-void CalcTheta(double *tmpThetaHidden, const int *eleNum);
+inline double LogHiddenWeightVal(const double *thetaHidden);
+inline double LogHiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld);
+void CalcTheta(double *thetaHidden, const int *eleNum);
 void CompleteHiddenPhysIntIdx();  
 
-void CalcTheta(double *tmpThetaHidden, const int *eleNum) {
+
+inline double LogHiddenWeightVal(const double *thetaHidden) {
+  int idx;
+  double z=0;
+
+  /* To Do YN */
+  return z;
+}
+
+inline double LogHiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld) {
+  int idx;
+  double z=0;
+
+  /* To Do YN */
+  return z;
+}
+
+
+void CalcTheta(double *thetaHidden, const int *eleNum) {
   const int *n0=eleNum;
   const int *n1=eleNum+Nsite;
   int idx,offset1,offset2;
