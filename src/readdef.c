@@ -508,7 +508,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
       strcpy(defname, cFileNameListFile[iKWidx]);
 
       /* modified by YN */
-      /* TBC */ 
+      /* TBC */ /* When NSetHidden is nonzero, we a need def file for Hidden-Phys Interaction */ 
       if(strcmp(defname,"")==0) { 
 	switch (iKWidx){
 	case KWHiddenPhysInt: 
@@ -1124,7 +1124,7 @@ int ReadInputParameters(char *xNameListFile, MPI_Comm comm)
         }        
         break;
 
-      /* To DO YN: initial parameter for hidden variables  */
+      /* To Do (YN): initial parameter for hidden variables  */
         
       case KWInOrbital:
         if(idx != NOrbitalIdx){

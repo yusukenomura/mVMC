@@ -27,27 +27,30 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, int *eleCfg,
-                         int *eleNum, int *eleProjCnt);
+                         int *eleNum, int *eleProjCnt, double *thetaHidden); /* modified by YN */
 
 void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, int *eleCfg,
-                        int *eleNum, int *eleProjCnt) {
+                        int *eleNum, int *eleProjCnt, double *thetaHidden) { /* modified by YN */
 
   int idx,idx0,idx1;
   int ri,rj,s,rk,rl,t;
   double complex tmp;
   int *myEleIdx, *myEleNum, *myProjCntNew;
+  double *myThetaHiddenNew; /* added by YN */
   double complex *myBuffer;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
+  RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
   RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
 #pragma omp parallel default(shared)\
-  private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx)
+  private(myEleIdx,myEleNum,myProjCntNew,myThetaHiddenNew,myBuffer,idx) /* modified by YN */
   {
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
+    myThetaHiddenNew = GetWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
 
     #pragma loop noalias
@@ -64,7 +67,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
       rj = CisAjsIdx[idx][2];
       s  = CisAjsIdx[idx][3];
       tmp = GreenFunc1(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
-                       myProjCntNew,myBuffer);
+                       myProjCntNew,thetaHidden,myThetaHiddenNew,myBuffer); /* modified by YN */
       LocalCisAjs[idx] = tmp;
     }
 
@@ -89,7 +92,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
       t  = CisAjsCktAltDCIdx[idx][5];
 
       tmp = GreenFunc2(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
-                       myProjCntNew,myBuffer);
+                       myProjCntNew,thetaHidden,myThetaHiddenNew,myBuffer); /* modified by YN */
       PhysCisAjsCktAltDC[idx] += w*tmp;
     }
     

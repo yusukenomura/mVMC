@@ -120,20 +120,20 @@ int **OrbitalSgn; /* OrbitalSgn[Nsite][Nsite] = +1 or -1 */
 
 /* added by YN */
 /* variables for neural network */
-int NSetHidden;          /* Number of the set of Hidden variables = Hidden neuron density      */
-                         /* A set consists of magnetic field and hidden-phys interaction       */
-int NHiddenMagField;     /* Total number of magnetic-field variabls in hidden layers           */
-int NHiddenPhysInt;      /* Total number of (hidden layer)-(physical layer) interactions       */
-int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron                  */
-int NHiddenVariable;     /* Total number of hidden variables = NHiddenMagField+ NHiddenPhysInt */  
-int NSizeTheta;          /* Number of theta angles per set =  NSetHidden * Nsite*2             */  
-int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*(Nsite*2)][NIntPerNeuron]                            
+int NSetHidden;          /* Number of the set of Hidden variables = Hidden neuron density       */
+                         /* A set consists of magnetic field and hidden-phys interaction        */
+int NHiddenMagField;     /* Total number of magnetic-field variabls in hidden layers            */
+int NHiddenPhysInt;      /* Total number of (hidden layer)-(physical layer) interactions        */
+int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron                   */
+int NHiddenVariable;     /* Total number of hidden variables = NHiddenMagField + NHiddenPhysInt */  
+int NSizeTheta;          /* Number of theta angles per set =  NSetHidden * Nsite*2              */  
+int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*Nsite*2(=NSizeTheta)][NIntPerNeuron]                            
                             i-th neuron in f-th set has NIntPerNeuron interactions; through j-th interaction, 
                             it interacts with HiddenPhysIntIdx1[f*(Nsite*2)+i][j]-th physical variable.    */ 
 int **HiddenPhysIntIdx2; /* HiddenPysIntIdx2[NSetHidden*NIntPerNeuron(=NHiddenPhysInt)][Nsite*2] 
-                          j-th type of interaction in f-th set connects i-th neuron with       
-                          HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable.      */ 
-   /* Note that HiddenPhysIntIdx 1 and 2 have the same information but the order of data is different  */
+                            j-th type of interaction in f-th set connects i-th neuron with       
+                            HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable.      */ 
+ /* Note that HiddenPhysIntIdx 1 and 2 have the same information but the order of data is different  */
 /* added by YN */
 
 /* zqptransidx.def */
@@ -174,7 +174,7 @@ int FlagBinary=0;
 int NFileFlushInterval=1;
 
 /***** Variational Parameters *****/
-int NPara; /* the total number of variational prameters NPara= NProj+NHiddenVariable+NSlater+NOptTrans */ /* modified by YN */
+int NPara; /* the total number of variational prameters NPara=NProj+NHiddenVariable+NSlater+NOptTrans */ /* modified by YN */
 int NProj;    /* the number of correlation factor */
 int NSlater;  /* the number of pair orbital (f_ij) = NOrbitalIdx */
 int NOptTrans; /* the number of weights for OptTrans. This is used only for variatonal parameters */
@@ -193,8 +193,7 @@ int *EleIdx; /* EleIdx[sample][mi+si*Ne] */
 int *EleCfg; /* EleCfg[sample][ri+si*Nsite] */
 int *EleNum; /* EleIdx[sample][ri+si*Nsite] */
 int *EleProjCnt; /* EleProjCnt[sample][proj] */
-double *ThetaHidden; /* = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN */
-                     /* ThetaHidden[sample][NSetHidden*Nsite2]      */
+double *ThetaHidden; /* ThetaHidden[sample][NSizeTheta] = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN */
 double *logSqPfFullSlater; /* logSqPfFullSlater[sample] */
 
 int *TmpEleIdx;

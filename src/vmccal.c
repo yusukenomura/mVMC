@@ -48,6 +48,11 @@ void calculateQCACAQ(double *qcacaq, const double *lslca, const double w,
 
 void VMCMainCal(MPI_Comm comm) {
   int *eleIdx,*eleCfg,*eleNum,*eleProjCnt;
+/* added by YN */ 
+  int f,j,offset,idx,rsi;
+  double *thetaHidden,*tmpTheta; 
+  double x;
+/* added by YN */ 
   double complex e,ip;
   double w;
   double we,sqrtw;
@@ -59,8 +64,13 @@ void VMCMainCal(MPI_Comm comm) {
 
   /* optimazation for Kei */
   const int nProj=NProj;
-  const int offset1 = 2*NProj + 2*NHiddenVariable; /* added by YN */
-  const int offset2 = 2*NProj + 2*NHiddenVariable + 2*NSlater; /* added by YN */
+  /* added by YN */
+  const int offset1=2*NProj+2*NHiddenVariable; 
+  const int offset2=2*NProj+2*NHiddenVariable+2*NSlater; 
+  const int nSetHidden=NSetHidden;
+  const int nIntPerNeuron=NIntPerNeuron;
+  const int nSite2=Nsite2;
+  /* added by YN */
   double complex *srOptO = SROptO;
   double         *srOptO_real = SROptO_real;
 
@@ -81,6 +91,7 @@ void VMCMainCal(MPI_Comm comm) {
     eleCfg = EleCfg + sample*Nsite2;
     eleNum = EleNum + sample*Nsite2;
     eleProjCnt = EleProjCnt + sample*NProj;
+    thetaHidden = ThetaHidden + sample*NSizeTheta; /* added by YN */
 //DEBUG
     /* for(i=0;i<Nsite;i++) {
       printf("Debug: sample=%d: i=%d  up=%d down =%d \n",sample,i,eleCfg[i+0*Nsite],eleCfg[i+1*Nsite]);
@@ -118,6 +129,7 @@ void VMCMainCal(MPI_Comm comm) {
     printf("  Debug: sample=%d: LogProjVal \n",sample);
 #endif
     LogProjVal(eleProjCnt);
+    /* comment by YN: LogHiddenWeightVal(thetaHidden) is needed ? */ 
     /* calculate reweight */
     //w = exp(2.0*(log(fabs(ip))+x) - logSqPfFullSlater[sample]);
     w =1.0;
@@ -138,12 +150,12 @@ void VMCMainCal(MPI_Comm comm) {
 #ifdef _DEBUG
       printf("  Debug: sample=%d: calculateHam_real \n",sample);
 #endif
-      e = CalculateHamiltonian_real(creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt);
+      e = CalculateHamiltonian_real(creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt,thetaHidden); /* modified by YN */
     }else{
 #ifdef _DEBUG
       printf("  Debug: sample=%d: calculateHam_cmp \n",sample);
 #endif
-      e = CalculateHamiltonian(ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+      e = CalculateHamiltonian(ip,eleIdx,eleCfg,eleNum,eleProjCnt,thetaHidden); /* modified by YN */
     }
     //printf("DEBUG: rank=%d: sample=%d ip= %lf %lf\n",rank,sample,creal(ip),cimag(ip));
     StopTimer(41);
@@ -167,6 +179,46 @@ void VMCMainCal(MPI_Comm comm) {
         srOptO[(i+1)*2]     = (double)(eleProjCnt[i]); // even real
         srOptO[(i+1)*2+1]   = 0.0+0.0*I;               // odd  comp
       }
+
+      /* added by YN */
+      /* Hidden-layer magnetic field 
+         This part assumes that the magnetic field is uniform for each set of Hidden variables. 
+         In this case, NHiddenMagField = NSetHidden */
+      tmp_i = nProj; 
+      // #pragma loop noalias  /* comment by YN: is this line needed? */
+      for(f=0;f<nSetHidden;f++){ 
+        tmpTheta = thetaHidden + f*nSite2; 
+        x = 0.0;
+        for(i=0;i<nSite2;i++) x += tanh(tmpTheta[i]); 
+        srOptO[(tmp_i+1)*2]   = x;               // even real
+        srOptO[(tmp_i+1)*2+1] = 0.0+0.0*I;       // odd  comp
+        tmp_i++;
+      }
+
+      /* Interaction between hidden and phyisical variables 
+         j-th type of interaction in f-th set connects i-th neuron with 
+         HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable. */
+      // #pragma loop noalias  /* comment by YN: is this line needed? */
+      for(f=0;f<nSetHidden;f++){ 
+        tmpTheta = thetaHidden + f*nSite2; 
+        offset = f*NIntPerNeuron;
+        for(j=0;j<nIntPerNeuron;j++) {
+          idx = offset + j; 
+          x = 0.0;
+          for(i=0;i<nSite2;i++) {
+           rsi = HiddenPhysIntIdx2[idx][i]; 
+           x += tanh(tmpTheta[i])*(double)(2*eleNum[rsi]-1); 
+          }
+          srOptO[(tmp_i+1)*2]   = x;               // even real
+          srOptO[(tmp_i+1)*2+1] = 0.0+0.0*I;       // odd  comp
+          tmp_i++;
+        }
+      }
+      if( 2*tmp_i != offset1 ) {
+        fprintf(stderr, " 2*tmp_i != offset1 \n");
+        MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+      }
+      /* added by YN */
 
       StartTimer(42);
       /* SlaterElmDiff */
@@ -218,7 +270,7 @@ void VMCMainCal(MPI_Comm comm) {
     } else if(NVMCCalMode==1) {
       StartTimer(42);
       /* Calculate Green Function */
-      CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+      CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt,thetaHidden);
       StopTimer(42);
 
       if(NLanczosMode>0){

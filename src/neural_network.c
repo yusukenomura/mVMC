@@ -26,43 +26,102 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  * by Yusuke Nomura
  *-------------------------------------------------------------*/
 
-
 inline double LogHiddenWeightVal(const double *thetaHidden);
 inline double LogHiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld);
-void CalcTheta(double *thetaHidden, const int *eleNum);
+inline double HiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld);
+void CalcThetaHidden(double *thetaHidden, const int *eleNum);
+void UpdateThetaHidden(const int ri, const int rj, const int s,
+                       double *thetaHiddenNew, const double *thetaHiddenOld,
+                       const int *eleNum);
 void CompleteHiddenPhysIntIdx();  
 
 
 inline double LogHiddenWeightVal(const double *thetaHidden) {
   int idx;
   double z=0;
-
-  /* To Do YN */
+  for(idx=0;idx<NSizeTheta;idx++) {
+    z += log(cosh(thetaHidden[idx]));
+  }
   return z;
 }
 
 inline double LogHiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld) {
   int idx;
   double z=0;
-
-  /* To Do YN */
+  for(idx=0;idx<NSizeTheta;idx++) {
+    z += log(cosh(thetaHiddenNew[idx])) - log(cosh(thetaHiddenOld[idx]));
+  }
   return z;
 }
 
+inline double HiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld) {
+  int idx;
+  double z=0;
+  for(idx=0;idx<NSizeTheta;idx++) {
+    z += log(cosh(thetaHiddenNew[idx])) - log(cosh(thetaHiddenOld[idx]));
+  }
+  return exp(z);
+}
 
-void CalcTheta(double *thetaHidden, const int *eleNum) {
-  const int *n0=eleNum;
-  const int *n1=eleNum+Nsite;
-  int idx,offset1,offset2;
-  int ri,rj;
-  /* optimization for Kei */
-  const int nProj=NProj;
-  const int nSite=Nsite;
+void CalcThetaHidden(double *thetaHidden, const int *eleNum) {
+  int f,i,j;
+  int idx,rsi,offset1,offset2;
+  double *tmpTheta;
 
-  printf("CalcTheta \n");
+  const int nSetHidden=NSetHidden;
+  const int nIntPerNeuron=NIntPerNeuron;
+  const int nSite2=Nsite2;
+
+  for(f=0;f<nSetHidden;f++) { 
+    tmpTheta = thetaHidden + f*nSite2; 
+    offset1 = f*nSite2;
+    offset2 = f*nIntPerNeuron;
+    for(i=0;i<nSite2;i++) { 
+      idx = offset1 + i; 
+
+      /* Magnetic field acting on Hidden variables */    
+      tmpTheta[i] = creal(HiddenMagField[f]); // TBC 
+
+      /* Interaction between hidden and phyiscal vairables  
+         i-th neuron in f-th set has NIntPerNeuron interactions; through j-th interaction,
+         it interacts with HiddenPhysIntIdx1[f*(Nsite*2)+i][j]-th physical variable.    */
+      for(j=0;j<nIntPerNeuron;j++) {
+        rsi = HiddenPhysIntIdx1[idx][j]; 
+        tmpTheta[i] += creal(HiddenPhysInt[offset2+j]) * (double)(2*eleNum[rsi]-1); // TBC 
+      }
+    }
+  } 
 
   return;
 }
+
+
+/* An electron with spin s hops from ri to rj. */
+void UpdateThetaHidden(const int ri, const int rj, const int s,
+                       double *thetaHiddenNew, const double *thetaHiddenOld,
+                       const int *eleNum) {
+  int f,i,j;
+  int idx,rsi,offset1,offset2;
+  double *tmpTheta;
+
+  const int nSizeTheta=NSizeTheta;
+  const int nSetHidden=NSetHidden;
+  const int nIntPerNeuron=NIntPerNeuron;
+  const int nSite2=Nsite2;
+
+
+  if(thetaHiddenNew!=thetaHiddenOld) {
+    for(idx=0;idx<nSizeTheta;idx++) thetaHiddenNew[idx] = thetaHiddenOld[idx];
+  }
+  if(ri==rj) return;
+
+  /* To Do YN */
+
+  /* not implemented */ 
+
+  return; 
+}
+
 
 void CompleteHiddenPhysIntIdx() {
   int i,j,f; 
@@ -75,7 +134,7 @@ void CompleteHiddenPhysIntIdx() {
   HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable.
 */ 
   for(f=1;f<NSetHidden;f++) {
-    offset2=f*NIntPerNeuron;  
+    offset2 = f*NIntPerNeuron;  
     for(j=0;j<NIntPerNeuron;j++) {
     for(i=0;i<Nsite2;i++) {
       HiddenPhysIntIdx2[offset2+j][i] = HiddenPhysIntIdx2[j][i];
@@ -88,8 +147,8 @@ void CompleteHiddenPhysIntIdx() {
  it interacts with HiddenPhysIntIdx1[f*(Nsite*2)+i][j]-th physical variable.     
 */ 
   for(f=0;f<NSetHidden;f++) {
-    offset1=f*Nsite2;  
-    offset2=f*NIntPerNeuron;  
+    offset1 = f*Nsite2;  
+    offset2 = f*NIntPerNeuron;  
     for(i=0;i<Nsite2;i++) {
     for(j=0;j<NIntPerNeuron;j++) {
       HiddenPhysIntIdx1[offset1+i][j] = HiddenPhysIntIdx2[offset2+j][i];
@@ -110,8 +169,8 @@ void CompleteHiddenPhysIntIdx() {
   }
 
   for(f=0;f<NSetHidden;f++) {
-    offset1=f*Nsite2;  
-    offset2=f*NIntPerNeuron;  
+    offset1 = f*Nsite2;  
+    offset2 = f*NIntPerNeuron;  
 
     /* check for HiddenPhysIntIdx1 */
     for(i=0;i<Nsite2;i++) { 
@@ -145,8 +204,8 @@ void CompleteHiddenPhysIntIdx() {
   file1 = fopen("check_Idx1.txt","w");
   file2 = fopen("check_Idx2.txt","w");
   for(f=0;f<NSetHidden;f++) {
-    offset1=f*Nsite2;  
-    offset2=f*NIntPerNeuron;  
+    offset1 = f*Nsite2;  
+    offset2 = f*NIntPerNeuron;  
     for(i=0;i<Nsite2;i++) { 
       for(j=0;j<NIntPerNeuron;j++) fprintf(file1,"%d %d %d \n", i, j, HiddenPhysIntIdx1[offset1+i][j]);
     }
