@@ -41,6 +41,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
   double  logIpOld,logIpNew; /* logarithm of inner product <phi|L|x> */ // is this ok ? TBC
   int projCntNew[NProj];
   double         pfMNew_real[NQPFull];
+  double thetaHiddenNew[NSizeTheta]; /* added by YN */
   double x,w; // TBC x will be complex number
 
   int qpStart,qpEnd;
@@ -57,7 +58,8 @@ void VMCMakeSample_real(MPI_Comm comm) {
     makeInitialSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpThetaHidden, /* modified by YN */
                       qpStart,qpEnd,comm);
   } else {
-    copyFromBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpThetaHidden); /* modified by YN */
+    copyFromBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt);
+    CalcThetaHidden(TmpThetaHidden,TmpEleNum); /* added by YN */
   }
   
   CalculateMAll_real(TmpEleIdx,qpStart,qpEnd);
@@ -211,7 +213,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
   } /* end of outstep */
 
-  copyToBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpThetaHidden); /* modified by YN */ 
+  copyToBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt);
   BurnFlag=1;
   return;
 }

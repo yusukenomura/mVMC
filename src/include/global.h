@@ -206,7 +206,6 @@ int *BurnEleIdx;
 int *BurnEleCfg;
 int *BurnEleNum;
 int *BurnEleProjCnt;
-double *BurnThetaHidden; /* added by YN */
 int BurnFlag=0; /* 0: off, 1: on */
 
 /***** Slater Elements ******/

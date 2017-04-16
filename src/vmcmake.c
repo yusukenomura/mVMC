@@ -30,9 +30,8 @@ void VMCMakeSample(MPI_Comm comm);
 /* modified by YN */ 
 int makeInitialSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, double *thetaHidden,
                       const int qpStart, const int qpEnd, MPI_Comm comm);
-void copyFromBurnSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, double *thetaHidden );
-void copyToBurnSample(const int *eleIdx, const int *eleCfg, const int *eleNum, 
-                      const int *eleProjCnt, const double *thetaHidden);
+void copyFromBurnSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt);
+void copyToBurnSample(const int *eleIdx, const int *eleCfg, const int *eleNum, const int *eleProjCnt);
 void saveEleConfig(const int sample, const double complex logIp,
                    const int *eleIdx, const int *eleCfg, const int *eleNum, 
                    const int *eleProjCnt, const double *thetaHidden );
@@ -78,7 +77,8 @@ void VMCMakeSample(MPI_Comm comm) {
     makeInitialSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpThetaHidden, /* modified by YN */
                       qpStart,qpEnd,comm);
   } else {
-    copyFromBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpThetaHidden); /* modified by YN */
+    copyFromBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt);
+    CalcThetaHidden(TmpThetaHidden,TmpEleNum); /* added by YN */
   }
   
   CalculateMAll_fcmp(TmpEleIdx,qpStart,qpEnd);
@@ -239,7 +239,7 @@ void VMCMakeSample(MPI_Comm comm) {
 
   } /* end of outstep */
 
-  copyToBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpThetaHidden); /* modified by YN */
+  copyToBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt);
   BurnFlag=1;
   return;
 }
@@ -313,40 +313,21 @@ int makeInitialSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, do
   return 0;
 }
 
-void copyFromBurnSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, double *thetaHidden ) { /* modified by YN */
+void copyFromBurnSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt) {
   int i,n;
   const int *burnEleIdx = BurnEleIdx;
-  const double *burnThetaHidden = BurnThetaHidden; /* added by YN */
-
   n = Nsize + 2*Nsite + 2*Nsite + NProj;
   #pragma loop noalias
   for(i=0;i<n;i++) eleIdx[i] = burnEleIdx[i];
-
-  /* added by YN */ 
-  n = NSizeTheta;
-  #pragma loop noalias
-  for(i=0;i<n;i++) thetaHidden[i] = burnThetaHidden[i];
-  /* added by YN */
-
   return;
 }
 
-void copyToBurnSample(const int *eleIdx, const int *eleCfg, const int *eleNum, /* modified by YN */
-                      const int *eleProjCnt, const double *thetaHidden ) {     /* modified by YN */
+void copyToBurnSample(const int *eleIdx, const int *eleCfg, const int *eleNum, const int *eleProjCnt) {
   int i,n;
   int *burnEleIdx = BurnEleIdx;
-  double *burnThetaHidden = BurnThetaHidden; /* added by YN */
-
   n = Nsize + 2*Nsite + 2*Nsite + NProj;
   #pragma loop noalias
   for(i=0;i<n;i++) burnEleIdx[i] = eleIdx[i];
-
-  /* added by YN */ 
-  n = NSizeTheta;
-  #pragma loop noalias
-  for(i=0;i<n;i++) burnThetaHidden[i] = thetaHidden[i];
-  /* added by YN */
-
   return;
 }
 

@@ -252,7 +252,6 @@ void SetMemory() {
   BurnEleCfg = BurnEleIdx + 2*Ne;
   BurnEleNum = BurnEleCfg + 2*Nsite;
   BurnEleProjCnt = BurnEleNum + 2*Nsite;
-  BurnThetaHidden = (double*)malloc(sizeof(double)*(NSizeTheta)); /* added by YN */
 
   /***** Slater Elements ******/
   SlaterElm = (double complex*)malloc( sizeof(double complex)*(NQPFull*(2*Nsite)*(2*Nsite)) );
