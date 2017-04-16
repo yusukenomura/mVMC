@@ -215,10 +215,6 @@ void CompleteHiddenPhysIntIdx() {
   fprintf(file1,"\n");fprintf(file2,"\n");
   }
   fclose(file1); fclose(file2);
-
-  file1 = fopen("check_OptFlag.txt","w");
-  for(f=0;f<2*NPara;f++) fprintf(file1,"%d \n", OptFlag[f]);
-  fclose(file1); 
 /* end writing (to be deleted) */
 
   return;
