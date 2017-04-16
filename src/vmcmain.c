@@ -324,7 +324,31 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
   int rank;
   int i,tmp_i;//DEBUG
   int iprogress;
+  FILE *file1,*file2; /* to be deleted */
   MPI_Comm_rank(comm_parent, &rank);
+
+  if( rank == 0 ){
+  file1 = fopen("check1_OptFlag.txt","w"); // delete
+  for(i=0;i<2*NPara;i++) fprintf(file1,"%d \n", OptFlag[i]); // delete
+  fclose(file1); // delete
+  file1 = fopen("check1_Slater.txt","w"); // delete
+  for(i=0;i<NSlater;i++) fprintf(file1,"%lf %lf \n", creal(Slater[i]),cimag(Slater[i])); // delete
+  fclose(file1); // delete
+  file1 = fopen("check1_Para.txt","w"); // delete
+  for(i=0;i<NPara;i++) fprintf(file1,"%lf %lf \n", creal(Para[i]),cimag(Para[i])); // delete
+  fclose(file1); // delete
+  }
+  if( rank == 5 ){
+  file2 = fopen("check2_OptFlag.txt","w"); // delete
+  for(i=0;i<2*NPara;i++) fprintf(file2,"%d \n", OptFlag[i]); // delete
+  fclose(file2); // delete
+  file2 = fopen("check2_Slater.txt","w"); // delete
+  for(i=0;i<NSlater;i++) fprintf(file2,"%lf %lf \n", creal(Slater[i]),cimag(Slater[i])); // delete
+  fclose(file2); // delete
+  file2 = fopen("check2_Para.txt","w"); // delete
+  for(i=0;i<NPara;i++) fprintf(file2,"%lf %lf \n", creal(Para[i]),cimag(Para[i])); // delete
+  fclose(file2); // delete
+  }
 
   for(step=0;step<NSROptItrStep;step++) {
     if(rank==0){
