@@ -62,7 +62,7 @@ double  GreenFunc1_real(const int ri, const int rj, const int s, const double ip
   eleNum[rsj] = 0;
   eleNum[rsi] = 1;
   UpdateProjCnt(rj, ri, s, projCntNew, eleProjCnt, eleNum);
-  CalcThetaHidden(thetaHiddenNew,eleNum); /* To Do YN, should be modified */ 
+  UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHidden); /* added by YN */
   z = ProjRatio(projCntNew,eleProjCnt);
   z *= HiddenWeightRatio(thetaHiddenNew,thetaHidden);  /* added by YN */
 
@@ -144,11 +144,12 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   eleNum[rtl] = 0;
   eleNum[rtk] = 1;
   UpdateProjCnt(rl, rk, t, projCntNew, eleProjCnt, eleNum);
+  UpdateThetaHidden(rl, rk, t, thetaHiddenNew, thetaHidden); /* added by YN */
   eleIdx[msj] = ri;
   eleNum[rsj] = 0;
   eleNum[rsi] = 1;
   UpdateProjCnt(rj, ri, s, projCntNew, projCntNew, eleNum);
-  CalcThetaHidden(thetaHiddenNew,eleNum); /* To Do YN, should be modified */ 
+  UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHidden); /* added by YN */
 
   z = ProjRatio(projCntNew,eleProjCnt);
   z *= HiddenWeightRatio(thetaHiddenNew,thetaHidden);  /* added by YN */

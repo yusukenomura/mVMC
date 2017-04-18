@@ -120,7 +120,7 @@ void VMCMakeSample(MPI_Comm comm) {
         /* The mi-th electron with spin s hops to site rj */
         updateEleConfig(mi,ri,rj,s,TmpEleIdx,TmpEleCfg,TmpEleNum);
         UpdateProjCnt(ri,rj,s,projCntNew,TmpEleProjCnt,TmpEleNum);
-        CalcThetaHidden(thetaHiddenNew,TmpEleNum); /* To Do YN, should be modified */ 
+        UpdateThetaHidden(ri,rj,s,thetaHiddenNew,TmpThetaHidden); /* added by YN */
           StopTimer(60);
           StartTimer(61);
         //CalculateNewPfM2(mi,s,pfMNew,TmpEleIdx,qpStart,qpEnd);
@@ -177,11 +177,11 @@ void VMCMakeSample(MPI_Comm comm) {
         /* The mi-th electron with spin s hops to rj */
         updateEleConfig(mi,ri,rj,s,TmpEleIdx,TmpEleCfg,TmpEleNum);
         UpdateProjCnt(ri,rj,s,projCntNew,TmpEleProjCnt,TmpEleNum);
-        /* To Do YN */ 
+        UpdateThetaHidden(ri,rj,s,thetaHiddenNew,TmpThetaHidden); /* added by YN */
         /* The mj-th electron with spin t hops to ri */
         updateEleConfig(mj,rj,ri,t,TmpEleIdx,TmpEleCfg,TmpEleNum);
         UpdateProjCnt(rj,ri,t,projCntNew,projCntNew,TmpEleNum);
-        CalcThetaHidden(thetaHiddenNew,TmpEleNum); /* To Do YN, should be modified */ 
+        UpdateThetaHidden(rj,ri,t,thetaHiddenNew,TmpThetaHidden); /* added by YN */
 
         StopTimer(65);
         StartTimer(66);
@@ -218,12 +218,22 @@ void VMCMakeSample(MPI_Comm comm) {
         StopTimer(33);
       }
 
-      if(nAccept>Nsite) {
+      if(nAccept>Nsite && nAccept>100) { /* modified by YN */
         StartTimer(34);
         /* recal PfM and InvM */
         CalculateMAll_fcmp(TmpEleIdx,qpStart,qpEnd);
         //printf("DEBUG: maker3: PfM=%lf\n",creal(PfM[0]));
         logIpOld = CalculateLogIP_fcmp(PfM,qpStart,qpEnd,comm);
+        /* added by YN */
+        CalcThetaHidden(thetaHiddenNew,TmpEleNum); 
+        for(i=0;i<NSizeTheta;i++) { 
+          if( fabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-3 ) {
+            fprintf(stderr,"Warning: failed in updating ThetaHidden, %lf %lf \n",
+                    TmpThetaHidden[i],thetaHiddenNew[i]);
+          }  
+          TmpThetaHidden[i] = thetaHiddenNew[i];
+        } 
+        /* added by YN */
         StopTimer(34);
         nAccept=0;
       }
