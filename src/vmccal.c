@@ -50,8 +50,8 @@ void VMCMainCal(MPI_Comm comm) {
   int *eleIdx,*eleCfg,*eleNum,*eleProjCnt;
 /* added by YN */ 
   int f,j,offset,idx,rsi;
-  double *thetaHidden,*tmpTheta; 
-  double x;
+  double complex *thetaHidden,*tmpTheta; /* modified by KI */
+  double complex x;  /* modified by KI */
 /* added by YN */ 
   double complex we,e,ip; /* modified by YN */
   double w;
@@ -189,9 +189,9 @@ void VMCMainCal(MPI_Comm comm) {
       for(f=0;f<nSetHidden;f++){ 
         tmpTheta = thetaHidden + f*nNeuronPerSet; 
         x = 0.0;
-        for(i=0;i<nNeuronPerSet;i++) x += tanh(tmpTheta[i]); 
+        for(i=0;i<nNeuronPerSet;i++) x += cTanh(tmpTheta[i]);  /* modified by KI */
         srOptO[(tmp_i+1)*2]   = x;               // even real
-        srOptO[(tmp_i+1)*2+1] = 0.0+0.0*I;       // odd  comp
+        srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp   /* modified by KI */
         tmp_i++;
       }
 
@@ -207,10 +207,10 @@ void VMCMainCal(MPI_Comm comm) {
           x = 0.0;
           for(i=0;i<nNeuronPerSet;i++) {
            rsi = HiddenPhysIntIdx2[idx][i]; 
-           x += tanh(tmpTheta[i])*(double)(2*eleNum[rsi]-1); 
+           x += cTanh(tmpTheta[i])*(double complex)(2*eleNum[rsi]-1);  /* modified by KI */
           }
           srOptO[(tmp_i+1)*2]   = x;               // even real
-          srOptO[(tmp_i+1)*2+1] = 0.0+0.0*I;       // odd  comp
+          srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */
           tmp_i++;
         }
       }

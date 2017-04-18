@@ -28,15 +28,15 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 /* modified by YN */
 double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double *thetaHidden);
+                             int *eleNum, const int *eleProjCnt, const double complex *thetaHidden);
 double complex CalculateHamiltonian0(const int *eleNum);
 double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double *thetaHidden);
+                             int *eleNum, const int *eleProjCnt, const double complex *thetaHidden);
 double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double *thtaHidden);
+                             int *eleNum, const int *eleProjCnt, const double complex *thtaHidden);
 
 double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double *thetaHidden) {
+                             int *eleNum, const int *eleProjCnt, const double complex *thetaHidden) {
 /* modified by YN */
   const int *n0 = eleNum;
   const int *n1 = eleNum + Nsite;
@@ -44,13 +44,13 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
   int idx;
   int ri,rj,s,rk,rl,t;
   int *myEleIdx, *myEleNum, *myProjCntNew;
-  double *myThetaHiddenNew; /* added by YN */
+  double complex *myThetaHiddenNew; /* added by YN, modified by KI */
   double complex *myBuffer;
   double complex myEnergy;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
-  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
+  //RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+NSizeTheta); /* modified by KI  */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
   /*
@@ -71,7 +71,7 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    myThetaHiddenNew = GetWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+    myThetaHiddenNew = GetWorkSpaceThreadComplex(NSizeTheta); /* added by YN, modified by KI */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
 
     #pragma loop noalias
@@ -230,18 +230,18 @@ double complex CalculateHamiltonian0(const int *eleNum) {
 /* which can be calculated by 1-body Green function. */
 /* This function will be used in the Lanczos mode */
 double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double *thetaHidden) { /* modified by YN */
+                             int *eleNum, const int *eleProjCnt, const double complex *thetaHidden) { /* modified by YN, modified by KI */
   double complex e=0.0;
   int idx;
   int ri,rj,s;
   int *myEleIdx, *myEleNum, *myProjCntNew;
-  double *myThetaHiddenNew; /* added by YN */
+  double complex *myThetaHiddenNew; /* added by YN, modified by KI */
   double complex *myBuffer;
   double complex myEnergy;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
-  RequestWorkSpaceThreadComplex(NQPFull);
+  //RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+  RequestWorkSpaceThreadComplex(NQPFull+NSizeTheta); /* modified by KI */
   /* GreenFunc1: NQPFull */
 
 /* modified by YN */
@@ -253,7 +253,7 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    myThetaHiddenNew = GetWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+    myThetaHiddenNew = GetWorkSpaceThreadComplex(NSizeTheta); /* added by YN, modified by KI */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull);
 
     #pragma loop noalias
@@ -288,18 +288,18 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
 /* which can be calculated by 2-body Green function. */
 /* This function will be used in the Lanczos mode */
 double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double *thetaHidden) { /* modified by YN */
-  double e=0.0, tmp;
+                             int *eleNum, const int *eleProjCnt, const double complex*thetaHidden) { /* modified by YN, modified by KI */
+  double complex e=0.0, tmp; /* modified by KI */
   int idx;
   int ri,rj,s,rk,rl,t;
   int *myEleIdx, *myEleNum, *myProjCntNew;
-  double *myThetaHiddenNew; /* added by YN */
+  double complex *myThetaHiddenNew; /* added by YN, modified by KI */
   double complex *myBuffer;
   double complex myEnergy;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
-  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
+  //RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+NSizeTheta); /* modified by KI */
   /* GreenFunc2: NQPFull+2*Nsize */
 
 /* modified by YN */
@@ -311,7 +311,8 @@ double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    myThetaHiddenNew = GetWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+    //myThetaHiddenNew = GetWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+    myThetaHiddenNew = GetWorkSpaceThreadComplex(NSizeTheta); /* added by YN, modified by KI */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
 
     #pragma loop noalias
