@@ -53,9 +53,9 @@ void VMCMainCal(MPI_Comm comm) {
   double *thetaHidden,*tmpTheta; 
   double x;
 /* added by YN */ 
-  double complex e,ip;
+  double complex we,e,ip; /* modified by YN */
   double w;
-  double we,sqrtw;
+  double sqrtw; /* modified by YN */
 
   const int qpStart=0;
   const int qpEnd=NQPFull;
@@ -69,7 +69,7 @@ void VMCMainCal(MPI_Comm comm) {
   const int offset2=2*NProj+2*NHiddenVariable+2*NSlater; 
   const int nSetHidden=NSetHidden;
   const int nIntPerNeuron=NIntPerNeuron;
-  const int nSite2=Nsite2;
+  const int nNeuronPerSet=NNeuronPerSet;
   /* added by YN */
   double complex *srOptO = SROptO;
   double         *srOptO_real = SROptO_real;
@@ -187,9 +187,9 @@ void VMCMainCal(MPI_Comm comm) {
       tmp_i = nProj; 
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(f=0;f<nSetHidden;f++){ 
-        tmpTheta = thetaHidden + f*nSite2; 
+        tmpTheta = thetaHidden + f*nNeuronPerSet; 
         x = 0.0;
-        for(i=0;i<nSite2;i++) x += tanh(tmpTheta[i]); 
+        for(i=0;i<nNeuronPerSet;i++) x += tanh(tmpTheta[i]); 
         srOptO[(tmp_i+1)*2]   = x;               // even real
         srOptO[(tmp_i+1)*2+1] = 0.0+0.0*I;       // odd  comp
         tmp_i++;
@@ -200,12 +200,12 @@ void VMCMainCal(MPI_Comm comm) {
          HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable. */
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(f=0;f<nSetHidden;f++){ 
-        tmpTheta = thetaHidden + f*nSite2; 
+        tmpTheta = thetaHidden + f*nNeuronPerSet; 
         offset = f*NIntPerNeuron;
         for(j=0;j<nIntPerNeuron;j++) {
           idx = offset + j; 
           x = 0.0;
-          for(i=0;i<nSite2;i++) {
+          for(i=0;i<nNeuronPerSet;i++) {
            rsi = HiddenPhysIntIdx2[idx][i]; 
            x += tanh(tmpTheta[i])*(double)(2*eleNum[rsi]-1); 
           }

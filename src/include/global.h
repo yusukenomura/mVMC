@@ -124,15 +124,20 @@ int NSetHidden;          /* Number of the set of Hidden variables = Hidden neuro
                          /* A set consists of magnetic field and hidden-phys interaction        */
 int NHiddenMagField;     /* Total number of magnetic-field variabls in hidden layers            */
 int NHiddenPhysInt;      /* Total number of (hidden layer)-(physical layer) interactions        */
+int NNeuronPerSet;       /* Number of neurons per one set                                       */
+int FlagNeuronTrans;     /* FlagNeuronTrans=1: use translational symmetry, 0: symmetry not used */
 int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron                   */
 int NHiddenVariable;     /* Total number of hidden variables = NHiddenMagField + NHiddenPhysInt */  
-int NSizeTheta;          /* Number of theta angles per set =  NSetHidden * Nsite*2              */  
-int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*Nsite*2(=NSizeTheta)][NIntPerNeuron]                            
+int NSizeTheta;          /* Number of theta angles per set =  NSetHidden * NNeuronPerSet        */  
+int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*NNeuronPerSet(=NSizeTheta)][NIntPerNeuron]                            
                             i-th neuron in f-th set has NIntPerNeuron interactions; through j-th interaction, 
-                            it interacts with HiddenPhysIntIdx1[f*(Nsite*2)+i][j]-th physical variable.    */ 
+                            it interacts with HiddenPhysIntIdx1[f*NNeuronPerSet+i][j]-th physical variable.  */ 
 int **HiddenPhysIntIdx2; /* HiddenPysIntIdx2[NSetHidden*NIntPerNeuron(=NHiddenPhysInt)][Nsite*2] 
                             j-th type of interaction in f-th set connects i-th neuron with       
                             HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable.      */ 
+int **HiddenPhysIntIdx3; /* HiddenPysIntIdx3[NSetHidden*NNeuronPerset(=NSizeTheta)][Nsite*2]                            
+                            i-th neuron in f-th set interacts with rsi-th physical variable 
+                            through HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]-th type of interaction.  */ 
  /* Note that HiddenPhysIntIdx 1 and 2 have the same information but the order of data is different  */
 /* added by YN */
 

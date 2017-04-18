@@ -106,6 +106,12 @@ void SetMemoryDef() {
     HiddenPhysIntIdx2[i] = pInt;
     pInt += Nsite2;
   }
+
+  HiddenPhysIntIdx3 = (int**)malloc(sizeof(int*)*NSizeTheta);
+  for(i=0;i<NSizeTheta;i++) {
+    HiddenPhysIntIdx3[i] = pInt;
+    pInt += Nsite2;
+  }
   /* added by YN */ 
 
   OrbitalIdx = (int**)malloc(sizeof(int*)*Nsite);

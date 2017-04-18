@@ -187,6 +187,9 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
 	    else if(CheckWords(ctmp, "NSetHidden")==0){ 
 	      bufInt[IdxNSetHidden]=(int)dtmp;
 	    }
+	    else if(CheckWords(ctmp, "FlagNeuronTrans")==0){ 
+	      bufInt[IdxFlagNeuronTrans]=(int)dtmp;
+	    }
             /* added by YN */
 	    else{
 	      fprintf(stderr, "  Error: keyword \" %s \" is incorrect. \n", ctmp);
@@ -404,6 +407,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NDoublonHolon2siteIdx  =  bufInt[IdxNDH2];
   NDoublonHolon4siteIdx  =  bufInt[IdxNDH4];
   NSetHidden             =  bufInt[IdxNSetHidden]; /* added by YN */
+  FlagNeuronTrans        =  bufInt[IdxFlagNeuronTrans]; /* added by YN */
   NOrbitalIdx            =  bufInt[IdxNOrbit];
   NQPTrans               =  bufInt[IdxNQPTrans];
   NCisAjs                =  bufInt[IdxNOneBodyG];
@@ -441,7 +445,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NIntPerNeuron   = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
   NHiddenPhysInt  = NSetHidden * NIntPerNeuron; 
   NHiddenVariable = NHiddenMagField + NHiddenPhysInt; 
-  NSizeTheta      = NSetHidden * Nsite2; 
+  NNeuronPerSet   = (FlagNeuronTrans==0) ? 1 : Nsite2;
+  NSizeTheta      = NSetHidden * NNeuronPerSet; 
   /* added by YN */ 
   NOptTrans = (FlagOptTrans>0) ? NQPOptTrans : 0;
   NPara   = NProj + NHiddenVariable + NSlater + NOptTrans ;  /* modified by YN */
@@ -462,6 +467,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
     + 4*Nsite*NDoublonHolon4siteIdx /* DoublonHolon4siteIdx */
     + NSizeTheta*NIntPerNeuron  /* HiddenPhysIntIdx1 */    /* added by YN */
     + NHiddenPhysInt*Nsite2     /* HiddenPhysIntIdx2 */    /* added by YN */
+    + NSizeTheta*Nsite2         /* HiddenPhysIntIdx3 */    /* added by YN */
     + Nsite*Nsite /* OrbitalIdx */
     + Nsite*Nsite /* OrbitalSgn */
     + Nsite*NQPTrans /* QPTrans */
@@ -1398,6 +1404,7 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufInt[IdxNDH2]=0;
   bufInt[IdxNDH4]=0;
   bufInt[IdxNSetHidden]=0; /* added by YN */
+  bufInt[IdxFlagNeuronTrans]=1; /* added by YN */
   bufInt[IdxNOrbit]=0;
   bufInt[IdxNQPTrans]=0;
   bufInt[IdxNOneBodyG]=0;
