@@ -185,11 +185,17 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
             /* added by YN */
             /* TBC */ 
 	    else if(CheckWords(ctmp, "NSetHidden")==0){ 
-	      bufInt[IdxNSetHidden]=(int)dtmp;
+	      bufInt[IdxSetHidden]=(int)dtmp;
 	    }
 	    else if(CheckWords(ctmp, "FlagNeuronTrans")==0){ 
 	      bufInt[IdxFlagNeuronTrans]=(int)dtmp;
 	    }
+	    else if(CheckWords(ctmp, "NSROptWithShift")==0){ 
+	      bufInt[IdxSROptWithShift]=(int)dtmp;
+	    }
+	    else if(CheckWords(ctmp, "DSROptShiftRatio")==0){
+	      bufDouble[IdxSROptShiftRatio]=(double)dtmp;
+	    }	
             /* added by YN */
 	    else{
 	      fprintf(stderr, "  Error: keyword \" %s \" is incorrect. \n", ctmp);
@@ -406,8 +412,9 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NJastrowIdx            =  bufInt[IdxNJast];
   NDoublonHolon2siteIdx  =  bufInt[IdxNDH2];
   NDoublonHolon4siteIdx  =  bufInt[IdxNDH4];
-  NSetHidden             =  bufInt[IdxNSetHidden]; /* added by YN */
+  NSetHidden             =  bufInt[IdxSetHidden]; /* added by YN */
   FlagNeuronTrans        =  bufInt[IdxFlagNeuronTrans]; /* added by YN */
+  NSROptWithShift        =  bufInt[IdxSROptWithShift]; /* added by YN */
   NOrbitalIdx            =  bufInt[IdxNOrbit];
   NQPTrans               =  bufInt[IdxNQPTrans];
   NCisAjs                =  bufInt[IdxNOneBodyG];
@@ -419,6 +426,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   DSROptRedCut = bufDouble[IdxSROptRedCut];
   DSROptStaDel = bufDouble[IdxSROptStaDel];
   DSROptStepDt = bufDouble[IdxSROptStepDt];
+  DSROptShiftRatio = bufDouble[IdxSROptShiftRatio]; /* added by YN */
 
   if(NMPTrans < 0) {
     APFlag = 1; /* anti-periodic boundary */
@@ -1403,8 +1411,9 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufInt[IdxNJast]=0;
   bufInt[IdxNDH2]=0;
   bufInt[IdxNDH4]=0;
-  bufInt[IdxNSetHidden]=0; /* added by YN */
+  bufInt[IdxSetHidden]=0; /* added by YN */
   bufInt[IdxFlagNeuronTrans]=1; /* added by YN */
+  bufInt[IdxSROptWithShift]=0; /* added by YN */
   bufInt[IdxNOrbit]=0;
   bufInt[IdxNQPTrans]=0;
   bufInt[IdxNOneBodyG]=0;
@@ -1416,6 +1425,7 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufDouble[IdxSROptRedCut]=0.001;
   bufDouble[IdxSROptStaDel]=0.02;
   bufDouble[IdxSROptStepDt]=0.02;
+  bufDouble[IdxSROptShiftRatio]=0.01; /* added by YN */
   NStoreO=0;
 }
 

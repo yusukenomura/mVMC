@@ -59,13 +59,13 @@ extern void M_PDGEMV(char *trans, int *m, int *n, double *alpha,
                      double *beta,
                      double *y, int *iy, int *jy, int *descy, int *incy);
 
-int StochasticOpt(MPI_Comm comm);
-int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, MPI_Comm comm);
+int StochasticOpt(MPI_Comm comm, const double x); /* modified by YN */
+int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, const double diagShift, MPI_Comm comm); /* modified by YN */
 int StochasticOptDiag(MPI_Comm comm);
 int stcOptMainDiag(double *const r, int const nSmat, int *const smatToParaIdx,
                MPI_Comm comm, int const optNum);
 
-int StochasticOpt(MPI_Comm comm) {
+int StochasticOpt(MPI_Comm comm, const double x) { /* modified by YN */
   const int nPara=NPara;
   const int srOptSize=SROptSize;
   const double complex *srOptOO=SROptOO;
@@ -78,6 +78,7 @@ int StochasticOpt(MPI_Comm comm) {
   int cutNum=0,optNum=0;
   double sDiag,sDiagMax,sDiagMin;
   double diagCutThreshold;
+  double diagShift;   /* added by YN */
 
   int si; /* index for matrix S */
   int pi; /* index for variational parameters */
@@ -137,7 +138,8 @@ int StochasticOpt(MPI_Comm comm) {
 // threshold
 // optNum = number of parameters 
 // cutNum: number of paramers that are cut
-  diagCutThreshold = sDiagMax*DSROptRedCut;
+  diagShift = sDiagMax*DSROptShiftRatio*x;  /* added by YN */
+  diagCutThreshold = (sDiagMax+diagShift)*DSROptRedCut; /* modified by YN */
   si = 0;
   for(pi=0;pi<2*nPara;pi++) {
     //printf("DEBUG: nPara=%d pi=%d OptFlag=%d r=%lf\n",nPara,pi,OptFlag[pi],r[pi]);
@@ -146,7 +148,18 @@ int StochasticOpt(MPI_Comm comm) {
       continue; //skip sDiag
     }
 // s:this part will be skipped if OptFlag[pi]!=1
+    /* modified by YN */ 
+    /* TBC */
     sDiag = r[pi];
+    if(sDiag < diagCutThreshold*1.0e-5) { 
+      /* if sDiag is extremely small, the corresponding variable is not optimized */ 
+      cutNum++;
+      continue; //skip
+    } else { 
+      sDiag += diagShift;
+    }
+    /* modified by YN */ 
+
     if(sDiag < diagCutThreshold) { /* fixed by diagCut */
       cutNum++;
     } else { /* optimized */
@@ -166,7 +179,7 @@ int StochasticOpt(MPI_Comm comm) {
 
   //printf("DEBUG: nSmat=%d \n",nSmat);
   /* calculate r[i]: global vector [nSmat] */
-  info = stcOptMain(r, nSmat, smatToParaIdx, comm);
+  info = stcOptMain(r, nSmat, smatToParaIdx, diagShift, comm); /* modified by YN */
 
   StopTimer(51);
   StartTimer(52);
@@ -181,8 +194,10 @@ int StochasticOpt(MPI_Comm comm) {
       }
     }
 
-    fprintf(FileSRinfo, "%5d %5d %5d %5d % .5e % .5e % .5e %5d\n",NPara,nSmat,optNum,cutNum,
-            sDiagMax,sDiagMin,rmax,smatToParaIdx[simax]);
+    /* modified by YN */
+    fprintf(FileSRinfo, "%5d %5d %5d %5d % .5e % .5e % .5e %5d % .5e\n",NPara,nSmat,optNum,cutNum,
+            sDiagMax,sDiagMin,rmax,smatToParaIdx[simax],diagShift);
+    /* modified by YN */
   }
 
   /*** check inf and nan ***/
@@ -218,7 +233,7 @@ int StochasticOpt(MPI_Comm comm) {
 
 /* calculate the parameter change r[nSmat] from SOpt.
    The result is gathered in rank 0. */
-int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, MPI_Comm comm) {
+int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, const double diagShift, MPI_Comm comm) { /* modified by YN */
   /* global vector */
   double *w; /* workspace */
   /* distributed matrix (row x col) */
@@ -336,6 +351,7 @@ int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, MPI_Comm co
       /* modify diagonal elements */
       //printf("DEBUG: idx=%d %d %d s[]=%lf \n",idx,pi,pj,s[idx]);
       //printf("XDEBUG %d %d %lf \n",ic,ir,s[idx]);
+      if(pi==pj) s[idx] += diagShift; // TBC /* added by YN */
       if(pi==pj) s[idx] *= ratioDiag; // TBC
       //if(pi==pj) s[idx] +=0.5;   // TBC
     }

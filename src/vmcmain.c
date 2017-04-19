@@ -324,6 +324,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
   int rank;
   int i,tmp_i;//DEBUG
   int iprogress;
+  double x; /* added by YN */
   FILE *file1,*file2; /* to be deleted */
   MPI_Comm_rank(comm_parent, &rank);
 
@@ -422,7 +423,14 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       } 
     }
 //DBBUG
-    info = StochasticOpt(comm_parent);
+    /* added and modified by YN */
+    if( NSROptWithShift > 0 && step < NSROptWithShift ) {
+      x = (double)(NSROptWithShift-step)/(double)(NSROptWithShift);
+    } else {
+      x = 0.0;
+    }
+    info = StochasticOpt(comm_parent,x);
+    /* added and modified by YN */
     //info = StochasticOptDiag(comm_parent);
       StopTimer(5);
 
