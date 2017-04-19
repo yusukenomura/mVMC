@@ -60,11 +60,13 @@ int NQPFix; /* for QPFixWeight NSPGaussLeg*NMPTranss */
 int NSROptItrStep; /* the number of SR method steps */
 int NSROptItrSmp; /* the number of SR method steps for calculation of average value */
 int NSROptFixSmp; /* the number of SR method steps with fixed samples (1 is recommended) */
-int NSROptWithShift; /* the number of SR method steps with constant shift for diagonal elements */ /* added by YN */
+int NSROptConstShift;  /* the number of SR method steps with constant shift for diagonal elements */ /* added by YN */
+int NSROptStaDelShift; /* the number of SR method steps with modified DSROptStaDel */ /* added by YN */
 
 double DSROptRedCut; /* SR stabilizing factor for truncation of redundant directions */
 double DSROptStaDel; /* SR stabiliaing factor for diagonal element modification */
-double DSROptShiftRatio; /* SR stabiliaing factor for diagonal element modification (constant shift) */ /* added by YN */
+double DSROptStaDelShiftAmp;  /* SR stabiliaing factor (shifting DSROptStaDel) */  /* added by YN */
+double DSROptConstShiftRatio; /* SR stabiliaing factor for diagonal element modification (constant shift) */ /* added by YN */
 double DSROptStepDt; /* step width of the SR method */
 
 int NVMCWarmUp; /* Monte Carlo steps for warming up */

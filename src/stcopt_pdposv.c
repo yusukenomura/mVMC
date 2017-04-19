@@ -59,13 +59,16 @@ extern void M_PDGEMV(char *trans, int *m, int *n, double *alpha,
                      double *beta,
                      double *y, int *iy, int *jy, int *descy, int *incy);
 
-int StochasticOpt(MPI_Comm comm, const double x); /* modified by YN */
-int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, const double diagShift, MPI_Comm comm); /* modified by YN */
+/* modified by YN */
+int StochasticOpt(MPI_Comm comm, const double x, const double y); 
+int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, 
+               const double diagShift, const double staDelShift, MPI_Comm comm); 
+/* modified by YN */
 int StochasticOptDiag(MPI_Comm comm);
 int stcOptMainDiag(double *const r, int const nSmat, int *const smatToParaIdx,
                MPI_Comm comm, int const optNum);
 
-int StochasticOpt(MPI_Comm comm, const double x) { /* modified by YN */
+int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified by YN */
   const int nPara=NPara;
   const int srOptSize=SROptSize;
   const double complex *srOptOO=SROptOO;
@@ -78,7 +81,7 @@ int StochasticOpt(MPI_Comm comm, const double x) { /* modified by YN */
   int cutNum=0,optNum=0;
   double sDiag,sDiagMax,sDiagMin;
   double diagCutThreshold;
-  double diagShift;   /* added by YN */
+  double diagShift, staDelShift;   /* added by YN */
 
   int si; /* index for matrix S */
   int pi; /* index for variational parameters */
@@ -138,7 +141,8 @@ int StochasticOpt(MPI_Comm comm, const double x) { /* modified by YN */
 // threshold
 // optNum = number of parameters 
 // cutNum: number of paramers that are cut
-  diagShift = sDiagMax*DSROptShiftRatio*x;  /* added by YN */
+  diagShift = sDiagMax*DSROptConstShiftRatio*x;  /* added by YN */
+  staDelShift = DSROptStaDelShiftAmp*y;        /* added by YN */
   diagCutThreshold = (sDiagMax+diagShift)*DSROptRedCut; /* modified by YN */
   si = 0;
   for(pi=0;pi<2*nPara;pi++) {
@@ -179,7 +183,7 @@ int StochasticOpt(MPI_Comm comm, const double x) { /* modified by YN */
 
   //printf("DEBUG: nSmat=%d \n",nSmat);
   /* calculate r[i]: global vector [nSmat] */
-  info = stcOptMain(r, nSmat, smatToParaIdx, diagShift, comm); /* modified by YN */
+  info = stcOptMain(r, nSmat, smatToParaIdx, diagShift, staDelShift, comm); /* modified by YN */
 
   StopTimer(51);
   StartTimer(52);
@@ -195,8 +199,8 @@ int StochasticOpt(MPI_Comm comm, const double x) { /* modified by YN */
     }
 
     /* modified by YN */
-    fprintf(FileSRinfo, "%5d %5d %5d %5d % .5e % .5e % .5e %5d % .5e\n",NPara,nSmat,optNum,cutNum,
-            sDiagMax,sDiagMin,rmax,smatToParaIdx[simax],diagShift);
+    fprintf(FileSRinfo, "%5d %5d %5d %5d % .5e % .5e % .5e %5d % .5e % .5e\n",NPara,nSmat,optNum,cutNum,
+            sDiagMax,sDiagMin,rmax,smatToParaIdx[simax],diagShift,staDelShift);
     /* modified by YN */
   }
 
@@ -233,7 +237,8 @@ int StochasticOpt(MPI_Comm comm, const double x) { /* modified by YN */
 
 /* calculate the parameter change r[nSmat] from SOpt.
    The result is gathered in rank 0. */
-int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, const double diagShift, MPI_Comm comm) { /* modified by YN */
+int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, /* modified by YN */
+               const double diagShift, const double staDelShift, MPI_Comm comm) { /* modified by YN */
   /* global vector */
   double *w; /* workspace */
   /* distributed matrix (row x col) */
@@ -269,7 +274,7 @@ int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, const doubl
   int nrhs, is, js, ig, jg;
 
   int info;
-  const double ratioDiag = 1.0+DSROptStaDel;
+  const double ratioDiag = 1.0+DSROptStaDel+staDelShift; /* modified by YN */
   int si,pi,pj,idx;
   int ir,ic;
 

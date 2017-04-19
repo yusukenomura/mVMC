@@ -50,7 +50,7 @@ void InitFile(char *xNameListFile, int rank) {
     FileSRinfo = fopen(fileName, "w");
     if(SRFlag == 0){
       fprintf(FileSRinfo,
-            "#Npara Msize optCut diagCut sDiagMax  sDiagMin    absRmax       imax   diagShift\n"); /* modified by YN */
+            "#Npara Msize optCut diagCut sDiagMax  sDiagMin    absRmax       imax   diagShift   staDelShift\n"); /* modified by YN */
     }else{
       fprintf(FileSRinfo,
             "#Npara Msize optCut diagCut sEigenMax  sEigenMin    absRmax       imax\n");

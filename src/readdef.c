@@ -190,11 +190,17 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
 	    else if(CheckWords(ctmp, "FlagNeuronTrans")==0){ 
 	      bufInt[IdxFlagNeuronTrans]=(int)dtmp;
 	    }
-	    else if(CheckWords(ctmp, "NSROptWithShift")==0){ 
-	      bufInt[IdxSROptWithShift]=(int)dtmp;
+	    else if(CheckWords(ctmp, "NSROptConstShift")==0){ 
+	      bufInt[IdxSROptConstShift]=(int)dtmp;
 	    }
-	    else if(CheckWords(ctmp, "DSROptShiftRatio")==0){
-	      bufDouble[IdxSROptShiftRatio]=(double)dtmp;
+	    else if(CheckWords(ctmp, "NSROptStaDelShift")==0){ 
+	      bufInt[IdxSROptStaDelShift]=(int)dtmp;
+	    }
+	    else if(CheckWords(ctmp, "DSROptConstShiftRatio")==0){
+	      bufDouble[IdxSROptConstShiftRatio]=(double)dtmp;
+	    }	
+	    else if(CheckWords(ctmp, "DSROptStaDelShiftAmp")==0){
+	      bufDouble[IdxSROptStaDelShiftAmp]=(double)dtmp;
 	    }	
             /* added by YN */
 	    else{
@@ -413,8 +419,9 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NDoublonHolon2siteIdx  =  bufInt[IdxNDH2];
   NDoublonHolon4siteIdx  =  bufInt[IdxNDH4];
   NSetHidden             =  bufInt[IdxSetHidden]; /* added by YN */
-  FlagNeuronTrans        =  bufInt[IdxFlagNeuronTrans]; /* added by YN */
-  NSROptWithShift        =  bufInt[IdxSROptWithShift]; /* added by YN */
+  FlagNeuronTrans        =  bufInt[IdxFlagNeuronTrans];  /* added by YN */
+  NSROptConstShift       =  bufInt[IdxSROptConstShift];  /* added by YN */
+  NSROptStaDelShift      =  bufInt[IdxSROptStaDelShift]; /* added by YN */
   NOrbitalIdx            =  bufInt[IdxNOrbit];
   NQPTrans               =  bufInt[IdxNQPTrans];
   NCisAjs                =  bufInt[IdxNOneBodyG];
@@ -426,7 +433,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   DSROptRedCut = bufDouble[IdxSROptRedCut];
   DSROptStaDel = bufDouble[IdxSROptStaDel];
   DSROptStepDt = bufDouble[IdxSROptStepDt];
-  DSROptShiftRatio = bufDouble[IdxSROptShiftRatio]; /* added by YN */
+  DSROptConstShiftRatio = bufDouble[IdxSROptConstShiftRatio]; /* added by YN */
+  DSROptStaDelShiftAmp  = bufDouble[IdxSROptStaDelShiftAmp];  /* added by YN */
 
   if(NMPTrans < 0) {
     APFlag = 1; /* anti-periodic boundary */
@@ -1412,8 +1420,9 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufInt[IdxNDH2]=0;
   bufInt[IdxNDH4]=0;
   bufInt[IdxSetHidden]=0; /* added by YN */
-  bufInt[IdxFlagNeuronTrans]=1; /* added by YN */
-  bufInt[IdxSROptWithShift]=0; /* added by YN */
+  bufInt[IdxFlagNeuronTrans]=1;  /* added by YN */
+  bufInt[IdxSROptConstShift]=0;  /* added by YN */
+  bufInt[IdxSROptStaDelShift]=0; /* added by YN */
   bufInt[IdxNOrbit]=0;
   bufInt[IdxNQPTrans]=0;
   bufInt[IdxNOneBodyG]=0;
@@ -1425,7 +1434,8 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufDouble[IdxSROptRedCut]=0.001;
   bufDouble[IdxSROptStaDel]=0.02;
   bufDouble[IdxSROptStepDt]=0.02;
-  bufDouble[IdxSROptShiftRatio]=0.01; /* added by YN */
+  bufDouble[IdxSROptConstShiftRatio]=0.01; /* added by YN */
+  bufDouble[IdxSROptStaDelShiftAmp]=0.1;   /* added by YN */
   NStoreO=0;
 }
 
