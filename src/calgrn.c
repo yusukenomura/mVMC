@@ -27,21 +27,21 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, int *eleCfg,
-                         int *eleNum, int *eleProjCnt, double *thetaHidden); /* modified by YN */
+                         int *eleNum, int *eleProjCnt, double complex *thetaHidden); /* modified by YN, modified by KI */
 
 void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, int *eleCfg,
-                        int *eleNum, int *eleProjCnt, double *thetaHidden) { /* modified by YN */
+                        int *eleNum, int *eleProjCnt, double complex *thetaHidden) { /* modified by YN, modified by KI */
 
   int idx,idx0,idx1;
   int ri,rj,s,rk,rl,t;
   double complex tmp;
   int *myEleIdx, *myEleNum, *myProjCntNew;
-  double *myThetaHiddenNew; /* added by YN */
+  double complex *myThetaHiddenNew; /* added by YN, modified by KI */
   double complex *myBuffer;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
-  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
+  //RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+NSizeTheta); /* modified by KI */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
 #pragma omp parallel default(shared)\
@@ -50,7 +50,8 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    myThetaHiddenNew = GetWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+    //myThetaHiddenNew = GetWorkSpaceThreadDouble(NSizeTheta); /* added by YN,modified by KI */
+    myThetaHiddenNew = GetWorkSpaceThreadComplex(NSizeTheta); /* added by YN,modified by KI */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
 
     #pragma loop noalias

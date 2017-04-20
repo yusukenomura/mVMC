@@ -202,14 +202,14 @@ int *EleIdx; /* EleIdx[sample][mi+si*Ne] */
 int *EleCfg; /* EleCfg[sample][ri+si*Nsite] */
 int *EleNum; /* EleIdx[sample][ri+si*Nsite] */
 int *EleProjCnt; /* EleProjCnt[sample][proj] */
-double *ThetaHidden; /* ThetaHidden[sample][NSizeTheta] = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN */
+double complex *ThetaHidden; /* ThetaHidden[sample][NSizeTheta] = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN, modified by KI */
 double *logSqPfFullSlater; /* logSqPfFullSlater[sample] */
 
 int *TmpEleIdx;
 int *TmpEleCfg;
 int *TmpEleNum;
 int *TmpEleProjCnt;
-double *TmpThetaHidden; /* added by YN */
+double complex *TmpThetaHidden; /* added by YN, modified by KI*/
 
 int *BurnEleIdx;
 int *BurnEleCfg;

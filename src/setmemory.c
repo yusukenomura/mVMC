@@ -246,13 +246,13 @@ void SetMemory() {
   EleNum            = (int*)malloc(sizeof(int)*( NVMCSample*2*Nsite ));
   EleProjCnt        = (int*)malloc(sizeof(int)*( NVMCSample*NProj ));
   logSqPfFullSlater = (double*)malloc(sizeof(double)*(NVMCSample));
-  ThetaHidden       = (double*)malloc(sizeof(double)*(NVMCSample*NSizeTheta)); /* added by YN */
+  ThetaHidden       = (double complex*)malloc(sizeof(double complex)*(NVMCSample*NSizeTheta)); /* added by YN, modified by KI */
 
   TmpEleIdx         = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj));
   TmpEleCfg         = TmpEleIdx + 2*Ne;
   TmpEleNum         = TmpEleCfg + 2*Nsite;
   TmpEleProjCnt     = TmpEleNum + 2*Nsite;
-  TmpThetaHidden    = (double*)malloc(sizeof(double)*(NSizeTheta)); /* added by YN */
+  TmpThetaHidden    = (double complex*)malloc(sizeof(double complex)*(NSizeTheta)); /* added by YN, modified by KI */
 
   BurnEleIdx = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj));
   BurnEleCfg = BurnEleIdx + 2*Ne;

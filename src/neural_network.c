@@ -26,46 +26,61 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  * by Yusuke Nomura
  *-------------------------------------------------------------*/
 
-inline double LogHiddenWeightVal(const double *thetaHidden);
-inline double LogHiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld);
-inline double HiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld);
-void CalcThetaHidden(double *thetaHidden, const int *eleNum);
+inline double complex cCosh(const double complex x);
+inline double complex cTanh(const double complex x);
+inline double complex LogHiddenWeightVal(const double complex *thetaHidden);
+inline double complex LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld);
+inline double complex HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld);
+void CalcThetaHidden(double complex *thetaHidden, const int *eleNum);
 void UpdateThetaHidden(const int ri, const int rj, const int s,
-                       double *thetaHiddenNew, const double *thetaHiddenOld );
+                       double complex *thetaHiddenNew, const double complex *thetaHiddenOld );
 void CompleteHiddenPhysIntIdx();  
 
+inline double complex cCosh(const double complex x) {
+  double complex z=0;
+  
+  z = cexp(x)+cexp(-x);
+  return 0.5*z;
+}
 
-inline double LogHiddenWeightVal(const double *thetaHidden) {
+inline double complex cTanh(const double complex x) {
+  double complex z=0;
+  
+  z = (cexp(x)-cexp(-x))/(cexp(x)+cexp(-x));
+  return z;
+}
+
+inline double complex LogHiddenWeightVal(const double complex *thetaHidden) {
   int idx;
   double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
-    z += log(cosh(thetaHidden[idx]));
+    z += clog(cCosh(thetaHidden[idx]));
   }
   return z;
 }
 
-inline double LogHiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld) {
+inline double complex LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
   int idx;
-  double z=0;
+  double complex z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
-    z += log(cosh(thetaHiddenNew[idx])) - log(cosh(thetaHiddenOld[idx]));
+    z += clog(cCosh(thetaHiddenNew[idx])) - clog(cCosh(thetaHiddenOld[idx]));
   }
   return z;
 }
 
-inline double HiddenWeightRatio(const double *thetaHiddenNew, const double *thetaHiddenOld) {
+inline double complex HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
   int idx;
-  double z=0;
+  double complex z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
-    z += log(cosh(thetaHiddenNew[idx])) - log(cosh(thetaHiddenOld[idx]));
+    z += clog(cCosh(thetaHiddenNew[idx])) - clog(cCosh(thetaHiddenOld[idx]));
   }
-  return exp(z);
+  return cexp(z);
 }
 
-void CalcThetaHidden(double *thetaHidden, const int *eleNum) {
+void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
   int f,i,j;
   int idx,rsi,offset1,offset2;
-  double *tmpTheta;
+  double complex *tmpTheta;
 
   const int nSetHidden=NSetHidden;
   const int nIntPerNeuron=NIntPerNeuron;
@@ -79,14 +94,16 @@ void CalcThetaHidden(double *thetaHidden, const int *eleNum) {
       idx = offset1 + i; 
 
       /* Magnetic field acting on Hidden variables */    
-      tmpTheta[i] = creal(HiddenMagField[f]); // TBC 
+      tmpTheta[i] = HiddenMagField[f]; // TBC 
+      //tmpTheta[i] = creal(HiddenMagField[f]); // TBC 
 
       /* Interaction between hidden and phyiscal variables  
          i-th neuron in f-th set has NIntPerNeuron interactions; through j-th interaction,
          it interacts with HiddenPhysIntIdx1[f*NNeuronPerSet+i][j]-th physical variable.    */
       for(j=0;j<nIntPerNeuron;j++) {
         rsi = HiddenPhysIntIdx1[idx][j]; 
-        tmpTheta[i] += creal(HiddenPhysInt[offset2+j]) * (double)(2*eleNum[rsi]-1); // TBC 
+        tmpTheta[i] += HiddenPhysInt[offset2+j] * (double complex)(2*eleNum[rsi]-1); // TBC 
+        //tmpTheta[i] += creal(HiddenPhysInt[offset2+j]) * (double)(2*eleNum[rsi]-1); // TBC 
       }
     }
   } 
@@ -97,10 +114,10 @@ void CalcThetaHidden(double *thetaHidden, const int *eleNum) {
 
 /* An electron with spin s hops from ri to rj. */
 void UpdateThetaHidden(const int ri, const int rj, const int s,
-                       double *thetaHiddenNew, const double *thetaHiddenOld) { 
+                       double complex *thetaHiddenNew, const double complex *thetaHiddenOld) { 
   int f,i,j,rsi,rsj;
   int idx,offset1,offset2;
-  double *tmpTheta;
+  double complex *tmpTheta;
 
   const int nSizeTheta=NSizeTheta;
   const int nSetHidden=NSetHidden;
@@ -127,9 +144,11 @@ void UpdateThetaHidden(const int ri, const int rj, const int s,
          i-th neuron in f-th set interacts with rsi-th physical variable 
          through HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]-th type of interaction. */
       j = HiddenPhysIntIdx3[idx][rsi]; 
-      tmpTheta[i] -= 2.0*creal(HiddenPhysInt[offset2+j]); // TBC 
+      tmpTheta[i] -= 2.0*HiddenPhysInt[offset2+j]; // TBC 
+      //tmpTheta[i] -= 2.0*creal(HiddenPhysInt[offset2+j]); // TBC 
       j = HiddenPhysIntIdx3[idx][rsj]; 
-      tmpTheta[i] += 2.0*creal(HiddenPhysInt[offset2+j]); // TBC
+      tmpTheta[i] += 2.0*HiddenPhysInt[offset2+j]; // TBC
+      //tmpTheta[i] += 2.0*creal(HiddenPhysInt[offset2+j]); // TBC
     }
   }
 
