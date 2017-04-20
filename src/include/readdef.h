@@ -74,7 +74,8 @@ enum ParamIdxInt{
   IdxNLocSpin,IdxNTrans,IdxNCoulombIntra,
   IdxNCoulombInter, IdxNHund, IdxNPairHop, 
   IdxNExchange, IdxNGutz, IdxNJast,
-  IdxNDH2, IdxNDH4, IdxNOrbit, IdxNSetHidden, IdxFlagNeuronTrans,/* modified by YN */
+  IdxNDH2, IdxNDH4, IdxNOrbit,
+  IdxSetHidden, IdxFlagNeuronTrans, IdxSROptConstShift, IdxSROptStaDelShift,/* added by YN */
   IdxNQPTrans, IdxNOneBodyG, IdxNTwoBodyG,
   IdxNTwoBodyGEx, IdxNInterAll, IdxNQPOptTrans,
   ParamIdxInt_End
@@ -82,6 +83,7 @@ enum ParamIdxInt{
 
 enum ParamIdxDouble{
   IdxSROptRedCut, IdxSROptStaDel, IdxSROptStepDt,
+  IdxSROptConstShiftRatio, IdxSROptStaDelShiftAmp, /* added by YN */
   ParamIdxDouble_End
 };
 

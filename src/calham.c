@@ -176,6 +176,7 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
   }
 
   ReleaseWorkSpaceThreadInt();
+  ReleaseWorkSpaceThreadDouble(); /* added by YN */
   ReleaseWorkSpaceThreadComplex();
   return e;
 }
@@ -280,6 +281,7 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
   }
 
   ReleaseWorkSpaceThreadInt();
+  ReleaseWorkSpaceThreadDouble(); /* added by YN */
   ReleaseWorkSpaceThreadComplex();
   return e;
 }
@@ -365,6 +367,7 @@ double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const
   }
 
   ReleaseWorkSpaceThreadInt();
+  ReleaseWorkSpaceThreadDouble(); /* added by YN */
   ReleaseWorkSpaceThreadComplex();
   return e;
 }
