@@ -258,10 +258,10 @@ void VMCMainCal(MPI_Comm comm) {
           }
         }else{
           #pragma omp parallel for default(shared) private(int_i)
-          for(int_i=0;int_i<SROptSize*2;int_i++){
+          for(int_i=0;int_i<SROptSmatDim;int_i++){   /* modified by YN */
             // SROptO_Store for fortran
-            SROptO_Store[int_i+sample*(2*SROptSize)]  = sqrtw*SROptO[int_i];
-            SROptHO[int_i]                           += we*SROptO[int_i]; 
+            SROptO_Store[int_i+sample*SROptSmatDim]  = sqrtw*SROptO[int_i];
+            SROptHO[int_i]                           += we*SROptO[int_i]; /* modified by YN */ 
           }
         }
       } 
@@ -301,7 +301,7 @@ void VMCMainCal(MPI_Comm comm) {
       StopTimer(45);
     }else{
       StartTimer(45);
-      calculateOO_Store(SROptOO,SROptHO,SROptO_Store,w,e,2*SROptSize,sampleSize);
+      calculateOO_Store(SROptOO,SROptHO,SROptO_Store,w,e,SROptSmatDim,sampleSize); /* modified by YN */ /* Warning!! Temporal Treatment */
       StopTimer(45);
     }
   }

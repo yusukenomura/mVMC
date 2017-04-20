@@ -28,10 +28,10 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 /* modified by YN */
 double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double *thetaHidden);
+                             int *eleNum, const int *eleProjCnt, const double complex *thetaHidden);
 
 double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double *thetaHidden) {
+                             int *eleNum, const int *eleProjCnt, const double complex *thetaHidden) {
 /* modified by YN */
   const int *n0 = eleNum;
   const int *n1 = eleNum + Nsite;
@@ -39,13 +39,13 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
   int idx;
   int ri,rj,s,rk,rl,t;
   int *myEleIdx, *myEleNum, *myProjCntNew;
-  double *myThetaHiddenNew; /* added by YN */
+  double complex *myThetaHiddenNew; /* added by YN */
   double  *myBuffer;
   double  myEnergy;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
   RequestWorkSpaceThreadDouble(NQPFull+2*Nsize);
+  RequestWorkSpaceThreadComplex(NSizeTheta); /* added by YN */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
 /* modified by YN */
@@ -61,7 +61,7 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    myThetaHiddenNew = GetWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
+    myThetaHiddenNew = GetWorkSpaceThreadComplex(NSizeTheta); /* added by YN */
     myBuffer = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
 
     #pragma loop noalias
@@ -198,8 +198,8 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
   printf("    Debug: Release\n");
 #endif
   ReleaseWorkSpaceThreadInt();
-  ReleaseWorkSpaceThreadDouble(); /* added by YN */
   ReleaseWorkSpaceThreadDouble();
+  ReleaseWorkSpaceThreadComplex(); /* added by YN */
 #ifdef _DEBUG
 #pragma omp master
   printf("    Debug: HamRealFinish\n", NInterAll);

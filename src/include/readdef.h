@@ -105,3 +105,4 @@ int iComplexFlgJastrow=0;
 int iComplexFlgDH2=0;
 int iComplexFlgDH4=0;
 int iComplexFlgOrbital=0;
+int iComplexFlgHidden=1; /* added by YN */

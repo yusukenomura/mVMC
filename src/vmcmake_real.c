@@ -27,7 +27,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 void VMCMakeSample_real(MPI_Comm comm);
-int makeInitialSample_real(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, double *thetaHidden, /* modified by YN */
+int makeInitialSample_real(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, double complex *thetaHidden, /* modified by YN */
                       const int qpStart, const int qpEnd, MPI_Comm comm);
 
 void VMCMakeSample_real(MPI_Comm comm) {
@@ -41,7 +41,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
   double  logIpOld,logIpNew; /* logarithm of inner product <phi|L|x> */ // is this ok ? TBC
   int projCntNew[NProj];
   double         pfMNew_real[NQPFull];
-  double thetaHiddenNew[NSizeTheta]; /* added by YN */
+  double complex thetaHiddenNew[NSizeTheta]; /* added by YN */
   double x,y,w; // TBC x and y will be complex number   /* modified by YN */
 
   int qpStart,qpEnd;
@@ -117,7 +117,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y = LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden);  /* added by YN */
+        y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN */
         w = exp(2.0*(x+y+(logIpNew-logIpOld)));                   /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
@@ -178,7 +178,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y = LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden);  /* added by YN */
+        y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN */
         w = exp(2.0*(x+y+(logIpNew-logIpOld))); //TBC             /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
@@ -208,9 +208,9 @@ void VMCMakeSample_real(MPI_Comm comm) {
         /* added by YN */
         CalcThetaHidden(thetaHiddenNew,TmpEleNum); 
         for(i=0;i<NSizeTheta;i++) { 
-          if( fabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-3 ) {
+          if( cabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-3 ) {
             fprintf(stderr,"Warning: failed in updating ThetaHidden, %lf %lf \n",
-                    TmpThetaHidden[i],thetaHiddenNew[i]);
+                    cabs(TmpThetaHidden[i]),cabs(thetaHiddenNew[i]));
           }  
           TmpThetaHidden[i] = thetaHiddenNew[i];
         } 
@@ -235,7 +235,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
   return;
 }
 
-int makeInitialSample_real(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, double *thetaHidden, /* modified by YN */
+int makeInitialSample_real(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, double complex *thetaHidden, /* modified by YN */
                       const int qpStart, const int qpEnd, MPI_Comm comm) {
   const int nsize = Nsize;
   const int nsite2 = Nsite2;

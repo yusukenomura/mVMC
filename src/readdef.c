@@ -180,7 +180,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
 	    }
 	    else if(CheckWords(ctmp, "NStore")==0){
 	      NStoreO=(int)dtmp;
-              NStoreO = 0;/*debug*/
+              //NStoreO = 0;/*debug*/ /* modified by YN */
 	    }
             /* added by YN */
             /* TBC */ 
@@ -376,6 +376,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   if(rank==0){
     AllComplexFlag  = iComplexFlgGutzwiller+iComplexFlgJastrow+iComplexFlgDH2; //TBC
     AllComplexFlag += iComplexFlgDH4+iComplexFlgOrbital;//TBC
+    AllComplexFlag += iComplexFlgHidden; /* added by YN */
     //AllComplexFlag  = 1;//DEBUG
     // AllComplexFlag= 0 -> All real, !=0 -> complex
   }

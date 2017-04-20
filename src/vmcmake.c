@@ -227,10 +227,6 @@ void VMCMakeSample(MPI_Comm comm) {
         /* added by YN, modified by KI */
         CalcThetaHidden(thetaHiddenNew,TmpEleNum); 
         for(i=0;i<NSizeTheta;i++) { 
-          /*if( fabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-3 ) {
-            fprintf(stderr,"Warning: failed in updating ThetaHidden, %lf %lf \n",
-                    TmpThetaHidden[i],thetaHiddenNew[i]);
-          }*/  
           if( cabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-3 ) {
             fprintf(stderr,"Warning: failed in updating ThetaHidden, %lf %lf \n",
                     cabs(TmpThetaHidden[i]),cabs(thetaHiddenNew[i]));

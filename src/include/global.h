@@ -234,6 +234,7 @@ double complex *SPGLCosSin, *SPGLCosCos, *SPGLSinSin; /* [NSPGaussLeg] */
 
 /***** Stocastic Reconfiguration *****/
 int    SROptSize; /* 1+NPara */
+int    SROptSmatDim; /* Dimension of S matrix */  /* added by YN */
 double complex *SROptOO; /* [SROptSize*SROptSize] <O^\dagger O> */
 double complex *SROptHO; /* [SROptSize]            < HO > */
 double complex *SROptO;  /* [SROptSize] calculation buffar */

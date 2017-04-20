@@ -28,11 +28,11 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double *thetaHidden, double *thetaHiddenNew, double *buffer); /* modified by YN */
+                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double *buffer); /* modified by YN */
 double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
                   const int s, const int t, const double  ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double *thetaHidden, double *thetaHiddenNew, double *buffer); /* modified by YN */
+                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double *buffer); /* modified by YN */
 /*
 double complex GreenFuncN(const int n, int *rsi, int *rsj, const double complex  ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
@@ -44,7 +44,7 @@ double complex calculateNewPfMN_child(const int qpidx, const int n, const int *m
 /* buffer size = NQPFull */
 double  GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double *thetaHidden, double *thetaHiddenNew, double *buffer) { /* modified by YN */
+                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double *buffer) { /* modified by YN */
   double  z;
   int mj,msj,rsi,rsj;
   double  *pfMNew_real = buffer; /* NQPFull */
@@ -64,7 +64,7 @@ double  GreenFunc1_real(const int ri, const int rj, const int s, const double ip
   UpdateProjCnt(rj, ri, s, projCntNew, eleProjCnt, eleNum);
   UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHidden); /* added by YN */
   z = ProjRatio(projCntNew,eleProjCnt);
-  z *= HiddenWeightRatio(thetaHiddenNew,thetaHidden);  /* added by YN */
+  z *= creal(HiddenWeightRatio(thetaHiddenNew,thetaHidden));  /* added by YN */
 
   /* calculate Pfaffian */
   CalculateNewPfM_real(mj, s, pfMNew_real, eleIdx, 0, NQPFull);
@@ -83,7 +83,7 @@ double  GreenFunc1_real(const int ri, const int rj, const int s, const double ip
 double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
                   const int s, const int t, const double ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double *thetaHidden, double *thetaHiddenNew, double *buffer) { /* modified by YN */
+                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double *buffer) { /* modified by YN */
   double z;
   int mj,msj,ml,mtl;
   int rsi,rsj,rtk,rtl;
@@ -152,7 +152,7 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHidden); /* added by YN */
 
   z = ProjRatio(projCntNew,eleProjCnt);
-  z *= HiddenWeightRatio(thetaHiddenNew,thetaHidden);  /* added by YN */
+  z *= creal(HiddenWeightRatio(thetaHiddenNew,thetaHidden));  /* added by YN */
 
   /* calculate Pfaffian */
   CalculateNewPfMTwo_real(ml, t, mj, s, pfMNew_real, eleIdx, 0, NQPFull, bufV);

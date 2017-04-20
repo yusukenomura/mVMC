@@ -95,7 +95,6 @@ void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
 
       /* Magnetic field acting on Hidden variables */    
       tmpTheta[i] = HiddenMagField[f]; // TBC 
-      //tmpTheta[i] = creal(HiddenMagField[f]); // TBC 
 
       /* Interaction between hidden and phyiscal variables  
          i-th neuron in f-th set has NIntPerNeuron interactions; through j-th interaction,
@@ -103,7 +102,6 @@ void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
       for(j=0;j<nIntPerNeuron;j++) {
         rsi = HiddenPhysIntIdx1[idx][j]; 
         tmpTheta[i] += HiddenPhysInt[offset2+j] * (double complex)(2*eleNum[rsi]-1); // TBC 
-        //tmpTheta[i] += creal(HiddenPhysInt[offset2+j]) * (double)(2*eleNum[rsi]-1); // TBC 
       }
     }
   } 
@@ -145,10 +143,8 @@ void UpdateThetaHidden(const int ri, const int rj, const int s,
          through HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]-th type of interaction. */
       j = HiddenPhysIntIdx3[idx][rsi]; 
       tmpTheta[i] -= 2.0*HiddenPhysInt[offset2+j]; // TBC 
-      //tmpTheta[i] -= 2.0*creal(HiddenPhysInt[offset2+j]); // TBC 
       j = HiddenPhysIntIdx3[idx][rsj]; 
       tmpTheta[i] += 2.0*HiddenPhysInt[offset2+j]; // TBC
-      //tmpTheta[i] += 2.0*creal(HiddenPhysInt[offset2+j]); // TBC
     }
   }
 

@@ -49,7 +49,6 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
   double complex myEnergy;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  //RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
   RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+NSizeTheta); /* modified by KI  */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
@@ -176,7 +175,6 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
   }
 
   ReleaseWorkSpaceThreadInt();
-  ReleaseWorkSpaceThreadDouble(); /* added by YN */
   ReleaseWorkSpaceThreadComplex();
   return e;
 }
@@ -241,7 +239,6 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
   double complex myEnergy;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  //RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
   RequestWorkSpaceThreadComplex(NQPFull+NSizeTheta); /* modified by KI */
   /* GreenFunc1: NQPFull */
 
@@ -281,7 +278,6 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
   }
 
   ReleaseWorkSpaceThreadInt();
-  ReleaseWorkSpaceThreadDouble(); /* added by YN */
   ReleaseWorkSpaceThreadComplex();
   return e;
 }
@@ -300,7 +296,6 @@ double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const
   double complex myEnergy;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  //RequestWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
   RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+NSizeTheta); /* modified by KI */
   /* GreenFunc2: NQPFull+2*Nsize */
 
@@ -313,7 +308,6 @@ double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    //myThetaHiddenNew = GetWorkSpaceThreadDouble(NSizeTheta); /* added by YN */
     myThetaHiddenNew = GetWorkSpaceThreadComplex(NSizeTheta); /* added by YN, modified by KI */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
 
@@ -367,7 +361,6 @@ double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const
   }
 
   ReleaseWorkSpaceThreadInt();
-  ReleaseWorkSpaceThreadDouble(); /* added by YN */
   ReleaseWorkSpaceThreadComplex();
   return e;
 }
