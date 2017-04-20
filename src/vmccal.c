@@ -74,7 +74,7 @@ void VMCMainCal(MPI_Comm comm) {
   double complex *srOptO = SROptO;
   double         *srOptO_real = SROptO_real;
 
-  int rank,size,int_i;
+  int rank,size,int_i,int_j; /* modified by YN */
   MPI_Comm_size(comm,&size);
   MPI_Comm_rank(comm,&rank);
 #ifdef _DEBUG
@@ -257,11 +257,12 @@ void VMCMainCal(MPI_Comm comm) {
             SROptHO_real[int_i]                       += creal(we)*SROptO_real[int_i]; 
           }
         }else{
-          #pragma omp parallel for default(shared) private(int_i)
-          for(int_i=0;int_i<SROptSmatDim;int_i++){   /* modified by YN */
+          #pragma omp parallel for default(shared) private(int_i,int_j) /* modified by YN */
+          for(int_i=0;int_i<SROptSize*2;int_i++){
             // SROptO_Store for fortran
-            SROptO_Store[int_i+sample*SROptSmatDim]  = sqrtw*SROptO[int_i];
-            SROptHO[int_i]                           += we*SROptO[int_i]; /* modified by YN */ 
+            int_j = int_i; /* added by YN */ /* Warning!! Temporal Treatment */
+            SROptO_Store[int_j+sample*SROptSmatDim]  = sqrtw*SROptO[int_i]; /* modified by YN */ /* Warning!! Temporal Treatment */
+            SROptHO[int_i]                           += we*SROptO[int_i]; 
           }
         }
       } 
@@ -315,15 +316,17 @@ void clearPhysQuantity(){
   Wc = Etot = Etot2 = 0.0;
   if(NVMCCalMode==0) {
     /* SROptOO, SROptHO, SROptO */
-    n = (2*SROptSize)*(2*SROptSize+2); // TBC
+    n = SROptSmatDim*SROptSmatDim+4*SROptSize; // TBC /* modified by YN */ /* Warning!! Temporal Treatment */  
     vec = SROptOO;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec[i] = 0.0+0.0*I;
 // only for real variables
+    if(AllComplexFlag==0){ /* added by YN */
     n = (SROptSize)*(SROptSize+2); // TBC
     vec_real = SROptOO_real;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec_real[i] = 0.0;
+    } /* added by YN */
   } else if(NVMCCalMode==1) {
     /* CisAjs, CisAjsCktAlt, CisAjsCktAltDC */
     n = 2*NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
