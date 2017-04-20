@@ -119,6 +119,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
   }
 
   ReleaseWorkSpaceThreadInt();
+  ReleaseWorkSpaceThreadDouble(); /* added by YN */
   ReleaseWorkSpaceThreadComplex();
   return;
 }

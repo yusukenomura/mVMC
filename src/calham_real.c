@@ -198,6 +198,7 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
   printf("    Debug: Release\n");
 #endif
   ReleaseWorkSpaceThreadInt();
+  ReleaseWorkSpaceThreadDouble(); /* added by YN */
   ReleaseWorkSpaceThreadDouble();
 #ifdef _DEBUG
 #pragma omp master
