@@ -75,7 +75,7 @@ void WeightAverageSROpt(MPI_Comm comm) {
   MPI_Comm_size(comm,&size);
 
   /* SROptOO and SROptHO */ // except for SROptO 
-  n   = 2*SROptSize*(2*SROptSize+1);
+  n   = (SROptSmatDim+2)*(SROptSmatDim+2) + 2*SROptSize; // TBC /* modified by YN */ /* Warning!! Temporal Treatment */  
   vec = SROptOO;
   if(size>1) {
     RequestWorkSpaceComplex(n);

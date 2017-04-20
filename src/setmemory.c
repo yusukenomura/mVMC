@@ -231,6 +231,7 @@ void FreeMemoryDef() {
 }
 
 void SetMemory() {
+  int i; /* added by YN */ /* Warning !! Temporal Treatment */ 
 
   /***** Variational Parameters *****/
   Para     = (double complex*)malloc(sizeof(double complex)*(NPara)); 
@@ -280,11 +281,19 @@ void SetMemory() {
   /***** Stocastic Reconfiguration *****/
   if(NVMCCalMode==0){
     //SR components are described by real and complex components of O
-/* modified by YN */ /* Warning !! Temporal Treatment */
-    SROptSmatDim = 2*SROptSize; 
-    SROptOO = (double complex*)malloc( sizeof(double complex)*(SROptSmatDim*SROptSmatDim+4*SROptSize) ) ; //TBC 
-    SROptHO = SROptOO + SROptSmatDim*SROptSmatDim; //TBC 
-/* modified by YN */ /* Warning !! Temporal Treatment */ 
+    SmatIdxtoParaIdx = (int*)malloc(sizeof(int)*(2*NPara)); /* added by YN */
+    /* modified by YN */ /* Warning !! Temporal Treatment */
+    SROptSmatDim = 0;
+    for(i=0;i<2*NPara;i++) SmatIdxtoParaIdx[i] = -1;  
+    for(i=0;i<2*NPara;i++) { 
+      if(OptFlag[i]==1) { 
+        SmatIdxtoParaIdx[SROptSmatDim] = i;
+        SROptSmatDim += 1;
+      }
+    }
+    SROptOO = (double complex*)malloc( sizeof(double complex)*((SROptSmatDim+2)*(SROptSmatDim+2)+4*SROptSize) ) ; //TBC 
+    SROptHO = SROptOO + (SROptSmatDim+2)*(SROptSmatDim+2); //TBC 
+    /* modified by YN */ /* Warning !! Temporal Treatment */ 
     SROptO  = SROptHO + (2*SROptSize);  //TBC
 //for real
     if(AllComplexFlag==0){ /* added by YN */
@@ -297,7 +306,7 @@ void SetMemory() {
       if(AllComplexFlag==0){
         SROptO_Store_real = (double *)malloc(sizeof(double)*(SROptSize*NVMCSample) );
       }else{
-        SROptO_Store      = (double complex*)malloc( sizeof(double complex)*(SROptSmatDim*NVMCSample) ); /* modified by YN */ /* Warning !! Temporal Treatment */
+        SROptO_Store      = (double complex*)malloc( sizeof(double complex)*((SROptSmatDim+2)*NVMCSample) ); /* modified by YN */ /* Warning !! Temporal Treatment */
       }
     }
     SROptData = (double complex*)malloc( sizeof(double complex)*(NSROptItrSmp*(2+NPara)) );
@@ -358,6 +367,8 @@ void FreeMemory() {
   free(EleCfg);
 
   free(Para);
+  free(ThetaHidden); /* added by YN */
+  free(TmpThetaHidden); /* added by YN */
 
   return;
 }

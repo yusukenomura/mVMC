@@ -180,7 +180,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
 	    }
 	    else if(CheckWords(ctmp, "NStore")==0){
 	      NStoreO=(int)dtmp;
-              //NStoreO = 0;/*debug*/ /* modified by YN */
+              NStoreO = 1;/*debug*/ /* modified by YN */ /* Warning!! Temporal Treatment */
 	    }
             /* added by YN */
             /* TBC */ 
@@ -806,7 +806,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
         for(fidx=NProj;fidx<NProj+NHiddenVariable;fidx++) {
           count_idx++; 
 	  OptFlag[2*fidx  ] = 1; 
-	  OptFlag[2*fidx+1] = 1; // TBC imaginary   
+	  OptFlag[2*fidx+1] = 0; // TBC imaginary   
         }
         /* end temporal treatment */
 	break;

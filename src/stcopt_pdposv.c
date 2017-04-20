@@ -61,7 +61,7 @@ extern void M_PDGEMV(char *trans, int *m, int *n, double *alpha,
 
 /* modified by YN */
 int StochasticOpt(MPI_Comm comm, const double x, const double y); 
-int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, 
+int stcOptMain(double *r, const int nSmat, const int *smatOptIdx,  /* Warning!! Temporal Treatment */
                const double diagShift, const double staDelShift, MPI_Comm comm); 
 /* modified by YN */
 int StochasticOptDiag(MPI_Comm comm);
@@ -70,13 +70,14 @@ int stcOptMainDiag(double *const r, int const nSmat, int *const smatToParaIdx,
 
 int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified by YN */
   const int nPara=NPara;
+  const int srOptSmatDim=SROptSmatDim; /* added by YN */ /* Warning !! Temporal Treatment */
   const int srOptSize=SROptSize;
   const double complex *srOptOO=SROptOO;
   //const double         *srOptOO= SROptOO_real;
 
-  double r[2*SROptSize]; /* the parameter change */
+  double r[SROptSmatDim]; /* the parameter change */ /* modified by YN */ /* Warning!! Temporal Treatment */
   int nSmat;
-  int smatToParaIdx[2*NPara];//TBC
+  int smatOptIdx[SROptSmatDim];//TBC /* modified by YN */ /* Warning !! Temporal Treatment */
 
   int cutNum=0,optNum=0;
   double sDiag,sDiagMax,sDiagMin;
@@ -84,6 +85,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
   double diagShift, staDelShift;   /* added by YN */
 
   int si; /* index for matrix S */
+  int sj; /* index for matrix S */ /* added by YN */
   int pi; /* index for variational parameters */
 
   double rmax;
@@ -118,12 +120,12 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 //[e]
   #pragma omp parallel for default(shared) private(pi)
   #pragma loop noalias
-  for(pi=0;pi<2*nPara;pi++) {
+  for(pi=0;pi<srOptSmatDim;pi++) { /* modified by YN */ /* Warning!! Temporal Treatment */
     //for(pi=0;pi<nPara;pi++) {
     /* r[i] is temporarily used for diagonal elements of S */
     /* S[i][i] = OO[pi+1][pi+1] - OO[0][pi+1] * OO[0][pi+1]; */
     //r[pi]   = creal(srOptOO[(pi+2)*(2*srOptSize)+(pi+2)]) - creal(srOptOO[pi+2] * srOptOO[pi+2]);
-    r[pi]   = creal(srOptOO[(pi+2)*(2*srOptSize)+(pi+2)]) - creal(srOptOO[pi+2]) * creal(srOptOO[pi+2]);
+    r[pi]   = creal(srOptOO[(pi+2)*(srOptSmatDim+2)+(pi+2)]) - creal(srOptOO[pi+2]) * creal(srOptOO[pi+2]); /* modified by YN */ /* Warning !! Temporal Treatment */
     //r[2*pi]   = creal(srOptOO[(2*pi+2)*(2*srOptSize+pi)+(2*pi+2)]) - creal(srOptOO[2*pi+2]) * creal(srOptOO[2*pi+2]);
     //r[2*pi+1] = creal(srOptOO[(2*pi+3)*(2*srOptSize+pi)+(2*pi+3)]) - creal(srOptOO[2*pi+3]) * creal(srOptOO[2*pi+3]);
     //printf("DEBUG: pi=%d: %lf %lf \n",pi,creal(srOptOO[pi]),cimag(srOptOO[pi]));
@@ -132,7 +134,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 // search for max and min
   sDiag = r[0];
   sDiagMax=sDiag; sDiagMin=sDiag;
-  for(pi=0;pi<2*nPara;pi++) {
+  for(pi=0;pi<srOptSmatDim;pi++) { /* modified by YN */ /* Warning!! Temporal Treatment */
     sDiag = r[pi];
     if(sDiag>sDiagMax) sDiagMax=sDiag;
     if(sDiag<sDiagMin) sDiagMin=sDiag;
@@ -145,12 +147,14 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
   staDelShift = DSROptStaDelShiftAmp*y;        /* added by YN */
   diagCutThreshold = (sDiagMax+diagShift)*DSROptRedCut; /* modified by YN */
   si = 0;
-  for(pi=0;pi<2*nPara;pi++) {
+  for(pi=0;pi<srOptSmatDim;pi++) { /* modified by YN */ /* Warning!! Temporal Treatment */
     //printf("DEBUG: nPara=%d pi=%d OptFlag=%d r=%lf\n",nPara,pi,OptFlag[pi],r[pi]);
-    if(OptFlag[pi]!=1) { /* fixed by OptFlag */
-      optNum++;
-      continue; //skip sDiag
-    }
+    /* modified by YN */  /* Warning!! Temporal Treatment */
+    //if(OptFlag[pi]!=1) { /* fixed by OptFlag */
+    //  optNum++;
+    //  continue; //skip sDiag
+    //}
+    /* modified by YN */ 
 // s:this part will be skipped if OptFlag[pi]!=1
     /* modified by YN */ 
     /* TBC */
@@ -167,14 +171,14 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
     if(sDiag < diagCutThreshold) { /* fixed by diagCut */
       cutNum++;
     } else { /* optimized */
-      smatToParaIdx[si] = pi; // si -> restricted parameters , pi -> full paramer 0 <-> 2*NPara
+      smatOptIdx[si] = pi; // si -> restricted parameters , pi -> full paramer 0 <-> 2*NPara
       si += 1;
     }
 // e
   }
   nSmat = si;
-  for(si=nSmat;si<2*nPara;si++) {
-    smatToParaIdx[si] = -1; // parameters that will not be optimized
+  for(si=nSmat;si<srOptSmatDim;si++) { /* modified by YN */ /* Warning !! Temporal Treatment */
+    smatOptIdx[si] = -1; // parameters that will not be optimized
   }
 
   StopTimer(50);
@@ -183,7 +187,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 
   //printf("DEBUG: nSmat=%d \n",nSmat);
   /* calculate r[i]: global vector [nSmat] */
-  info = stcOptMain(r, nSmat, smatToParaIdx, diagShift, staDelShift, comm); /* modified by YN */
+  info = stcOptMain(r, nSmat, smatOptIdx, diagShift, staDelShift, comm); /* modified by YN */
 
   StopTimer(51);
   StartTimer(52);
@@ -200,7 +204,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 
     /* modified by YN */
     fprintf(FileSRinfo, "%5d %5d %5d %5d % .5e % .5e % .5e %5d % .5e % .5e\n",NPara,nSmat,optNum,cutNum,
-            sDiagMax,sDiagMin,rmax,smatToParaIdx[simax],diagShift,staDelShift);
+            sDiagMax,sDiagMin,rmax,smatOptIdx[simax],diagShift,staDelShift);
     /* modified by YN */
   }
 
@@ -218,11 +222,12 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 
   /* update variational parameters */
   if(info==0 && rank==0) {
-    #pragma omp parallel for default(shared) private(si,pi)
+    #pragma omp parallel for default(shared) private(si,sj,pi)
     #pragma loop noalias
     #pragma loop norecurrence para
     for(si=0;si<nSmat;si++) {
-      pi = smatToParaIdx[si];
+      sj = smatOptIdx[si];  
+      pi = SmatIdxtoParaIdx[sj];
       if(pi%2==0){
         para[pi/2]     += r[si];  // real
       }else{
@@ -237,7 +242,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 
 /* calculate the parameter change r[nSmat] from SOpt.
    The result is gathered in rank 0. */
-int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, /* modified by YN */
+int stcOptMain(double *r, const int nSmat, const int *smatOptIdx, /* modified by YN */
                const double diagShift, const double staDelShift, MPI_Comm comm) { /* modified by YN */
   /* global vector */
   double *w; /* workspace */
@@ -278,7 +283,7 @@ int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, /* modified
   int si,pi,pj,idx;
   int ir,ic;
 
-  const int srOptSize = SROptSize;//TBC
+  const int srOptSmatDim = SROptSmatDim;//TBC /* modified by YN */ /* Warning !! Tremporal Treatment */
   const double dSROptStepDt = DSROptStepDt;
   const double srOptHO_0 = creal(SROptHO[0]);
  // const double complex srOptHO_0 = SROptHO[0];
@@ -331,11 +336,11 @@ int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, /* modified
   for(ir=0;ir<mlocr;ir++) {
     si = (ir/mb)*nprow*mb + myprow*mb + (ir%mb);
     irToSmatIdx[ir] = si;
-    irToParaIdx[ir] = smatToParaIdx[si];
+    irToParaIdx[ir] = smatOptIdx[si]; /* modifified by YN */ /* Warning !! Tremporal Treatment */
   }
   #pragma omp parallel for default(shared) private(ic)
   for(ic=0;ic<mlocc;ic++) {
-    icToParaIdx[ic] = smatToParaIdx[(ic/nb)*npcol*nb + mypcol*nb + (ic%nb)];
+    icToParaIdx[ic] = smatOptIdx[(ic/nb)*npcol*nb + mypcol*nb + (ic%nb)]; /* modified by YN */ /* Warning !! Tremporal Treatment */
   }
 
   StopTimer(55);
@@ -351,7 +356,7 @@ int stcOptMain(double *r, const int nSmat, const int *smatToParaIdx, /* modified
       idx = ir + ic*mlocr; /* local index (row major) */
 
       /* S[i][j] = xOO[i+1][j+1] - xOO[0][i+1] * xOO[0][j+1]; */
-      s[idx] = creal(srOptOO[(pi+2)*(2*srOptSize)+(pj+2)]) - creal(srOptOO[pi+2]) * creal(srOptOO[pj+2]);
+      s[idx] = creal(srOptOO[(pi+2)*(srOptSmatDim+2)+(pj+2)]) - creal(srOptOO[pi+2]) * creal(srOptOO[pj+2]); /* modified by YN */ /* Warning !! Temporal Treatment */
       //s[idx] = creal(srOptOO[(pi+2)*(2*srOptSize)+(pj+2)]) - creal(srOptOO[pi+2]*srOptOO[pj+2]);
       /* modify diagonal elements */
       //printf("DEBUG: idx=%d %d %d s[]=%lf \n",idx,pi,pj,s[idx]);

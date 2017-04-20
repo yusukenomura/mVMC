@@ -49,6 +49,7 @@ void InitFile(char *xNameListFile, int rank) {
     sprintf(fileName, "%s_SRinfo.dat", CDataFileHead);
     FileSRinfo = fopen(fileName, "w");
     if(SRFlag == 0){
+      fprintf(FileSRinfo," SROptSmatDim = %d \n", SROptSmatDim); /* added by YN */ /* Warning!! Temporal Treatment */
       fprintf(FileSRinfo,
             "#Npara Msize optCut diagCut sDiagMax  sDiagMin    absRmax       imax   diagShift   staDelShift\n"); /* modified by YN */
     }else{

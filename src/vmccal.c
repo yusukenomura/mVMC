@@ -190,7 +190,7 @@ void VMCMainCal(MPI_Comm comm) {
         tmpTheta = thetaHidden + f*nNeuronPerSet; 
         x = 0.0;
         for(i=0;i<nNeuronPerSet;i++) x += cTanh(tmpTheta[i]);  /* modified by KI */
-        srOptO[(tmp_i+1)*2]   = x;               // even real
+        srOptO[(tmp_i+1)*2]   = x;         // even real
         srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp   /* modified by KI */
         tmp_i++;
       }
@@ -257,13 +257,20 @@ void VMCMainCal(MPI_Comm comm) {
             SROptHO_real[int_i]                       += creal(we)*SROptO_real[int_i]; 
           }
         }else{
-          #pragma omp parallel for default(shared) private(int_i,int_j) /* modified by YN */
-          for(int_i=0;int_i<SROptSize*2;int_i++){
-            // SROptO_Store for fortran
-            int_j = int_i; /* added by YN */ /* Warning!! Temporal Treatment */
-            SROptO_Store[int_j+sample*SROptSmatDim]  = sqrtw*SROptO[int_i]; /* modified by YN */ /* Warning!! Temporal Treatment */
-            SROptHO[int_i]                           += we*SROptO[int_i]; 
+          /* modified by YN */ /* Warning!! Temporal Treatment */
+          // SROptO_Store for fortran
+          SROptO_Store[  sample*(SROptSmatDim+2)]  = sqrtw*SROptO[0]; 
+          SROptO_Store[1+sample*(SROptSmatDim+2)]  = sqrtw*SROptO[1]; 
+          SROptHO[0] += we*SROptO[0]; 
+          SROptHO[1] += we*SROptO[1]; 
+          #pragma omp parallel for default(shared) private(int_i,int_j) 
+          for(int_i=0;int_i<SROptSmatDim;int_i++){
+            int_j = SmatIdxtoParaIdx[int_i]; 
+            if( int_j >= 2*NPara ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE); 
+            SROptO_Store[(int_i+2)+sample*(SROptSmatDim+2)]  = sqrtw*SROptO[(int_j+2)]; 
+            SROptHO[int_i+2]                                += we*SROptO[(int_j+2)]; 
           }
+          /* modified by YN */ /* Warning!! Temporal Treatment */
         }
       } 
       StopTimer(43);
@@ -302,7 +309,7 @@ void VMCMainCal(MPI_Comm comm) {
       StopTimer(45);
     }else{
       StartTimer(45);
-      calculateOO_Store(SROptOO,SROptHO,SROptO_Store,w,e,SROptSmatDim,sampleSize); /* modified by YN */ /* Warning!! Temporal Treatment */
+      calculateOO_Store(SROptOO,SROptHO,SROptO_Store,w,e,SROptSmatDim+2,sampleSize); /* modified by YN */ /* Warning!! Temporal Treatment */
       StopTimer(45);
     }
   }
@@ -316,7 +323,7 @@ void clearPhysQuantity(){
   Wc = Etot = Etot2 = 0.0;
   if(NVMCCalMode==0) {
     /* SROptOO, SROptHO, SROptO */
-    n = SROptSmatDim*SROptSmatDim+4*SROptSize; // TBC /* modified by YN */ /* Warning!! Temporal Treatment */  
+    n = (SROptSmatDim+2)*(SROptSmatDim+2) + 4*SROptSize; // TBC /* modified by YN */ /* Warning!! Temporal Treatment */  
     vec = SROptOO;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec[i] = 0.0+0.0*I;
