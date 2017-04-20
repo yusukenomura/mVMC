@@ -103,6 +103,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 
   StartTimer(50);
 //[s] for only real variables TBC
+   /* Comment by YN: If this subroutine is passed through, it will give an error */
   if(AllComplexFlag==0){
     #pragma omp parallel for default(shared) private(i,int_x,int_y,j)
     #pragma loop noalias

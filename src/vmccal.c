@@ -102,10 +102,14 @@ void VMCMainCal(MPI_Comm comm) {
 #ifdef _DEBUG
     printf("  Debug: sample=%d: CalculateMAll \n",sample);
 #endif
-    if(AllComplexFlag==0){
+    if(iComplexFlgOrbital==0){ /* modified by YN */ /* Warning !! Temporal Treatment */
        info = CalculateMAll_real(eleIdx,qpStart,qpEnd); // InvM_real,PfM_real will change
        #pragma omp parallel for default(shared) private(tmp_i)
        for(tmp_i=0;tmp_i<NQPFull*(Nsize*Nsize+1);tmp_i++)  InvM[tmp_i]= InvM_real[tmp_i]; // InvM will be used in  SlaterElmDiff_fcmp
+       /* added by YN */ /* Warning!! Temporal Treatment */
+       #pragma omp parallel for default(shared) private(tmp_i)
+       for(tmp_i=0;tmp_i<qpEnd-qpStart;tmp_i++)  PfM[tmp_i]= PfM_real[tmp_i]; 
+       /* added by YN */ /* Warning!! Temporal Treatment */
     }else{
       info = CalculateMAll_fcmp(eleIdx,qpStart,qpEnd); // InvM,PfM will change
     }
