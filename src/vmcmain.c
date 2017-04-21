@@ -739,13 +739,13 @@ inline double sigmoid(double a, double c, double x) {
  /* added by YN */
  double y, z; 
 
- y = -a * (x-c); 
+ y = a * (x-c); 
  if( y < -100.0 ) {
    z = 0.0; 
  } else if( y > 100.0 ) { 
    z = 1.0; 
  } else { 
-   z = 1.0 / exp(y); 
+   z = 1.0 / exp(-y); 
  }
  /* added by YN */
  return z; /* modified by YN */
