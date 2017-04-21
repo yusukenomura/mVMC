@@ -374,14 +374,15 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     if ( FlagFTCalc ){
       x = 0.01; // TBC
       y = ( 0.5*NSROptItrStep > 1000.0 ) ? 1000.0 : 0.5*NSROptItrStep;
-      if( rank == 0 && step == 0 ) printf("Finite Temperature Calculation: Condition for sigmoid: %lf %lf \n", x, y); 
+      if( rank == 0 && step == 0 ) printf("Finite Temperature Calculation: Condition for sigmoid: %lf  %lf  %lf  %lf \n", dt_i, dt_f, x, y); 
     } else {
       x = 0.2; // TBC
       y = ( 0.05*NSROptItrStep > 50.0 ) ? 50.0 : 0.05*NSROptItrStep;
-      if( rank == 0 && step == 0 ) printf("Ground State Calculation: Condition for sigmoid: %lf %lf \n", x, y); 
+      if( rank == 0 && step == 0 ) printf("Ground State Calculation: Condition for sigmoid: %lf  %lf  %lf  %lf\n", dt_i, dt_f, x, y); 
     } 
-    /* added by YN */
     DSROptStepDt = dt_i + (dt_f-dt_i)*sigmoid(x, y, (double)step);
+    if( step == 0 ) Time += 1.0e-15 + DSROptStepDt;
+    /* added by YN */
     Time += DSROptStepDt;
     /*added by KI */
     if(rank==0){
@@ -567,7 +568,7 @@ void outputData() {
   /* zvo_out.dat */
  // fprintf(FileOut, "% .18e % .18e % .18e \n", Etot, Etot2, (Etot2 - Etot*Etot)/(Etot*Etot));
     /*added by KI */
-    fprintf(FileOut, "% .18e % .18e  % .18e % .18e % .18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)), Time);
+    fprintf(FileOut, "% .18e % .18e  % .18e % .18e % .5e % .5e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)), Time, 0.25/Time);
     /*added by KI */
 
   /* zvo_var.dat */
