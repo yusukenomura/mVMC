@@ -381,7 +381,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       if( rank == 0 && step == 0 ) printf("Ground State Calculation: Condition for sigmoid: %lf  %lf  %lf  %lf\n", dt_i, dt_f, x, y); 
     } 
     DSROptStepDt = dt_i + (dt_f-dt_i)*sigmoid(x, y, (double)step);
-    if( step == 0 ) Time += 1.0e-15 + DSROptStepDt;
+    if( step == 0 ) Time += 1.0e-15 - DSROptStepDt;
     /* added by YN */
     Time += DSROptStepDt;
     /*added by KI */
