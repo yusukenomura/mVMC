@@ -203,6 +203,14 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
 	      bufDouble[IdxSROptStaDelShiftAmp]=(double)dtmp;
 	    }	
             /* added by YN */
+            /* added by KI */
+	    //else if(CheckWords(ctmp, "FlagFTCalc")==0){ 
+	    //  bufInt[IdxFlagFTCalc]=(int)dtmp;
+	    //}
+	    else if(CheckWords(ctmp, "DSROptInitStepDt")==0){
+	      bufDouble[IdxSROptInitStepDt]=(double)dtmp;
+	    }	
+            /* added by KI */
 	    else{
 	      fprintf(stderr, "  Error: keyword \" %s \" is incorrect. \n", ctmp);
 	      info = ReadDefFileError(defname);
@@ -430,6 +438,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NCisAjsCktAltDC        =  bufInt[IdxNTwoBodyG];
   NInterAll              =  bufInt[IdxNInterAll];
   NQPOptTrans            =  bufInt[IdxNQPOptTrans];
+	DSROptInitStepDt        =  bufDouble[IdxSROptInitStepDt];  /* added by KI */
 
   DSROptRedCut = bufDouble[IdxSROptRedCut];
   DSROptStaDel = bufDouble[IdxSROptStaDel];
@@ -1435,6 +1444,7 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufDouble[IdxSROptRedCut]=0.001;
   bufDouble[IdxSROptStaDel]=0.02;
   bufDouble[IdxSROptStepDt]=0.02;
+  bufDouble[IdxSROptInitStepDt]=0.02; /* added by KI */
   bufDouble[IdxSROptConstShiftRatio]=0.01; /* added by YN */
   bufDouble[IdxSROptStaDelShiftAmp]=0.1;   /* added by YN */
   NStoreO=0;

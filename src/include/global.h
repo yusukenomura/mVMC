@@ -144,6 +144,11 @@ int **HiddenPhysIntIdx3; /* HiddenPysIntIdx3[NSetHidden*NNeuronPerset(=NSizeThet
                             through HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]-th type of interaction.  */ 
  /* Note that HiddenPhysIntIdx 1 and 2 have the same information but the order of data is different  */
 /* added by YN */
+/* added by KI */
+//int FlagFTCalc=0; 
+double DSROptInitStepDt; 
+double Time=0.0;
+/* added by KI */
 
 /* zqptransidx.def */
 int NQPTrans, **QPTrans; /* [NQPTrans][Nsite] */
