@@ -35,6 +35,7 @@ void printUsageError();
 void printOption();
 void initMultiDefMode(int nMultiDef, char *fileDirList, MPI_Comm comm_parent, MPI_Comm *comm_child1);
 void StdFace_main(char *fname);
+inline double sigmoid(double a, double c, double x);
 
 /*main program*/
 int main(int argc, char* argv[])
@@ -326,6 +327,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
   int iprogress;
   double x, y; /* added by YN */
   FILE *file1,*file2; /* to be deleted */
+  double dt_i=DSROptInitStepDt, dt_f=DSROptStepDt;
   MPI_Comm_rank(comm_parent, &rank);
 
   if( rank == 0 ){
@@ -358,6 +360,10 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
   }
 
   for(step=0;step<NSROptItrStep;step++) {
+    /*added by KI */
+    DSROptStepDt = dt_i + (dt_f-dt_i)*sigmoid(1.0e-2, 0.5*NSROptItrStep, (double)step);
+    Time += DSROptStepDt;
+    /*added by KI */
     if(rank==0){
       OutputTime(step);
       if(step%(NSROptItrStep/20)==0){
@@ -540,7 +546,9 @@ void outputData() {
 
   /* zvo_out.dat */
  // fprintf(FileOut, "% .18e % .18e % .18e \n", Etot, Etot2, (Etot2 - Etot*Etot)/(Etot*Etot));
-    fprintf(FileOut, "% .18e % .18e  % .18e % .18e \n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)));
+    /*added by KI */
+    fprintf(FileOut, "% .18e % .18e  % .18e % .18e % .18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)), Time);
+    /*added by KI */
 
   /* zvo_var.dat */
   if(FlagBinary==0) { /* formatted output*/
@@ -704,3 +712,9 @@ void initMultiDefMode(int nMultiDef, char *fileDirList, MPI_Comm comm_parent, MP
   MPI_Comm_free(&comm_child2);
   return;
 }
+
+/*added by KI */
+inline double sigmoid(double a, double c, double x) {
+ return 1.0 / (1.0 + exp(-a * (x-c)));
+}
+/*added by KI */
