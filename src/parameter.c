@@ -48,8 +48,8 @@ void InitParameter() {
   for(i=0;i<NHiddenPhysInt ;i++) HiddenPhysInt [i] = 0.005*(genrand_real2()-0.5);   /* TBC */
   //for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] += I*0.1*(genrand_real2()-0.5);   /* TBC */
   //for(i=0;i<NHiddenPhysInt ;i++) HiddenPhysInt [i] += I*0.1*(genrand_real2()-0.5);   /* TBC */
-  //for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] = I*0.1*(genrand_real2()-0.5);   /* TBC */
-  //for(i=0;i<NHiddenPhysInt ;i++) HiddenPhysInt [i] = I*0.1*(genrand_real2()-0.5);   /* TBC */
+  for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] += I*0.005*(genrand_real2()-0.5);   /* TBC */
+  for(i=0;i<NHiddenPhysInt ;i++) HiddenPhysInt [i] += I*0.005*(genrand_real2()-0.5);   /* TBC */
   //for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] = I*2.0*M_PI*(genrand_real2()-0.5);   /* TBC */
   //for(i=0;i<NHiddenPhysInt ;i++) HiddenPhysInt [i] = I*2.0*M_PI*(genrand_real2()-0.5);   /* TBC */
   /* added by YN */ 
