@@ -204,9 +204,9 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
 	    }	
             /* added by YN */
             /* added by KI */
-	    //else if(CheckWords(ctmp, "FlagFTCalc")==0){ 
-	    //  bufInt[IdxFlagFTCalc]=(int)dtmp;
-	    //}
+	    else if(CheckWords(ctmp, "FlagFTCalc")==0){ 
+	      bufInt[IdxFlagFTCalc]=(int)dtmp;
+	    }
 	    else if(CheckWords(ctmp, "DSROptInitStepDt")==0){
 	      bufDouble[IdxSROptInitStepDt]=(double)dtmp;
 	    }	
@@ -438,7 +438,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NCisAjsCktAltDC        =  bufInt[IdxNTwoBodyG];
   NInterAll              =  bufInt[IdxNInterAll];
   NQPOptTrans            =  bufInt[IdxNQPOptTrans];
-	DSROptInitStepDt        =  bufDouble[IdxSROptInitStepDt];  /* added by KI */
+  DSROptInitStepDt       =  bufDouble[IdxSROptInitStepDt];  /* added by KI */
+  FlagFTCalc             =  bufInt[IdxFlagFTCalc];          /* added by YN */
 
   DSROptRedCut = bufDouble[IdxSROptRedCut];
   DSROptStaDel = bufDouble[IdxSROptStaDel];
@@ -471,7 +472,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NIntPerNeuron   = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
   NHiddenPhysInt  = NSetHidden * NIntPerNeuron; 
   NHiddenVariable = NHiddenMagField + NHiddenPhysInt; 
-  NNeuronPerSet   = (FlagNeuronTrans==0) ? 1 : Nsite2;
+  NNeuronPerSet   = (FlagNeuronTrans) ? Nsite2 : 1;
   NSizeTheta      = NSetHidden * NNeuronPerSet; 
   /* added by YN */ 
   NOptTrans = (FlagOptTrans>0) ? NQPOptTrans : 0;
@@ -1433,6 +1434,7 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufInt[IdxFlagNeuronTrans]=1;  /* added by YN */
   bufInt[IdxSROptConstShift]=0;  /* added by YN */
   bufInt[IdxSROptStaDelShift]=0; /* added by YN */
+  bufInt[FlagFTCalc]=0; /* added by YN */
   bufInt[IdxNOrbit]=0;
   bufInt[IdxNQPTrans]=0;
   bufInt[IdxNOneBodyG]=0;
@@ -1444,7 +1446,7 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufDouble[IdxSROptRedCut]=0.001;
   bufDouble[IdxSROptStaDel]=0.02;
   bufDouble[IdxSROptStepDt]=0.02;
-  bufDouble[IdxSROptInitStepDt]=0.02; /* added by KI */
+  bufDouble[IdxSROptInitStepDt]=-1; /* added by KI */
   bufDouble[IdxSROptConstShiftRatio]=0.01; /* added by YN */
   bufDouble[IdxSROptStaDelShiftAmp]=0.1;   /* added by YN */
   NStoreO=0;

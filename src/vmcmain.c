@@ -327,8 +327,17 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
   int iprogress;
   double x, y; /* added by YN */
   FILE *file1,*file2; /* to be deleted */
-  double dt_i=DSROptInitStepDt, dt_f=DSROptStepDt;
+  double dt_i, dt_f; /* added by IK, modified by YN */
   MPI_Comm_rank(comm_parent, &rank);
+
+  /* added by YN */
+  if( DSROptInitStepDt < 0.0 ){
+    dt_i=DSROptStepDt;
+  } else { 
+    dt_i=DSROptInitStepDt;
+  } 
+  dt_f=DSROptStepDt;
+  /* added by YN */
 
   if( rank == 0 ){
   file1 = fopen("check1_OptFlag.txt","w"); // delete
@@ -361,7 +370,18 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
 
   for(step=0;step<NSROptItrStep;step++) {
     /*added by KI */
-    DSROptStepDt = dt_i + (dt_f-dt_i)*sigmoid(1.0e-2, 0.5*NSROptItrStep, (double)step);
+    /* added by YN */
+    if ( FlagFTCalc ){
+      x = 0.01; // TBC
+      y = ( 0.5*NSROptItrStep > 1000.0 ) ? 1000.0 : 0.5*NSROptItrStep;
+      if( rank == 0 && step == 0 ) printf("Finite Temperature Calculation: Condition for sigmoid: %lf %lf \n", x, y); 
+    } else {
+      x = 0.2; // TBC
+      y = ( 0.05*NSROptItrStep > 50.0 ) ? 50.0 : 0.05*NSROptItrStep;
+      if( rank == 0 && step == 0 ) printf("Ground State Calculation: Condition for sigmoid: %lf %lf \n", x, y); 
+    } 
+    /* added by YN */
+    DSROptStepDt = dt_i + (dt_f-dt_i)*sigmoid(x, y, (double)step);
     Time += DSROptStepDt;
     /*added by KI */
     if(rank==0){
@@ -715,6 +735,18 @@ void initMultiDefMode(int nMultiDef, char *fileDirList, MPI_Comm comm_parent, MP
 
 /*added by KI */
 inline double sigmoid(double a, double c, double x) {
- return 1.0 / (1.0 + exp(-a * (x-c)));
+ /* added by YN */
+ double y, z; 
+
+ y = -a * (x-c); 
+ if( y < -100.0 ) {
+   z = 0.0; 
+ } else if( y > 100.0 ) { 
+   z = 1.0; 
+ } else { 
+   z = 1.0 / exp(y); 
+ }
+ /* added by YN */
+ return z; /* modified by YN */
 }
 /*added by KI */

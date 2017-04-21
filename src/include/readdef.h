@@ -84,7 +84,7 @@ enum ParamIdxInt{
 enum ParamIdxDouble{
   IdxSROptRedCut, IdxSROptStaDel, IdxSROptStepDt,
   IdxSROptConstShiftRatio, IdxSROptStaDelShiftAmp, /* added by YN */
-  IdxSROptInitStepDt, /* added by KI */ 
+  IdxSROptInitStepDt, IdxFlagFTCalc, /* added by KI */ 
   ParamIdxDouble_End
 };
 

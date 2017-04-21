@@ -145,7 +145,7 @@ int **HiddenPhysIntIdx3; /* HiddenPysIntIdx3[NSetHidden*NNeuronPerset(=NSizeThet
  /* Note that HiddenPhysIntIdx 1 and 2 have the same information but the order of data is different  */
 /* added by YN */
 /* added by KI */
-//int FlagFTCalc=0; 
+int FlagFTCalc;
 double DSROptInitStepDt; 
 double Time=0.0;
 /* added by KI */
