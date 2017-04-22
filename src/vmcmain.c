@@ -745,7 +745,7 @@ inline double sigmoid(double a, double c, double x) {
  } else if( y > 100.0 ) { 
    z = 1.0; 
  } else { 
-   z = 1.0 / exp(-y); 
+   z = 1.0 / (1.0 + exp(-y)); 
  }
  /* added by YN */
  return z; /* modified by YN */
