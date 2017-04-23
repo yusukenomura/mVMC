@@ -1434,7 +1434,7 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufInt[IdxFlagNeuronTrans]=1;  /* added by YN */
   bufInt[IdxSROptConstShift]=0;  /* added by YN */
   bufInt[IdxSROptStaDelShift]=0; /* added by YN */
-  bufInt[FlagFTCalc]=0; /* added by YN */
+  bufInt[IdxFlagFTCalc]=0; /* added by YN */
   bufInt[IdxNOrbit]=0;
   bufInt[IdxNQPTrans]=0;
   bufInt[IdxNOneBodyG]=0;
