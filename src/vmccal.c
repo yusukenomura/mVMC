@@ -327,7 +327,7 @@ void clearPhysQuantity(){
   Wc = Etot = Etot2 = 0.0;
   if(NVMCCalMode==0) {
     /* SROptOO, SROptHO, SROptO */
-    n = (SROptSmatDim+2)*(SROptSmatDim+2) + 4*SROptSize; // TBC /* modified by YN */ /* Warning!! Temporal Treatment */  
+    n = (SROptSmatDim*AllComplexFlag+2)*(SROptSmatDim*AllComplexFlag+2) + 4*SROptSize; // TBC /* modified by YN */ /* Warning!! Temporal Treatment */  
     vec = SROptOO;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec[i] = 0.0+0.0*I;

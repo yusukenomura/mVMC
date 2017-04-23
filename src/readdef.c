@@ -816,7 +816,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
         for(fidx=NProj;fidx<NProj+NHiddenVariable;fidx++) {
           count_idx++; 
 	  OptFlag[2*fidx  ] = 1; 
-	  OptFlag[2*fidx+1] = 1; // TBC imaginary   
+	  OptFlag[2*fidx+1] = 0; // TBC imaginary   
         }
         /* end temporal treatment */
 	break;

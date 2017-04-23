@@ -72,7 +72,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
   const int nPara=NPara;
   const int srOptSmatDim=SROptSmatDim; /* added by YN */ /* Warning !! Temporal Treatment */
   const int srOptSize=SROptSize;
-  const double complex *srOptOO=SROptOO;
+  const double *srOptOO=SROptOO_real; /* modified by YN */
   //const double         *srOptOO= SROptOO_real;
 
   double r[SROptSmatDim]; /* the parameter change */ /* modified by YN */ /* Warning!! Temporal Treatment */
@@ -104,20 +104,20 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
   StartTimer(50);
 //[s] for only real variables TBC
    /* Comment by YN: If this subroutine is passed through, it will give an error */
-  if(AllComplexFlag==0){
-    #pragma omp parallel for default(shared) private(i,int_x,int_y,j)
-    #pragma loop noalias
-    for(i=0;i<2*SROptSize*(2*SROptSize+2);i++){
-      int_x  = i%(2*SROptSize);
-      int_y  = (i-int_x)/(2*SROptSize);
-      if(int_x%2==0 && int_y%2==0){
-        j          = int_x/2+(int_y/2)*SROptSize;
-        SROptOO[i] = SROptOO_real[j];// only real part TBC
-      }else{
-        SROptOO[i] = 0.0+0.0*I;
-      }
-    }
-  }
+  //if(AllComplexFlag==0){
+  //  #pragma omp parallel for default(shared) private(i,int_x,int_y,j)
+  //  #pragma loop noalias
+  //  for(i=0;i<2*SROptSize*(2*SROptSize+2);i++){
+  //    int_x  = i%(2*SROptSize);
+  //    int_y  = (i-int_x)/(2*SROptSize);
+  //    if(int_x%2==0 && int_y%2==0){
+  //      j          = int_x/2+(int_y/2)*SROptSize;
+  //      SROptOO[i] = SROptOO_real[j];// only real part TBC
+  //    }else{
+  //      SROptOO[i] = 0.0+0.0*I;
+  //    }
+  //  }
+  //}
 //[e]
   #pragma omp parallel for default(shared) private(pi)
   #pragma loop noalias
@@ -126,7 +126,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
     /* r[i] is temporarily used for diagonal elements of S */
     /* S[i][i] = OO[pi+1][pi+1] - OO[0][pi+1] * OO[0][pi+1]; */
     //r[pi]   = creal(srOptOO[(pi+2)*(2*srOptSize)+(pi+2)]) - creal(srOptOO[pi+2] * srOptOO[pi+2]);
-    r[pi]   = creal(srOptOO[(pi+2)*(srOptSmatDim+2)+(pi+2)]) - creal(srOptOO[pi+2]) * creal(srOptOO[pi+2]); /* modified by YN */ /* Warning !! Temporal Treatment */
+    r[pi]   = srOptOO[(pi+1)*(srOptSmatDim+1)+(pi+1)] - srOptOO[pi+1] * srOptOO[pi+1]; /* modified by YN */ /* Warning !! Temporal Treatment */
     //r[2*pi]   = creal(srOptOO[(2*pi+2)*(2*srOptSize+pi)+(2*pi+2)]) - creal(srOptOO[2*pi+2]) * creal(srOptOO[2*pi+2]);
     //r[2*pi+1] = creal(srOptOO[(2*pi+3)*(2*srOptSize+pi)+(2*pi+3)]) - creal(srOptOO[2*pi+3]) * creal(srOptOO[2*pi+3]);
     //printf("DEBUG: pi=%d: %lf %lf \n",pi,creal(srOptOO[pi]),cimag(srOptOO[pi]));
@@ -286,10 +286,10 @@ int stcOptMain(double *r, const int nSmat, const int *smatOptIdx, /* modified by
 
   const int srOptSmatDim = SROptSmatDim;//TBC /* modified by YN */ /* Warning !! Tremporal Treatment */
   const double dSROptStepDt = DSROptStepDt;
-  const double srOptHO_0 = creal(SROptHO[0]);
+  const double srOptHO_0 = SROptHO_real[0]; /* modified by YN */
  // const double complex srOptHO_0 = SROptHO[0];
-  double complex *srOptOO=SROptOO;
-  double complex *srOptHO=SROptHO;
+  double *srOptOO=SROptOO_real; /* modified by YN */
+  double *srOptHO=SROptHO_real; /* modified by YN */
 
   StartTimer(55);
 
@@ -357,7 +357,7 @@ int stcOptMain(double *r, const int nSmat, const int *smatOptIdx, /* modified by
       idx = ir + ic*mlocr; /* local index (row major) */
 
       /* S[i][j] = xOO[i+1][j+1] - xOO[0][i+1] * xOO[0][j+1]; */
-      s[idx] = creal(srOptOO[(pi+2)*(srOptSmatDim+2)+(pj+2)]) - creal(srOptOO[pi+2]) * creal(srOptOO[pj+2]); /* modified by YN */ /* Warning !! Temporal Treatment */
+      s[idx] = srOptOO[(pi+1)*(srOptSmatDim+1)+(pj+1)] - srOptOO[pi+1] * srOptOO[pj+1]; /* modified by YN */ /* Warning !! Temporal Treatment */
       //s[idx] = creal(srOptOO[(pi+2)*(2*srOptSize)+(pj+2)]) - creal(srOptOO[pi+2]*srOptOO[pj+2]);
       /* modify diagonal elements */
       //printf("DEBUG: idx=%d %d %d s[]=%lf \n",idx,pi,pj,s[idx]);
@@ -378,7 +378,7 @@ int stcOptMain(double *r, const int nSmat, const int *smatOptIdx, /* modified by
       
       /* energy gradient = 2.0*( xHO[i+1] - xHO[0] * xOO[0][i+1]) */
       /* g[i] = -dt * (energy gradient) */
-      g[ir] = -dSROptStepDt*2.0*(creal(srOptHO[pi+2]) - srOptHO_0 * creal(srOptOO[pi+2]));
+      g[ir] = -dSROptStepDt*2.0*( srOptHO[pi+1] - srOptHO_0 * srOptOO[pi+1]);
       //g[ir] = -dSROptStepDt*2.0*(creal(srOptHO[pi+2]) - creal(srOptHO_0 * srOptOO[pi+2]));
       //printf("ZDEBUG: %d %lf \n",ir,g[ir]);
     }

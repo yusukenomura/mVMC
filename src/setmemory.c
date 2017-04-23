@@ -291,12 +291,16 @@ void SetMemory() {
         SROptSmatDim += 1;
       }
     }
-    SROptOO = (double complex*)malloc( sizeof(double complex)*((SROptSmatDim+2)*(SROptSmatDim+2)+4*SROptSize) ) ; //TBC 
-    SROptHO = SROptOO + (SROptSmatDim+2)*(SROptSmatDim+2); //TBC 
+    SROptOO = (double complex*)malloc( sizeof(double complex)*((SROptSmatDim*AllComplexFlag+2)*(SROptSmatDim*AllComplexFlag+2)+4*SROptSize) ) ; //TBC 
+    SROptHO = SROptOO + (SROptSmatDim*AllComplexFlag+2)*(SROptSmatDim*AllComplexFlag+2); //TBC 
     /* modified by YN */ /* Warning !! Temporal Treatment */ 
     SROptO  = SROptHO + (2*SROptSize);  //TBC
 //for real
     if(AllComplexFlag==0){ /* added by YN */
+    if( SROptSize != SROptSmatDim+1 ) {
+      fprintf(stderr, "error: SROptSize != SROptSmatDim+1 \n");
+      MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+    }
     SROptOO_real = (double*)malloc( sizeof(double )*((SROptSize)*(SROptSize+2))) ; //TBC
     SROptHO_real = SROptOO_real + (SROptSize)*(SROptSize); //TBC
     SROptO_real  = SROptHO_real + (SROptSize);  //TBC
