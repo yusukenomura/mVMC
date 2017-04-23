@@ -53,6 +53,7 @@ enum KWIdxInt{
   KWDH2, KWDH4, KWOrbital, KWHiddenPhysInt, /* modified by YN */
   KWTransSym, KWInGutzwiller, KWInJastrow,
   KWInDH2, KWInDH4, KWInOrbital,
+  KWInHiddenMagField, KWInHiddenPhysInt, /* added by YN */
   KWOneBodyG, KWTwoBodyG, KWTwoBodyGEx,
   KWInterAll, KWOptTrans, KWInOptTrans,
   KWIdxInt_end
