@@ -38,6 +38,7 @@ static char cKWListOfFileNameList[][D_CharTmpReadDef]={
   "DH2", "DH4", "Orbital", "HiddenPhysInt", /* modified by YN */
   "TransSym", "InGutzwiller", "InJastrow",
   "InDH2", "InDH4", "InOrbital",
+  "InHiddenMagField", "InHiddenPhysInt", /* added by YN */
   "OneBodyG", "TwoBodyG", "TwoBodyGEx",
   "InterAll", "OptTrans", "InOptTrans"
 };
