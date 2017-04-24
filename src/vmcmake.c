@@ -181,7 +181,7 @@ void VMCMakeSample(MPI_Comm comm) {
         /* The mj-th electron with spin t hops to ri */
         updateEleConfig(mj,rj,ri,t,TmpEleIdx,TmpEleCfg,TmpEleNum);
         UpdateProjCnt(rj,ri,t,projCntNew,projCntNew,TmpEleNum);
-        UpdateThetaHidden(rj,ri,t,thetaHiddenNew,TmpThetaHidden); /* added by YN */
+        UpdateThetaHidden(rj,ri,t,thetaHiddenNew,thetaHiddenNew); /* added by YN */
 
         StopTimer(65);
         StartTimer(66);

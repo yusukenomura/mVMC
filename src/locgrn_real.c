@@ -149,7 +149,7 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   eleNum[rsj] = 0;
   eleNum[rsi] = 1;
   UpdateProjCnt(rj, ri, s, projCntNew, projCntNew, eleNum);
-  UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHidden); /* added by YN */
+  UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHiddenNew); /* added by YN */
 
   z = ProjRatio(projCntNew,eleProjCnt);
   z *= creal(HiddenWeightRatio(thetaHiddenNew,thetaHidden));  /* added by YN */
