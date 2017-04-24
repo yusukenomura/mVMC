@@ -250,6 +250,7 @@ int main(int argc, char* argv[])
 
   /* initialize Mersenne Twister */
   init_gen_rand(RndSeed+group1);
+  if(rank0==0) fprintf(stdout,"RndSeed = %d \n",RndSeed);
   /* get the size of work space for LAPACK and PFAPACK */
   LapackLWork = getLWork_fcmp(); //TBC
 
