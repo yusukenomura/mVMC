@@ -36,6 +36,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
   UpdateType updateType;
   int mi,mj,ri,rj,s,t,i;
   int nAccept=0;
+  int nFail=0; /* added by YN */
   int sample;
 
   double  logIpOld,logIpNew; /* logarithm of inner product <phi|L|x> */ // is this ok ? TBC
@@ -208,9 +209,11 @@ void VMCMakeSample_real(MPI_Comm comm) {
         /* added by YN */
         CalcThetaHidden(thetaHiddenNew,TmpEleNum); 
         for(i=0;i<NSizeTheta;i++) { 
-          if( cabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-3 ) {
+          if( cabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-5 ) {
             fprintf(stderr,"Warning: failed in updating ThetaHidden, %lf %lf \n",
                     cabs(TmpThetaHidden[i]),cabs(thetaHiddenNew[i]));
+            nFail++;
+            if( nFail > 20 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
           }  
           TmpThetaHidden[i] = thetaHiddenNew[i];
         } 
