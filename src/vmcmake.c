@@ -514,7 +514,7 @@ UpdateType getUpdateType(int path) {
   if(path==0) {
     return HOPPING;
   } else if (path==1) {
-    return (genrand_real2()<0.5) ? EXCHANGE : HOPPING; /* exchange or hopping */
+    return (genrand_real2()<0.2) ? EXCHANGE : HOPPING; /* exchange or hopping */
   } else if (path==2) {
     return EXCHANGE;
   }
