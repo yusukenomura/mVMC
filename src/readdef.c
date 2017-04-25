@@ -1082,7 +1082,7 @@ int ReadInputParameters(char *xNameListFile, MPI_Comm comm)
   char defname[D_FileNameMax];
   char ctmp[D_FileNameMax], ctmp2[256];
   int iKWidx=0;
-  int i,idx;
+  int i,j,idx; /* modified by YN */
   int rank;
   int count=0;
   int info=0;
@@ -1157,7 +1157,30 @@ int ReadInputParameters(char *xNameListFile, MPI_Comm comm)
         }        
         break;
 
-      /* To Do (YN): initial parameter for hidden variables  */
+      /* added by YN */ 
+      case KWInHiddenMagField:
+        if(idx > NHiddenMagField){
+          info=1;
+          continue;
+        }
+        for(i=0; i<idx; i++){
+          fscanf(fp, "%d %lf %lf ", &j, &tmp_real,&tmp_comp);
+          HiddenMagField[i]=tmp_real+I*tmp_comp;
+        }  
+        break;
+
+      case KWInHiddenPhysInt:
+        if(idx > NHiddenPhysInt){
+          info=1;
+          continue;
+        }
+        for(i=0; i<idx; i++){
+          fscanf(fp, "%d %lf %lf ", &j, &tmp_real,&tmp_comp);
+          HiddenPhysInt[i]=tmp_real+I*tmp_comp;
+        }  
+        for(i=idx;i<NHiddenPhysInt;i++) HiddenPhysInt[i] = 0.005*(genrand_real2()-0.5);
+        break;
+      /* added by YN */ 
         
       case KWInOrbital:
         if(idx != NOrbitalIdx){
