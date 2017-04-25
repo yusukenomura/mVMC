@@ -515,7 +515,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     
     StartTimer(3);
 
-    if(AllComplexFlag==0){
+    if(iComplexFlgOrbital==0){ /* modified by YN */ /* Warning!! Temporal Treatment */
       // only for real TBC
       StartTimer(69);
 #pragma omp parallel for default(shared) private(tmp_i)
