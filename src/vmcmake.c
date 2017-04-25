@@ -232,7 +232,7 @@ void VMCMakeSample(MPI_Comm comm) {
             fprintf(stderr,"Warning: failed in updating ThetaHidden, %lf %lf \n",
                     cabs(TmpThetaHidden[i]),cabs(thetaHiddenNew[i]));
             nFail++;
-            if( nFail > 50 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+            if( nFail > 20 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
           }  
           TmpThetaHidden[i] = thetaHiddenNew[i];
         } 
