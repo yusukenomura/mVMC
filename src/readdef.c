@@ -468,6 +468,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
     + 2*3*NDoublonHolon2siteIdx
     + 2*5*NDoublonHolon4siteIdx;
   /* added by YN */
+  NPfUpdate0 = (Nsite > 100) ? Nsite : 100; 
+  NPfUpdate = NPfUpdate; 
   NHiddenMagField = NSetHidden; 
   NIntPerNeuron   = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
   NHiddenPhysInt  = NSetHidden * NIntPerNeuron; 
