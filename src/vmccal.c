@@ -141,7 +141,7 @@ void VMCMainCal(MPI_Comm comm) {
     if( fabs(w) > 0.0001 ){
       if( fabs(w) > 0.01 ) fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
       nFail++; 
-      if( nFail > (sampleEnd-sampleStart)/20 ) { 
+      if( nFail > (sampleEnd-sampleStart)/5 ) { 
         fprintf(stderr,"Error: VMCMainCal rank:%d sample:%d nFail=%d\n",rank,sample,nFail);
         MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
       }
@@ -315,6 +315,7 @@ void VMCMainCal(MPI_Comm comm) {
       }
     }
   } /* end of for(sample) */
+  if( nFail > (sampleEnd-sampleStart)/20 ) fprintf(stderr,"warning: VMCMainCal rank:%d nFail=%d\n",rank,nFail); /* added by YN */
 // calculate OO and HO at NVMCCalMode==0
   if(NStoreO!=0 && NVMCCalMode==0){
     sampleSize=sampleEnd-sampleStart;
