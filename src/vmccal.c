@@ -138,10 +138,13 @@ void VMCMainCal(MPI_Comm comm) {
     y = LogHiddenWeightVal(thetaHidden);
     /* calculate reweight */
     w = 2.0*(log(fabs(ip))+creal(x+y)) - logSqPfFullSlater[sample];
-    if( fabs(w) > 0.00001 ){
-      fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
+    if( fabs(w) > 0.0001 ){
+      if( fabs(w) > 0.01 ) fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
       nFail++; 
-      if( nFail > 10 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+      if( nFail > (sampleEnd-sampleStart)/20 ) { 
+        fprintf(stderr,"Error: VMCMainCal rank:%d sample:%d nFail=%d\n",rank,sample,nFail);
+        MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+      }
     } 
     /* modified by YN */
     w =1.0;
