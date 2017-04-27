@@ -51,7 +51,8 @@ void VMCMainCal(MPI_Comm comm) {
 /* added by YN */ 
   int f,j,offset,idx,rsi;
   double complex *thetaHidden,*tmpTheta; /* modified by KI */
-  double complex x;  /* modified by KI */
+  double complex x,y;  /* modified by KI */
+  int nFail = 0; 
 /* added by YN */ 
   double complex we,e,ip; /* modified by YN */
   double w;
@@ -132,10 +133,17 @@ void VMCMainCal(MPI_Comm comm) {
 #ifdef _DEBUG
     printf("  Debug: sample=%d: LogProjVal \n",sample);
 #endif
-    LogProjVal(eleProjCnt);
-    /* comment by YN: LogHiddenWeightVal(thetaHidden) is needed ? */ 
+    /* modified by YN */
+    x = LogProjVal(eleProjCnt);
+    y = LogHiddenWeightVal(thetaHidden);
     /* calculate reweight */
-    //w = exp(2.0*(log(fabs(ip))+x) - logSqPfFullSlater[sample]);
+    w = 2.0*(log(fabs(ip))+creal(x+y)) - logSqPfFullSlater[sample];
+    if( fabs(w) > 0.00001 ){
+      fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
+      nFail++; 
+      if( nFail > 10 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+    } 
+    /* modified by YN */
     w =1.0;
 #ifdef _DEBUG
     printf("  Debug: sample=%d: isfinite \n",sample);
