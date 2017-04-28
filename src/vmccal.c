@@ -139,12 +139,8 @@ void VMCMainCal(MPI_Comm comm) {
     /* calculate reweight */
     w = 2.0*(log(fabs(ip))+creal(x+y)) - logSqPfFullSlater[sample];
     if( fabs(w) > 0.0001 ){
-      if( fabs(w) > 0.01 ) fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
+      if( fabs(w) > 1.0 && sample == sampleStart) printf("warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
       nFail++; 
-      if( nFail > (sampleEnd-sampleStart)/5 ) { 
-        fprintf(stderr,"Error: VMCMainCal rank:%d sample:%d nFail=%d\n",rank,sample,nFail);
-        MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
-      }
     } 
     /* modified by YN */
     w =1.0;
@@ -315,7 +311,16 @@ void VMCMainCal(MPI_Comm comm) {
       }
     }
   } /* end of for(sample) */
-  if( nFail > (sampleEnd-sampleStart)/20 ) fprintf(stderr,"warning: VMCMainCal rank:%d nFail=%d\n",rank,nFail); /* added by YN */
+  /* added by YN */
+  if( nFail > (sampleEnd-sampleStart)/10 ){
+    NPfUpdate /= 2;  
+    if( NPfUpdate < 10 ) NPfUpdate = 10; 
+    if( nFail > (sampleEnd-sampleStart)/4 ) printf("warning: VMCMainCal rank: %d nFail= %d NPfUpdate= %d\n",rank,nFail,NPfUpdate); 
+  } else if( nFail < (sampleEnd-sampleStart)/40 ) {
+    NPfUpdate *= 2;  
+    if( NPfUpdate > NPfUpdate0 ) NPfUpdate = NPfUpdate0; 
+  }
+  /* added by YN */
 // calculate OO and HO at NVMCCalMode==0
   if(NStoreO!=0 && NVMCCalMode==0){
     sampleSize=sampleEnd-sampleStart;

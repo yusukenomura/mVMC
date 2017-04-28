@@ -219,7 +219,7 @@ void VMCMakeSample(MPI_Comm comm) {
         StopTimer(33);
       }
 
-      if(nAccept>Nsite && nAccept>100) { /* modified by YN */
+      if(nAccept>NPfUpdate) { /* modified by YN */
         StartTimer(34);
         /* recal PfM and InvM */
         CalculateMAll_fcmp(TmpEleIdx,qpStart,qpEnd);

@@ -386,11 +386,11 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     /* added by YN */
     Time += DSROptStepDt;
     /*added by KI */
-    if(rank==0){
-      OutputTime(step);
+    if(rank==0) OutputTime(step); /* modified YN */
+    if(rank==0 || rank==5){ /* modified by YN */
       if(step%(NSROptItrStep/20)==0){
         iprogress = (int) (100.0*step/NSROptItrStep);
-        printf("Progress of Optimization: %d %%.\n", iprogress);
+        printf("Progress of Optimization: %d %%.  rank = %d, NPfUpdate = %d\n", iprogress,rank,NPfUpdate); /* modified by YN */
       }
     }
     

@@ -149,6 +149,8 @@ int FlagFTCalc;
 double DSROptInitStepDt; 
 double Time=0.0;
 /* added by KI */
+int NPfUpdate;   /* added by YN */
+int NPfUpdate0;  /* added by YN */
 
 /* zqptransidx.def */
 int NQPTrans, **QPTrans; /* [NQPTrans][Nsite] */
