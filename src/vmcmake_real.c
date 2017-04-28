@@ -122,8 +122,8 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y1 = creal(LogHiddenWeightRatio(thetaHiddenNew1,TmpThetaHidden1));  /* added by YN, modified by KI */
-        y2 = creal(LogHiddenWeightRatio(thetaHiddenNew2,TmpThetaHidden2));  /* added by YN, modified by KI */
+        y1 = LogHiddenWeightRatio(thetaHiddenNew1,TmpThetaHidden1);  /* added by YN, modified by KI */
+        y2 = LogHiddenWeightRatio(thetaHiddenNew2,TmpThetaHidden2);  /* added by YN, modified by KI */
         w = exp(2.0*(x+(logIpNew-logIpOld))+y1+y2);                   /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
@@ -187,8 +187,8 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y1 = creal(LogHiddenWeightRatio(thetaHiddenNew1,TmpThetaHidden1));  /* added by YN, modified by KI */
-        y2 = creal(LogHiddenWeightRatio(thetaHiddenNew2,TmpThetaHidden2));  /* added by YN, modified by KI */
+        y1 = LogHiddenWeightRatio(thetaHiddenNew1,TmpThetaHidden1);  /* added by YN, modified by KI */
+        y2 = LogHiddenWeightRatio(thetaHiddenNew2,TmpThetaHidden2);  /* added by YN, modified by KI */
         w = exp(2.0*(x+(logIpNew-logIpOld))+y1+y2); //TBC             /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
