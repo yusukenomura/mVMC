@@ -27,7 +27,8 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 void VMCMakeSample_real(MPI_Comm comm);
-int makeInitialSample_real(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, double complex *thetaHidden, /* modified by YN */
+int makeInitialSample_real(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, /* modified by YN */ 
+                      int *hiddenCfg1, int *hiddenCfg2, double complex *thetaHidden1, double complex *thetaHidden2, /* modified by YN */
                       const int qpStart, const int qpEnd, MPI_Comm comm);
 
 void VMCMakeSample_real(MPI_Comm comm) {
@@ -42,8 +43,9 @@ void VMCMakeSample_real(MPI_Comm comm) {
   double  logIpOld,logIpNew; /* logarithm of inner product <phi|L|x> */ // is this ok ? TBC
   int projCntNew[NProj];
   double         pfMNew_real[NQPFull];
-  double complex thetaHiddenNew[NSizeTheta]; /* added by YN */
-  double x,y,w; // TBC x and y will be complex number   /* modified by YN */
+  double complex thetaHiddenNew1[NSizeTheta]; /* added by YN, modified by KI*/
+  double complex thetaHiddenNew2[NSizeTheta]; /* added by YN, modified by KI*/
+  double x,y1,y2,w; // TBC x and y will be complex number   /* modified by YN */
 
   int qpStart,qpEnd;
   int rejectFlag;
@@ -56,11 +58,12 @@ void VMCMakeSample_real(MPI_Comm comm) {
   
   StartTimer(30);
   if(BurnFlag==0) {
-    makeInitialSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpThetaHidden, /* modified by YN */
-                      qpStart,qpEnd,comm);
+    makeInitialSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpHiddenCfg1,TmpHiddenCfg2, /* modified by YN */
+                      TmpThetaHidden1,TmpThetaHidden2,qpStart,qpEnd,comm);  /* modified by YN */
   } else {
-    copyFromBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt);
-    CalcThetaHidden(TmpThetaHidden,TmpEleNum); /* added by YN */
+    copyFromBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpHiddenCfg1,TmpHiddenCfg2); /* modified by YN */
+    CalcThetaHidden(TmpThetaHidden1,TmpEleNum,TmpHiddenCfg1); /* added by YN */
+    CalcThetaHidden(TmpThetaHidden2,TmpEleNum,TmpHiddenCfg2); /* added by YN */
   }
   
   CalculateMAll_real(TmpEleIdx,qpStart,qpEnd);
@@ -68,8 +71,8 @@ void VMCMakeSample_real(MPI_Comm comm) {
   logIpOld = CalculateLogIP_real(PfM_real,qpStart,qpEnd,comm);
   if( !isfinite(logIpOld) ) {
     if(rank==0) fprintf(stderr,"waring: VMCMakeSample remakeSample logIpOld=%e\n",creal(logIpOld)); //TBC
-    makeInitialSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpThetaHidden, /* modified by YN */
-                      qpStart,qpEnd,comm);
+    makeInitialSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpHiddenCfg1,TmpHiddenCfg2, /* modified by YN */
+                      TmpThetaHidden1,TmpThetaHidden2,qpStart,qpEnd,comm);  /* modified by YN */
     CalculateMAll_real(TmpEleIdx,qpStart,qpEnd);
     //printf("DEBUG: maker2: PfM=%lf\n",creal(PfM[0]));
     logIpOld = CalculateLogIP_real(PfM_real,qpStart,qpEnd,comm);
@@ -102,7 +105,8 @@ void VMCMakeSample_real(MPI_Comm comm) {
         /* The mi-th electron with spin s hops to site rj */
         updateEleConfig(mi,ri,rj,s,TmpEleIdx,TmpEleCfg,TmpEleNum);
         UpdateProjCnt(ri,rj,s,projCntNew,TmpEleProjCnt,TmpEleNum);
-        UpdateThetaHidden(ri,rj,s,thetaHiddenNew,TmpThetaHidden); /* added by YN */
+        UpdateThetaHidden(ri,rj,s,thetaHiddenNew1,TmpThetaHidden1,TmpHiddenCfg1); /* added by YN */
+        UpdateThetaHidden(ri,rj,s,thetaHiddenNew2,TmpThetaHidden2,TmpHiddenCfg2); /* added by YN */
           StopTimer(60);
           StartTimer(61);
         //CalculateNewPfM2(mi,s,pfMNew,TmpEleIdx,qpStart,qpEnd);
@@ -118,8 +122,9 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN */
-        w = exp(2.0*(x+y+(logIpNew-logIpOld)));                   /* modified by YN */
+        y1 = creal(LogHiddenWeightRatio(thetaHiddenNew1,TmpThetaHidden1));  /* added by YN, modified by KI */
+        y2 = creal(LogHiddenWeightRatio(thetaHiddenNew2,TmpThetaHidden2));  /* added by YN, modified by KI */
+        w = exp(2.0*(x+(logIpNew-logIpOld))+y1+y2);                   /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
         if(w > genrand_real2()) { /* accept */
@@ -130,7 +135,8 @@ void VMCMakeSample_real(MPI_Comm comm) {
             StopTimer(63);
 
           for(i=0;i<NProj;i++) TmpEleProjCnt[i] = projCntNew[i];
-          for(i=0;i<NSizeTheta;i++) TmpThetaHidden[i] = thetaHiddenNew[i]; /* added by YN */
+          for(i=0;i<NSizeTheta;i++) TmpThetaHidden1[i] = thetaHiddenNew1[i]; /* added by YN */
+          for(i=0;i<NSizeTheta;i++) TmpThetaHidden2[i] = thetaHiddenNew2[i]; /* added by YN */
           logIpOld = logIpNew;
           nAccept++;
           Counter[1]++;
@@ -159,11 +165,13 @@ void VMCMakeSample_real(MPI_Comm comm) {
         /* The mi-th electron with spin s hops to rj */
         updateEleConfig(mi,ri,rj,s,TmpEleIdx,TmpEleCfg,TmpEleNum);
         UpdateProjCnt(ri,rj,s,projCntNew,TmpEleProjCnt,TmpEleNum);
-        UpdateThetaHidden(ri,rj,s,thetaHiddenNew,TmpThetaHidden); /* added by YN */
+        UpdateThetaHidden(ri,rj,s,thetaHiddenNew1,TmpThetaHidden1,TmpHiddenCfg1); /* added by YN */
+        UpdateThetaHidden(ri,rj,s,thetaHiddenNew2,TmpThetaHidden2,TmpHiddenCfg2); /* added by YN */
         /* The mj-th electron with spin t hops to ri */
         updateEleConfig(mj,rj,ri,t,TmpEleIdx,TmpEleCfg,TmpEleNum);
         UpdateProjCnt(rj,ri,t,projCntNew,projCntNew,TmpEleNum);
-        UpdateThetaHidden(rj,ri,t,thetaHiddenNew,thetaHiddenNew); /* added by YN */
+        UpdateThetaHidden(rj,ri,t,thetaHiddenNew1,thetaHiddenNew1,TmpHiddenCfg1); /* added by YN */
+        UpdateThetaHidden(rj,ri,t,thetaHiddenNew2,thetaHiddenNew2,TmpHiddenCfg2); /* added by YN */
 
         StopTimer(65);
         StartTimer(66);
@@ -179,8 +187,9 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN */
-        w = exp(2.0*(x+y+(logIpNew-logIpOld))); //TBC             /* modified by YN */
+        y1 = creal(LogHiddenWeightRatio(thetaHiddenNew1,TmpThetaHidden1));  /* added by YN, modified by KI */
+        y2 = creal(LogHiddenWeightRatio(thetaHiddenNew2,TmpThetaHidden2));  /* added by YN, modified by KI */
+        w = exp(2.0*(x+(logIpNew-logIpOld))+y1+y2); //TBC             /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
         if(w > genrand_real2()) { /* accept */
@@ -189,7 +198,8 @@ void VMCMakeSample_real(MPI_Comm comm) {
           StopTimer(68);
 
           for(i=0;i<NProj;i++) TmpEleProjCnt[i] = projCntNew[i];
-          for(i=0;i<NSizeTheta;i++) TmpThetaHidden[i] = thetaHiddenNew[i]; /* added by YN */
+          for(i=0;i<NSizeTheta;i++) TmpThetaHidden1[i] = thetaHiddenNew1[i]; /* added by YN */
+          for(i=0;i<NSizeTheta;i++) TmpThetaHidden2[i] = thetaHiddenNew2[i]; /* added by YN */
           logIpOld = logIpNew;
           nAccept++;
           Counter[3]++;
@@ -207,15 +217,22 @@ void VMCMakeSample_real(MPI_Comm comm) {
         //printf("DEBUG: maker3: PfM=%lf\n",creal(PfM[0]));
         logIpOld = CalculateLogIP_real(PfM_real,qpStart,qpEnd,comm);
         /* added by YN */
-        CalcThetaHidden(thetaHiddenNew,TmpEleNum); 
+        CalcThetaHidden(thetaHiddenNew1,TmpEleNum,TmpHiddenCfg1); 
+        CalcThetaHidden(thetaHiddenNew2,TmpEleNum,TmpHiddenCfg2); 
         for(i=0;i<NSizeTheta;i++) { 
-          if( cabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-5 ) {
-            fprintf(stderr,"Warning: failed in updating ThetaHidden, %lf %lf \n",
-                    cabs(TmpThetaHidden[i]),cabs(thetaHiddenNew[i]));
+          if( cabs(TmpThetaHidden1[i]-thetaHiddenNew1[i]) > 1.0e-5 ) {
+            fprintf(stderr,"Warning: failed in updating ThetaHidden1, %lf %lf \n",
+                    cabs(TmpThetaHidden1[i]),cabs(thetaHiddenNew1[i]));
+            nFail++;
+            if( nFail > 20 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+          } else if( cabs(TmpThetaHidden2[i]-thetaHiddenNew2[i]) > 1.0e-5 ) {
+            fprintf(stderr,"Warning: failed in updating ThetaHidden2, %lf %lf \n",
+                    cabs(TmpThetaHidden2[i]),cabs(thetaHiddenNew2[i]));
             nFail++;
             if( nFail > 20 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
           }  
-          TmpThetaHidden[i] = thetaHiddenNew[i];
+          TmpThetaHidden1[i] = thetaHiddenNew1[i];
+          TmpThetaHidden2[i] = thetaHiddenNew2[i];
         } 
         /* added by YN */
         StopTimer(34);
@@ -227,23 +244,26 @@ void VMCMakeSample_real(MPI_Comm comm) {
     /* save Electron Configuration */
     if(outStep >= nOutStep-NVMCSample) {
       sample = outStep-(nOutStep-NVMCSample);
-      saveEleConfig(sample,logIpOld,TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpThetaHidden); /* modified by YN */
+      saveEleConfig(sample,logIpOld,TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt, /* modified by YN */
+                    TmpHiddenCfg1,TmpHiddenCfg2,TmpThetaHidden1,TmpThetaHidden2); /* modified by YN */
     }
     StopTimer(35);
 
   } /* end of outstep */
 
-  copyToBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt);
+  copyToBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpHiddenCfg1,TmpHiddenCfg2); /* modified by YN */
   BurnFlag=1;
   return;
 }
 
-int makeInitialSample_real(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, double complex *thetaHidden, /* modified by YN */
+int makeInitialSample_real(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, /* modified by YN */ 
+                      int *hiddenCfg1, int *hiddenCfg2, double complex *thetaHidden1, double complex *thetaHidden2, /* modified by YN */
                       const int qpStart, const int qpEnd, MPI_Comm comm) {
   const int nsize = Nsize;
   const int nsite2 = Nsite2;
+  const int nNeuronSample = NNeuronSample; /* added by YN */
   int flag=1,flagRdc,loop=0;
-  int ri,mi,si,msi,rsi;
+  int ri,mi,si,msi,rsi,hi; /* modified by YN */
   int rank,size;
   MPI_Comm_size(comm,&size);
   MPI_Comm_rank(comm,&rank);
@@ -288,7 +308,13 @@ int makeInitialSample_real(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCn
     }
     
     MakeProjCnt(eleProjCnt,eleNum);
-    CalcThetaHidden(thetaHidden,eleNum); /* added by YN */
+
+    /* added by YN */
+    for(hi=0;hi<nNeuronSample;hi++) hiddenCfg1(hi) = (genrand_real2()<0.5) ? 1 : -1;
+    for(hi=0;hi<nNeuronSample;hi++) hiddenCfg2(hi) = (genrand_real2()<0.5) ? 1 : -1;
+    CalcThetaHidden(thetaHidden1,eleNum,hiddenCfg1); 
+    CalcThetaHidden(thetaHidden2,eleNum,hiddenCfg2); 
+    /* added by YN */
 
     flag = CalculateMAll_real(eleIdx,qpStart,qpEnd);
     //printf("DEBUG: maker4: PfM=%lf\n",creal(PfM[0]));

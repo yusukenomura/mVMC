@@ -209,14 +209,20 @@ int *EleIdx; /* EleIdx[sample][mi+si*Ne] */
 int *EleCfg; /* EleCfg[sample][ri+si*Nsite] */
 int *EleNum; /* EleIdx[sample][ri+si*Nsite] */
 int *EleProjCnt; /* EleProjCnt[sample][proj] */
-double complex *ThetaHidden; /* ThetaHidden[sample][NSizeTheta] = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN, modified by KI */
+int *HiddenCfg1; /* HiddenCfg1[sample][NNeuronSample] */
+int *HiddenCfg2; /* HiddenCfg2[sample][NNeuronSample] */
+double complex *ThetaHidden1; /* ThetaHidden[sample][NSizeTheta] = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN, modified by KI */
+double complex *ThetaHidden2; /* ThetaHidden[sample][NSizeTheta] = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN, modified by KI */
 double *logSqPfFullSlater; /* logSqPfFullSlater[sample] */
 
 int *TmpEleIdx;
 int *TmpEleCfg;
 int *TmpEleNum;
 int *TmpEleProjCnt;
-double complex *TmpThetaHidden; /* added by YN, modified by KI*/
+int *TmpHiddenCfg1
+int *TmpHiddenCfg2
+double complex *TmpThetaHidden1; /* added by YN, modified by KI*/
+double complex *TmpThetaHidden2; /* added by YN, modified by KI*/
 
 int *BurnEleIdx;
 int *BurnEleCfg;
