@@ -139,7 +139,7 @@ void VMCMainCal(MPI_Comm comm) {
     /* calculate reweight */
     w = 2.0*(log(fabs(ip))+creal(x+y)) - logSqPfFullSlater[sample];
     if( fabs(w) > 0.0001 ){
-      if( fabs(w) > 0.01 ) fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
+      if( fabs(w) > 0.02 ) printf("warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
       nFail++; 
     } 
     /* modified by YN */
@@ -313,9 +313,9 @@ void VMCMainCal(MPI_Comm comm) {
   } /* end of for(sample) */
   /* added by YN */
   if( nFail > (sampleEnd-sampleStart)/10 ){
-    fprintf(stderr,"warning: VMCMainCal rank:%d nFail=%d\n",rank,nFail); 
     NPfUpdate /= 2;  
     if( NPfUpdate < 10 ) NPfUpdate = 10; 
+    printf("warning: VMCMainCal rank: %d nFail= %d NPfUpdate= %d\n",rank,nFail,NPfUpdate); 
   } else {
     NPfUpdate *= 2;  
     if( NPfUpdate > NPfUpdate0 ) NPfUpdate = NPfUpdate0; 
