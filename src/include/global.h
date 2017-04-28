@@ -132,7 +132,7 @@ int NNeuronPerSet;       /* Number of neurons per one set                       
 int FlagNeuronTrans;     /* FlagNeuronTrans=1: use translational symmetry, 0: symmetry not used */
 int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron                   */
 int NHiddenVariable;     /* Total number of hidden variables = NHiddenMagField + NHiddenPhysInt */  
-int NSizeTheta;          /* Number of theta angles per set =  NSetHidden * NNeuronPerSet        */  
+int NNeuronSample;       /* Number of neurons whose spins are sampled by Monte Carlo method     */
 int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*NNeuronPerSet(=NSizeTheta)][NIntPerNeuron]                            
                             i-th neuron in f-th set has NIntPerNeuron interactions; through j-th interaction, 
                             it interacts with HiddenPhysIntIdx1[f*NNeuronPerSet+i][j]-th physical variable.  */ 

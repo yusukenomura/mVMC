@@ -326,10 +326,10 @@ int makeInitialSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, do
   return 0;
 }
 
-void copyFromBurnSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt) {
+void copyFromBurnSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, int *hiddenCfg1, int *hiddenCfg2) { /* modified by YN */
   int i,n;
   const int *burnEleIdx = BurnEleIdx;
-  n = Nsize + 2*Nsite + 2*Nsite + NProj;
+  n = Nsize + 2*Nsite + 2*Nsite + NProj + 2*NNeuronSample; /* modified by YN */
   #pragma loop noalias
   for(i=0;i<n;i++) eleIdx[i] = burnEleIdx[i];
   return;
@@ -338,7 +338,7 @@ void copyFromBurnSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt) 
 void copyToBurnSample(const int *eleIdx, const int *eleCfg, const int *eleNum, const int *eleProjCnt) {
   int i,n;
   int *burnEleIdx = BurnEleIdx;
-  n = Nsize + 2*Nsite + 2*Nsite + NProj;
+  n = Nsize + 2*Nsite + 2*Nsite + NProj + 2*NNeuronSample; /* modified by YN */
   #pragma loop noalias
   for(i=0;i<n;i++) burnEleIdx[i] = eleIdx[i];
   return;
