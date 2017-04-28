@@ -316,7 +316,7 @@ void VMCMainCal(MPI_Comm comm) {
     NPfUpdate /= 2;  
     if( NPfUpdate < 10 ) NPfUpdate = 10; 
     printf("warning: VMCMainCal rank: %d nFail= %d NPfUpdate= %d\n",rank,nFail,NPfUpdate); 
-  } else {
+  } else if( nFail < (sampleEnd-sampleStart)/40 ) {
     NPfUpdate *= 2;  
     if( NPfUpdate > NPfUpdate0 ) NPfUpdate = NPfUpdate0; 
   }
