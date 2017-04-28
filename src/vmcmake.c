@@ -241,14 +241,14 @@ void VMCMakeSample(MPI_Comm comm) {
         CalcThetaHidden(thetaHiddenNew1,TmpEleNum,TmpHiddenCfg1); 
         CalcThetaHidden(thetaHiddenNew2,TmpEleNum,TmpHiddenCfg2); 
         for(i=0;i<NSizeTheta;i++) { 
-          if( cabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-5 ) {
-            fprintf(stderr,"Warning: failed in updating ThetaHidden, %lf %lf \n",
-                    cabs(TmpThetaHidden[i]),cabs(thetaHiddenNew[i]));
+          if( cabs(TmpThetaHidden1[i]-thetaHiddenNew1[i]) > 1.0e-5 ) {
+            fprintf(stderr,"Warning: failed in updating ThetaHidden1, %lf %lf \n",
+                    cabs(TmpThetaHidden1[i]),cabs(thetaHiddenNew1[i]));
             nFail++;
             if( nFail > 20 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
-          } else if( cabs(TmpThetaHidden[i]-thetaHiddenNew[i]) > 1.0e-5 ) {
-            fprintf(stderr,"Warning: failed in updating ThetaHidden, %lf %lf \n",
-                    cabs(TmpThetaHidden[i]),cabs(thetaHiddenNew[i]));
+          } else if( cabs(TmpThetaHidden2[i]-thetaHiddenNew2[i]) > 1.0e-5 ) {
+            fprintf(stderr,"Warning: failed in updating ThetaHidden2, %lf %lf \n",
+                    cabs(TmpThetaHidden2[i]),cabs(thetaHiddenNew2[i]));
             nFail++;
             if( nFail > 20 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
           }  
@@ -364,7 +364,7 @@ void copyFromBurnSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt, 
 }
 
 void copyToBurnSample(const int *eleIdx, const int *eleCfg, const int *eleNum, const int *eleProjCnt, /* modified by YN */
-                      const int *hiddenCfg1, const int *hiddenCfg2){ /* modified by YN */
+                      const int *hiddenCfg1, const int *hiddenCfg2){ /* added by YN */
   int i,n;
   int *burnEleIdx = BurnEleIdx;
   n = Nsize + 2*Nsite + 2*Nsite + NProj + 2*NNeuronSample; /* modified by YN */
@@ -375,7 +375,7 @@ void copyToBurnSample(const int *eleIdx, const int *eleCfg, const int *eleNum, c
 
 void saveEleConfig(const int sample, const double complex logIp,
                    const int *eleIdx, const int *eleCfg, const int *eleNum, 
-                   const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, /* modified by YN */ 
+                   const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, /* modified by YN */
                    const double complex *thetaHidden1, const double complex *thetaHidden2){ /* modified by YN */
   int i,offset;
   double x,y1,y2;  /* modified by YN */

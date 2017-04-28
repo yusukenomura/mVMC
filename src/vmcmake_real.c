@@ -59,7 +59,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
   StartTimer(30);
   if(BurnFlag==0) {
     makeInitialSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpHiddenCfg1,TmpHiddenCfg2, /* modified by YN */
-                      TmpThetaHidden1,TmpThetaHidden2,qpStart,qpEnd,comm);  /* modified by YN */
+                      TmpThetaHidden1,TmpThetaHidden2,qpStart,qpEnd,comm); /* modified by YN */
   } else {
     copyFromBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpHiddenCfg1,TmpHiddenCfg2); /* modified by YN */
     CalcThetaHidden(TmpThetaHidden1,TmpEleNum,TmpHiddenCfg1); /* added by YN */
@@ -72,7 +72,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
   if( !isfinite(logIpOld) ) {
     if(rank==0) fprintf(stderr,"waring: VMCMakeSample remakeSample logIpOld=%e\n",creal(logIpOld)); //TBC
     makeInitialSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpHiddenCfg1,TmpHiddenCfg2, /* modified by YN */
-                      TmpThetaHidden1,TmpThetaHidden2,qpStart,qpEnd,comm);  /* modified by YN */
+                      TmpThetaHidden1,TmpThetaHidden2,qpStart,qpEnd,comm); /* modified by YN */
     CalculateMAll_real(TmpEleIdx,qpStart,qpEnd);
     //printf("DEBUG: maker2: PfM=%lf\n",creal(PfM[0]));
     logIpOld = CalculateLogIP_real(PfM_real,qpStart,qpEnd,comm);
