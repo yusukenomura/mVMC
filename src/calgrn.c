@@ -26,30 +26,45 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  * by Satoshi Morita
  *-------------------------------------------------------------*/
 
-void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, int *eleCfg,
-                         int *eleNum, int *eleProjCnt, double complex *thetaHidden); /* modified by YN, modified by KI */
+/* modified by YN */
+void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, int *eleCfg, int *eleNum, 
+                        int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
+                        const double complex *thetaHidden1, const double complex *thetaHidden2); 
 
-void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, int *eleCfg,
-                        int *eleNum, int *eleProjCnt, double complex *thetaHidden) { /* modified by YN, modified by KI */
+void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, int *eleCfg, int *eleNum, 
+                        int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
+                        const double complex *thetaHidden1, const double complex *thetaHidden2){ 
+/* modified by YN */
 
   int idx,idx0,idx1;
   int ri,rj,s,rk,rl,t;
   double complex tmp;
   int *myEleIdx, *myEleNum, *myProjCntNew;
-  double complex *myThetaHiddenNew; /* added by YN, modified by KI */
+  /* added by YN */
+  int *myhiddenCfgNew1;
+  int *myhiddenCfgNew2;
+  double complex *myThetaHiddenNew1; 
+  double complex *myThetaHiddenNew2; 
+  /* added by YN */
   double complex *myBuffer;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+NSizeTheta); /* modified by KI */
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfgSave); /* modified by YN */
+  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+2*NSizeThetaSave); /* modified by KI */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
 #pragma omp parallel default(shared)\
-  private(myEleIdx,myEleNum,myProjCntNew,myThetaHiddenNew,myBuffer,idx) /* modified by YN */
+  private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx,\
+          myhiddenCfgNew1,myhiddenCfgNew2,myThetaHiddenNew1,myThetaHiddenNew2) /* modified by YN */
   {
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    myThetaHiddenNew = GetWorkSpaceThreadComplex(NSizeTheta); /* added by YN, modified by KI */
+    /* added by YN */
+    myhiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave)
+    myhiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave)
+    myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeThetaSave); 
+    myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeThetaSave); 
+    /* added by YN */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
 
     #pragma loop noalias
@@ -65,8 +80,9 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
       ri = CisAjsIdx[idx][0];
       rj = CisAjsIdx[idx][2];
       s  = CisAjsIdx[idx][3];
-      tmp = GreenFunc1(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
-                       myProjCntNew,thetaHidden,myThetaHiddenNew,myBuffer); /* modified by YN */
+      tmp = GreenFunc1(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
+                       hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
+                       thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
       LocalCisAjs[idx] = tmp;
     }
 
@@ -90,8 +106,9 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
       rl = CisAjsCktAltDCIdx[idx][6];
       t  = CisAjsCktAltDCIdx[idx][5];
 
-      tmp = GreenFunc2(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
-                       myProjCntNew,thetaHidden,myThetaHiddenNew,myBuffer); /* modified by YN */
+      tmp = GreenFunc2(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
+                       hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
+                       thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
       PhysCisAjsCktAltDC[idx] += w*tmp;
     }
     
