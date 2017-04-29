@@ -246,11 +246,11 @@ void SetMemory() {
   EleCfg            = (int*)malloc(sizeof(int)*( NVMCSample*2*Nsite ));
   EleNum            = (int*)malloc(sizeof(int)*( NVMCSample*2*Nsite ));
   EleProjCnt        = (int*)malloc(sizeof(int)*( NVMCSample*NProj ));
-  HiddenCfg1        = (int*)malloc(sizeof(int)*( NVMCSample*NNeuronSample )); /* added by YN */
-  HiddenCfg2        = (int*)malloc(sizeof(int)*( NVMCSample*NNeuronSample )); /* added by YN */
+  HiddenCfg1        = (int*)malloc(sizeof(int)*( NVMCSample*NSizeHiddenCfgSave )); /* added by YN */
+  HiddenCfg2        = (int*)malloc(sizeof(int)*( NVMCSample*NSizeHiddenCfgSave )); /* added by YN */
   logSqPfFullSlater = (double*)malloc(sizeof(double)*(NVMCSample));
-  ThetaHidden1      = (double complex*)malloc(sizeof(double complex)*(NVMCSample*NSizeTheta)); /* added by YN, modified by KI */
-  ThetaHidden2      = (double complex*)malloc(sizeof(double complex)*(NVMCSample*NSizeTheta)); /* added by YN, modified by KI */
+  ThetaHidden1      = (double complex*)malloc(sizeof(double complex)*(NVMCSample*NSizeThetaSave)); /* added by YN, modified by KI */
+  ThetaHidden2      = (double complex*)malloc(sizeof(double complex)*(NVMCSample*NSizeThetaSave)); /* added by YN, modified by KI */
 
   TmpEleIdx         = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj+2*NNeuronSample)); /* added by YN */
   TmpEleCfg         = TmpEleIdx + 2*Ne;

@@ -35,7 +35,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
   int outStep,nOutStep;
   int inStep,nInStep;
   UpdateType updateType;
-  int mi,mj,ri,rj,s,t,i;
+  int mi,mj,ri,rj,s,t,i,hi,offset; /* modified by YN */
   int nAccept=0;
   int nFail=0; /* added by YN */
   int sample;
@@ -46,8 +46,10 @@ void VMCMakeSample_real(MPI_Comm comm) {
   /* added by YN */
   int nVMCSampleHidden = NVMCSampleHidden; 
   int nNeuronSample = nNeuronSample;       
-  int tmpHiddenCfg1[NSizeHiddenCfg];
-  int tmpHiddenCfg2[NSizeHiddenCfg]; 
+  int tmpHiddenCfg1[NSizeHiddenCfgSave];
+  int tmpHiddenCfg2[NSizeHiddenCfgSave]; 
+  double complex tmpThetaHidden1[NSizeThetaSave];
+  double complex tmpThetaHidden2[NSizeThetaSave];
   double complex thetaHiddenNew1[NSizeTheta]; /* modified by KI */
   double complex thetaHiddenNew2[NSizeTheta]; /* modified by KI */
   /* added by YN */
@@ -89,7 +91,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
   nOutStep = (BurnFlag==0) ? NVMCWarmUp+NVMCSample : NVMCSample+1;
   nInStep = NVMCInterval * Nsite;
 
-  for(i=0;i<4;i++) Counter[i]=0;  /* reset counter */
+  for(i=0;i<6;i++) Counter[i]=0;  /* reset counter */
 
   for(outStep=0;outStep<nOutStep;outStep++) {
     for(inStep=0;inStep<nInStep;inStep++) {
@@ -245,6 +247,25 @@ void VMCMakeSample_real(MPI_Comm comm) {
         nAccept=0;
       }
     } /* end of instep */
+
+    /* added by YN */
+    StartTimer(73);
+    for(inStep=0;inStep<nVMCSampleHidden;inStep++) {
+      UpdateHiddenCfg(TmpHiddenCfg1,TmpThetaHidden1);
+      UpdateHiddenCfg(TmpHiddenCfg2,TmpThetaHidden2);
+      offset = inStep*nNeuronSample; 
+      for(hi=0;hi<nNeuronSample;hi++){
+        tmpHiddenCfg1[offset+hi] = TmpHiddenCfg1[hi]
+        tmpHiddenCfg2[offset+hi] = TmpHiddenCfg2[hi]
+      }
+      offset = inStep*nSizeTheta; 
+      for(i=0;i<nSizeThea;hi++){
+        tmpThetaHidden1[offset+i] = TmpThetaHidden1;
+        tmpThetaHidden2[offset+i] = TmpThetaHidden2;
+      }
+    }
+    StopTimer(73);
+    /* added by YN */
 
     StartTimer(35);
     /* save Electron Configuration */

@@ -36,16 +36,17 @@ void OutputTimerPhysCal();
 
 void OutputTime(int step) {
   time_t tx;
-  double pHop,pEx;
+  double pHop,pEx,pHidden; /* modified by YN */
 
   tx = time(NULL);
   if(step==0) {
-    fprintf(FileTime, "%05d  acc_hop acc_ex  n_hop    n_ex     : %s", step, ctime(&tx));
+    fprintf(FileTime, "%05d  acc_hop acc_ex acc_hidden n_hop    n_ex    n_hidden : %s", step, ctime(&tx)); /* modified by YN */
   } else {
     pHop = (Counter[0] == 0) ? 0.0 : (double)Counter[1] / (double)Counter[0];
     pEx  = (Counter[2] == 0) ? 0.0 : (double)Counter[3] / (double)Counter[2];
-    fprintf(FileTime, "%05d  %.5lf %.5lf %-8d %-8d : %s", step, pHop,pEx,
-            Counter[0], Counter[2], ctime(&tx));
+    pHidden  = (Counter[4] == 0) ? 0.0 : (double)Counter[5] / (double)Counter[4]; /* added by YN */
+    fprintf(FileTime, "%05d  %.5lf %.5lf %.5lf %-8d %-8d %-10d : %s", step, pHop,pEx,pHidden, /* modified by YN */
+            Counter[0], Counter[2], Counter[4], ctime(&tx)); /* modified by YN */
   }
 }
 

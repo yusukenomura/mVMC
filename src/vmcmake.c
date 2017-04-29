@@ -68,8 +68,10 @@ void VMCMakeSample(MPI_Comm comm) {
   /* added by YN */
   int nVMCSampleHidden = NVMCSampleHidden; 
   int nNeuronSample = nNeuronSample;       
-  int tmpHiddenCfg1[NSizeHiddenCfg];
-  int tmpHiddenCfg2[NSizeHiddenCfg]; 
+  int tmpHiddenCfg1[NSizeHiddenCfgSave];
+  int tmpHiddenCfg2[NSizeHiddenCfgSave]; 
+  double complex tmpThetaHidden1[NSizeThetaSave];
+  double complex tmpThetaHidden2[NSizeThetaSave];
   double complex thetaHiddenNew1[NSizeTheta]; /* modified by KI */
   double complex thetaHiddenNew2[NSizeTheta]; /* modified by KI */
   /* added by YN */
@@ -110,7 +112,7 @@ void VMCMakeSample(MPI_Comm comm) {
   nOutStep = (BurnFlag==0) ? NVMCWarmUp+NVMCSample : NVMCSample+1;
   nInStep = NVMCInterval * Nsite;
 
-  for(i=0;i<4;i++) Counter[i]=0;  /* reset counter */
+  for(i=0;i<6;i++) Counter[i]=0;  /* reset counter */
 
   for(outStep=0;outStep<nOutStep;outStep++) {
     for(inStep=0;inStep<nInStep;inStep++) {
@@ -270,12 +272,17 @@ void VMCMakeSample(MPI_Comm comm) {
     /* added by YN */
     StartTimer(73);
     for(inStep=0;inStep<nVMCSampleHidden;inStep++) {
-      UpdateHiddenCfg(TmpHiddenCfg1);
-      UpdateHiddenCfg(TmpHiddenCfg2);
+      UpdateHiddenCfg(TmpHiddenCfg1,TmpThetaHidden1);
+      UpdateHiddenCfg(TmpHiddenCfg2,TmpThetaHidden2);
       offset = inStep*nNeuronSample; 
       for(hi=0;hi<nNeuronSample;hi++){
         tmpHiddenCfg1[offset+hi] = TmpHiddenCfg1[hi]
         tmpHiddenCfg2[offset+hi] = TmpHiddenCfg2[hi]
+      }
+      offset = inStep*nSizeTheta; 
+      for(i=0;i<nSizeThea;hi++){
+        tmpThetaHidden1[offset+i] = TmpThetaHidden1;
+        tmpThetaHidden2[offset+i] = TmpThetaHidden2;
       }
     }
     StopTimer(73);
@@ -286,7 +293,7 @@ void VMCMakeSample(MPI_Comm comm) {
     if(outStep >= nOutStep-NVMCSample) {
       sample = outStep-(nOutStep-NVMCSample);
       saveEleConfig(sample,logIpOld,TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt, /* modified by YN */
-                    tmpHiddenCfg1,tmpHiddenCfg2,TmpThetaHidden1,TmpThetaHidden2); /* modified by YN */
+                    tmpHiddenCfg1,tmpHiddenCfg2,tmpThetaHidden1,tmpThetaHidden2); /* modified by YN */
     }
     StopTimer(35);
 
@@ -402,8 +409,8 @@ void saveEleConfig(const int sample, const double complex logIp,
   const int nsize=Nsize;
   const int nsite2 = Nsite2;
   const int nProj = NProj;
-  const int nSizeTheta = NSizeTheta; /* added by YN */
-  const int nSizeHiddenCfg = NSizeHiddenCfg; /* added by YN */
+  const int nSizeThetaSave = NSizeThetaSave; /* added by YN */
+  const int nSizeHiddenCfgSave = NSizeHiddenCfgSave; /* added by YN */
 
   offset = sample*nsize;
   #pragma loop noalias
@@ -418,22 +425,22 @@ void saveEleConfig(const int sample, const double complex logIp,
   for(i=0;i<nProj;i++) EleProjCnt[offset+i] = eleProjCnt[i];
 
   /* added by YN */
-  offset = sample*nSizeHiddenCfg;
+  offset = sample*nSizeHiddenCfgSave;
   #pragma loop noalias
-  for(i=0;i<nSizeHiddenCfg;i++) HiddenCfg1[offset+i] = hiddenCfg1[i];
+  for(i=0;i<nSizeHiddenCfgSave;i++) HiddenCfg1[offset+i] = hiddenCfg1[i];
   #pragma loop noalias
-  for(i=0;i<nSizeHiddenCfg;i++) HiddenCfg2[offset+i] = hiddenCfg2[i];
+  for(i=0;i<nSizeHiddenCfgSave;i++) HiddenCfg2[offset+i] = hiddenCfg2[i];
 
-  offset = sample*nSizeTheta;
+  offset = sample*nSizeThetaSave;
   #pragma loop noalias
-  for(i=0;i<nSizeTheta;i++) ThetaHidden1[offset+i] = thetaHidden1[i];
+  for(i=0;i<nSizeThetaSave;i++) ThetaHidden1[offset+i] = thetaHidden1[i];
   #pragma loop noalias
-  for(i=0;i<nSizeTheta;i++) ThetaHidden2[offset+i] = thetaHidden2[i];
+  for(i=0;i<nSizeThetaSave;i++) ThetaHidden2[offset+i] = thetaHidden2[i];
   /* added by YN */
   
   x = LogProjVal(eleProjCnt);
-  y1 = LogHiddenWeightVal(thetaHidden); /* added by YN, modified by KI */
-  y2 = LogHiddenWeightVal(thetaHidden); /* added by YN, modified by KI */
+  y1 = LogHiddenWeightVal(thetaHidden1); /* added by YN, modified by KI */
+  y2 = LogHiddenWeightVal(thetaHidden2); /* added by YN, modified by KI */
   logSqPfFullSlater[sample] = 2.0*(x+creal(logIp))+y1+y2;//TBC /* modified by YN */
   
   return;
@@ -466,7 +473,7 @@ void sortEleConfig(int *eleIdx, int *eleCfg, const int *eleNum) {
 
 void ReduceCounter(MPI_Comm comm) {
   #ifdef _mpi_use
-  int n=4;
+  int n=6;
   int recv[n];
   int i;
   int rank,size;

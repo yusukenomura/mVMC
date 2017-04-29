@@ -96,10 +96,10 @@ void VMCMainCal(MPI_Comm comm) {
     eleCfg = EleCfg + sample*Nsite2;
     eleNum = EleNum + sample*Nsite2;
     eleProjCnt = EleProjCnt + sample*NProj;
-    hiddenCfg1 = HiddenCfg1 + sample*NSizeHiddenCfg; /* added by YN */
-    hiddenCfg2 = HiddenCfg2 + sample*NSizeHiddenCfg; /* added by YN */
-    thetaHidden1 = ThetaHidden1 + sample*NSizeTheta; /* added by YN */
-    thetaHidden2 = ThetaHidden2 + sample*NSizeTheta; /* added by YN */
+    hiddenCfg1 = HiddenCfg1 + sample*NSizeHiddenCfgSave; /* added by YN */
+    hiddenCfg2 = HiddenCfg2 + sample*NSizeHiddenCfgSave; /* added by YN */
+    thetaHidden1 = ThetaHidden1 + sample*NSizeThetaSave; /* added by YN */
+    thetaHidden2 = ThetaHidden2 + sample*NSizeThetaSave; /* added by YN */
 //DEBUG
     /* for(i=0;i<Nsite;i++) {
       printf("Debug: sample=%d: i=%d  up=%d down =%d \n",sample,i,eleCfg[i+0*Nsite],eleCfg[i+1*Nsite]);
