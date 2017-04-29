@@ -26,13 +26,19 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  * by Satoshi Morita
  *-------------------------------------------------------------*/
 
+/* modified by YN */
 double complex GreenFunc1(const int ri, const int rj, const int s, const double complex ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double complex *buffer); /* modified by YN, modified by KI */
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double complex *buffer); 
 double complex GreenFunc2(const int ri, const int rj, const int rk, const int rl,
                   const int s, const int t, const double complex  ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double complex *buffer); /* modified by YN, modified by KI */
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double complex *buffer); 
+/* modified by YN */
 /*
 double complex GreenFuncN(const int n, int *rsi, int *rsj, const double complex  ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
@@ -42,9 +48,13 @@ double complex calculateNewPfMN_child(const int qpidx, const int n, const int *m
 */
 /* Calculate 1-body Green function <CisAjs> */
 /* buffer size = NQPFull */
-double complex GreenFunc1(const int ri, const int rj, const int s, const double complex  ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, complex double *buffer) { /* modified by YN, modified by KI */
+/* modified by YN */
+double complex GreenFunc1(const int ri, const int rj, const int s, const double complex ip,
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double complex *buffer){ 
+/* modified by YN */
   double complex z;
   int mj,msj,rsi,rsj;
   double complex *pfMNew = buffer; /* NQPFull */
@@ -62,7 +72,8 @@ double complex GreenFunc1(const int ri, const int rj, const int s, const double 
   eleNum[rsj] = 0;
   eleNum[rsi] = 1;
   UpdateProjCnt(rj, ri, s, projCntNew, eleProjCnt, eleNum);
-  UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHidden); /* added by YN */
+  UpdateThetaHidden(rj, ri, s, thetaHiddenNew1, thetaHidden1, hiddenCfg1); /* added by YN */
+  UpdateThetaHidden(rj, ri, s, thetaHiddenNew2, thetaHidden2, hiddenCfg2); /* added by YN */
   z = ProjRatio(projCntNew,eleProjCnt);
   z *= HiddenWeightRatio(thetaHiddenNew,thetaHidden);  /* added by YN */
 
@@ -80,10 +91,14 @@ double complex GreenFunc1(const int ri, const int rj, const int s, const double 
 
 /* Calculate 2-body Green function <psi|CisAjsCktAlt|x>/<psi|x> */
 /* buffer size = NQPFull+2*Nsize */
+/* modified by YN */
 double complex GreenFunc2(const int ri, const int rj, const int rk, const int rl,
-                  const int s, const int t, const double complex ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double complex *buffer) { /* modified by YN */
+                  const int s, const int t, const double complex  ip,
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double complex *buffer){ 
+/* modified by YN */
   double complex z;
   int mj,msj,ml,mtl;
   int rsi,rsj,rtk,rtl;
