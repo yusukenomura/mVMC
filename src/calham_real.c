@@ -27,11 +27,13 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 /* modified by YN */
-double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double complex *thetaHidden);
+double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
+                                 const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                 const double complex *thetaHidden1, const double complex *thetaHidden2);
 
-double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg,
-                             int *eleNum, const int *eleProjCnt, const double complex *thetaHidden) {
+double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
+                                 const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                 const double complex *thetaHidden1, const double complex *thetaHidden2){
 /* modified by YN */
   const int *n0 = eleNum;
   const int *n1 = eleNum + Nsite;
@@ -39,29 +41,40 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
   int idx;
   int ri,rj,s,rk,rl,t;
   int *myEleIdx, *myEleNum, *myProjCntNew;
-  double complex *myThetaHiddenNew; /* added by YN */
+  /* added by YN */
+  int *myHiddenCfgNew1;
+  int *myHiddenCfgNew2;
+  double complex *myThetaHiddenNew1; 
+  double complex *myThetaHiddenNew2; 
+  /* added by YN */
   double  *myBuffer;
   double  myEnergy;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfgSave); /* modified by YN */
   RequestWorkSpaceThreadDouble(NQPFull+2*Nsize);
-  RequestWorkSpaceThreadComplex(NSizeTheta); /* added by YN */
+  RequestWorkSpaceThreadComplex(2*NSizeThetaSave); /* added by YN */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
 /* modified by YN */
   #pragma omp parallel default(none) \
-    private(myEleIdx,myEleNum,myProjCntNew,myThetaHiddenNew,myBuffer,myEnergy, idx, ri, rj, rk, rl, s, t) \
+    private(myEleIdx,myEleNum,myProjCntNew,myBuffer,myEnergy, idx, ri, rj, rk, rl, s, t, \
+            myHiddenCfgNew1,myHiddenCfgNew2,myThetaHiddenNew1,myThetaHiddenNew2) \
     firstprivate(Nsize, Nsite2, NProj, NSizeTheta, NQPFull, NCoulombIntra, CoulombIntra, ParaCoulombIntra,   \
     NCoulombInter, CoulombInter, ParaCoulombInter, NHundCoupling, HundCoupling, ParaHundCoupling,    \
     NTransfer, Transfer, ParaTransfer, NPairHopping, PairHopping, ParaPairHopping,    \
     NExchangeCoupling, ExchangeCoupling, ParaExchangeCoupling, NInterAll, InterAll, ParaInterAll, n0, n1)\
-    shared(eleCfg, eleProjCnt, thetaHidden, eleIdx, eleNum) reduction(+:e)
+    shared(eleCfg, eleProjCnt, hiddenCfg1, hiddenCfg2, thetaHidden1, thetaHidden2, eleIdx, eleNum) reduction(+:e)
 /* modified by YN */
   {
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    myThetaHiddenNew = GetWorkSpaceThreadComplex(NSizeTheta); /* added by YN */
+    /* added by YN */
+    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave); 
+    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave); 
+    myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeThetaSave); 
+    myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeThetaSave); 
+    /* added by YN */
     myBuffer = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
 
     #pragma loop noalias
@@ -126,7 +139,8 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
       
       myEnergy -= creal(ParaTransfer[idx])
         * GreenFunc1_real(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
-                          thetaHidden,myThetaHiddenNew,myBuffer); /* modified by YN */
+                          hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
+                          thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
       /* Caution: negative sign */
     }
 
@@ -145,7 +159,8 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
     
       myEnergy += ParaPairHopping[idx]
         * GreenFunc2_real(ri,rj,ri,rj,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
-                          thetaHidden,myThetaHiddenNew,myBuffer); /* modified by YN */
+                          hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
+                          thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
     }
 
 #ifdef _DEBUG
@@ -160,9 +175,11 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
     
       /* modified by YN */
       tmp =  GreenFunc2_real(ri,rj,rj,ri,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,
-                             thetaHidden,myThetaHiddenNew,myBuffer);
+                             hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
+                             thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
       tmp += GreenFunc2_real(ri,rj,rj,ri,1,0,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,
-                             thetaHidden,myThetaHiddenNew,myBuffer);
+                             hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
+                             thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
       /* modified by YN */
       myEnergy += ParaExchangeCoupling[idx] * tmp;
     }
@@ -183,7 +200,8 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
       
       myEnergy += ParaInterAll[idx]
         * GreenFunc2_real(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
-                          thetaHidden,myThetaHiddenNew,myBuffer); /* modified by YN */
+                          hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
+                          thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
     }
 
     #pragma omp master
