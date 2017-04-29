@@ -49,9 +49,11 @@ void calculateQCACAQ(double *qcacaq, const double *lslca, const double w,
 void VMCMainCal(MPI_Comm comm) {
   int *eleIdx,*eleCfg,*eleNum,*eleProjCnt;
 /* added by YN */ 
+  int *hiddenCfg1,*hiddenCfg2;
   int f,j,offset,idx,rsi;
-  double complex *thetaHidden,*tmpTheta; /* modified by KI */
-  double complex x,y;  /* modified by KI */
+  double complex *thetaHidden1,*tmpTheta1; /* modified by KI */
+  double complex *thetaHidden2,*tmpTheta2; /* modified by KI */
+  double x,y1,y2;  
   int nFail = 0; 
 /* added by YN */ 
   double complex we,e,ip; /* modified by YN */
@@ -69,6 +71,7 @@ void VMCMainCal(MPI_Comm comm) {
   const int offset1=2*NProj+2*NHiddenVariable; 
   const int offset2=2*NProj+2*NHiddenVariable+2*NSlater; 
   const int nSetHidden=NSetHidden;
+  const int nNeuronSample=NNeuronSample;
   const int nIntPerNeuron=NIntPerNeuron;
   const int nNeuronPerSet=NNeuronPerSet;
   /* added by YN */
@@ -92,7 +95,10 @@ void VMCMainCal(MPI_Comm comm) {
     eleCfg = EleCfg + sample*Nsite2;
     eleNum = EleNum + sample*Nsite2;
     eleProjCnt = EleProjCnt + sample*NProj;
-    thetaHidden = ThetaHidden + sample*NSizeTheta; /* added by YN */
+    hiddenCfg1 = HiddenCfg1 + sample*NSampleNeuron; /* added by YN */
+    hiddenCfg2 = HiddenCfg2 + sample*NSampleNeuron; /* added by YN */
+    thetaHidden1 = ThetaHidden1 + sample*NSizeTheta; /* added by YN */
+    thetaHidden2 = ThetaHidden2 + sample*NSizeTheta; /* added by YN */
 //DEBUG
     /* for(i=0;i<Nsite;i++) {
       printf("Debug: sample=%d: i=%d  up=%d down =%d \n",sample,i,eleCfg[i+0*Nsite],eleCfg[i+1*Nsite]);
@@ -135,9 +141,10 @@ void VMCMainCal(MPI_Comm comm) {
 #endif
     /* modified by YN */
     x = LogProjVal(eleProjCnt);
-    y = LogHiddenWeightVal(thetaHidden);
+    y1 = LogHiddenWeightVal(thetaHidden1);
+    y2 = LogHiddenWeightVal(thetaHidden1);
     /* calculate reweight */
-    w = 2.0*(log(fabs(ip))+creal(x+y)) - logSqPfFullSlater[sample];
+    w = 2.0*(log(fabs(ip))+x) + y1 + y2 - logSqPfFullSlater[sample];
     if( fabs(w) > 0.0001 ){
       if( fabs(w) > 1.0 && sample == sampleStart) printf("warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
       nFail++; 
@@ -161,12 +168,14 @@ void VMCMainCal(MPI_Comm comm) {
 #ifdef _DEBUG
       printf("  Debug: sample=%d: calculateHam_real \n",sample);
 #endif
-      e = CalculateHamiltonian_real(creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt,thetaHidden); /* modified by YN */
+      e = CalculateHamiltonian_real(creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt, /* modified by YN */
+                                    hiddenCfg1,hiddenCfg2,thetaHidden1,thetaHidden2); /* added by YN */
     }else{
 #ifdef _DEBUG
       printf("  Debug: sample=%d: calculateHam_cmp \n",sample);
 #endif
-      e = CalculateHamiltonian(ip,eleIdx,eleCfg,eleNum,eleProjCnt,thetaHidden); /* modified by YN */
+      e = CalculateHamiltonian(ip,eleIdx,eleCfg,eleNum,eleProjCnt, /* modified by YN */
+                               hiddenCfg1,hiddenCfg2,thetaHidden1,thetaHidden2); /* added by YN */
     }
     //printf("DEBUG: rank=%d: sample=%d ip= %lf %lf\n",rank,sample,creal(ip),cimag(ip));
     StopTimer(41);
