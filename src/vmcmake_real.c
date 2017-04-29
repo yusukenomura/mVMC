@@ -43,8 +43,14 @@ void VMCMakeSample_real(MPI_Comm comm) {
   double  logIpOld,logIpNew; /* logarithm of inner product <phi|L|x> */ // is this ok ? TBC
   int projCntNew[NProj];
   double         pfMNew_real[NQPFull];
-  double complex thetaHiddenNew1[NSizeTheta]; /* added by YN, modified by KI*/
-  double complex thetaHiddenNew2[NSizeTheta]; /* added by YN, modified by KI*/
+  /* added by YN */
+  int nVMCSampleHidden = NVMCSampleHidden; 
+  int nNeuronSample = nNeuronSample;       
+  int tmpHiddenCfg1[NSizeHiddenCfg];
+  int tmpHiddenCfg2[NSizeHiddenCfg]; 
+  double complex thetaHiddenNew1[NSizeTheta]; /* modified by KI */
+  double complex thetaHiddenNew2[NSizeTheta]; /* modified by KI */
+  /* added by YN */
   double x,y1,y2,w; // TBC x and y will be complex number   /* modified by YN */
 
   int qpStart,qpEnd;
@@ -245,7 +251,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
     if(outStep >= nOutStep-NVMCSample) {
       sample = outStep-(nOutStep-NVMCSample);
       saveEleConfig(sample,logIpOld,TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt, /* modified by YN */
-                    TmpHiddenCfg1,TmpHiddenCfg2,TmpThetaHidden1,TmpThetaHidden2); /* modified by YN */
+                    tmpHiddenCfg1,tmpHiddenCfg2,TmpThetaHidden1,TmpThetaHidden2); /* modified by YN */
     }
     StopTimer(35);
 

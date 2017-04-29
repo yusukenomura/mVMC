@@ -477,6 +477,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NNeuronPerSet   = (FlagNeuronTrans) ? Nsite2 : 1;
   NSizeTheta      = NSetHidden * NNeuronPerSet; 
   NNeuronSample   = NSizeTheta; 
+  NSizeHiddenCfg  = NNeuronSample * NVMCSampleHidden; 
   /* added by YN */ 
   NOptTrans = (FlagOptTrans>0) ? NQPOptTrans : 0;
   NPara   = NProj + NHiddenVariable + NSlater + NOptTrans ;  /* modified by YN */

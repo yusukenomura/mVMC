@@ -133,6 +133,8 @@ int FlagNeuronTrans;     /* FlagNeuronTrans=1: use translational symmetry, 0: sy
 int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron                   */
 int NHiddenVariable;     /* Total number of hidden variables = NHiddenMagField + NHiddenPhysInt */  
 int NNeuronSample;       /* Number of neurons whose spins are sampled by Monte Carlo method     */
+int NVMCSampleHidden;    /* Number of Monte Carlo Sampling for neuron spins                     */
+int NSizeHiddenCfg;      /* Array Size for HiddenCfg = NNeuronSample*NVMCSampleHidden           */
 int **HiddenPhysIntIdx1; /* HiddenPysIntIdx1[NSetHidden*NNeuronPerSet(=NSizeTheta)][NIntPerNeuron]                            
                             i-th neuron in f-th set has NIntPerNeuron interactions; through j-th interaction, 
                             it interacts with HiddenPhysIntIdx1[f*NNeuronPerSet+i][j]-th physical variable.  */ 
@@ -209,8 +211,8 @@ int *EleIdx; /* EleIdx[sample][mi+si*Ne] */
 int *EleCfg; /* EleCfg[sample][ri+si*Nsite] */
 int *EleNum; /* EleIdx[sample][ri+si*Nsite] */
 int *EleProjCnt; /* EleProjCnt[sample][proj] */
-int *HiddenCfg1; /* HiddenCfg1[sample][NNeuronSample] */
-int *HiddenCfg2; /* HiddenCfg2[sample][NNeuronSample] */
+int *HiddenCfg1; /* HiddenCfg1[sample][NNeuronSample*(sample for spin)] */
+int *HiddenCfg2; /* HiddenCfg2[sample][NNeuronSample*(sample for spin)] */
 double complex *ThetaHidden1; /* ThetaHidden[sample][NSizeTheta] = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN, modified by KI */
 double complex *ThetaHidden2; /* ThetaHidden[sample][NSizeTheta] = theta in Eq.(C2) in Carleo-Troyer Science */  /* added by YN, modified by KI */
 double *logSqPfFullSlater; /* logSqPfFullSlater[sample] */

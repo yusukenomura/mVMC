@@ -57,7 +57,7 @@ void VMCMakeSample(MPI_Comm comm) {
   int outStep,nOutStep;
   int inStep,nInStep;
   UpdateType updateType;
-  int mi,mj,ri,rj,s,t,i;
+  int mi,mj,ri,rj,s,t,i,hi,offset; /* modified by YN */
   int nAccept=0;
   int nFail=0; /* added by YN */
   int sample;
@@ -65,8 +65,14 @@ void VMCMakeSample(MPI_Comm comm) {
   double complex logIpOld,logIpNew; /* logarithm of inner product <phi|L|x> */ // is this ok ? TBC
   int projCntNew[NProj];
   double complex pfMNew[NQPFull];
-  double complex thetaHiddenNew1[NSizeTheta]; /* added by YN, modified by KI*/
-  double complex thetaHiddenNew2[NSizeTheta]; /* added by YN, modified by KI*/
+  /* added by YN */
+  int nVMCSampleHidden = NVMCSampleHidden; 
+  int nNeuronSample = nNeuronSample;       
+  int tmpHiddenCfg1[NSizeHiddenCfg];
+  int tmpHiddenCfg2[NSizeHiddenCfg]; 
+  double complex thetaHiddenNew1[NSizeTheta]; /* modified by KI */
+  double complex thetaHiddenNew2[NSizeTheta]; /* modified by KI */
+  /* added by YN */
   double x,y1,y2,w; // TBC x and y will be complex number   /* modified by YN */
 
   int qpStart,qpEnd;
@@ -261,12 +267,26 @@ void VMCMakeSample(MPI_Comm comm) {
       }
     } /* end of instep */
 
+    /* added by YN */
+    StartTimer(73);
+    for(inStep=0;inStep<nVMCSampleHidden;inStep++) {
+      UpdateHiddenCfg(TmpHiddenCfg1);
+      UpdateHiddenCfg(TmpHiddenCfg2);
+      offset = inStep*nNeuronSample; 
+      for(hi=0;hi<nNeuronSample;hi++){
+        tmpHiddenCfg1[offset+hi] = TmpHiddenCfg1[hi]
+        tmpHiddenCfg2[offset+hi] = TmpHiddenCfg2[hi]
+      }
+    }
+    StopTimer(73);
+    /* added by YN */
+
     StartTimer(35);
     /* save Electron Configuration */
     if(outStep >= nOutStep-NVMCSample) {
       sample = outStep-(nOutStep-NVMCSample);
       saveEleConfig(sample,logIpOld,TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt, /* modified by YN */
-                    TmpHiddenCfg1,TmpHiddenCfg2,TmpThetaHidden1,TmpThetaHidden2); /* modified by YN */
+                    tmpHiddenCfg1,tmpHiddenCfg2,TmpThetaHidden1,TmpThetaHidden2); /* modified by YN */
     }
     StopTimer(35);
 
@@ -383,7 +403,7 @@ void saveEleConfig(const int sample, const double complex logIp,
   const int nsite2 = Nsite2;
   const int nProj = NProj;
   const int nSizeTheta = NSizeTheta; /* added by YN */
-  const int nNeuronSample = NNeuronSample; /* added by YN */
+  const int nSizeHiddenCfg = NSizeHiddenCfg; /* added by YN */
 
   offset = sample*nsize;
   #pragma loop noalias
@@ -398,11 +418,11 @@ void saveEleConfig(const int sample, const double complex logIp,
   for(i=0;i<nProj;i++) EleProjCnt[offset+i] = eleProjCnt[i];
 
   /* added by YN */
-  offset = sample*nNeuronSample;
+  offset = sample*nSizeHiddenCfg;
   #pragma loop noalias
-  for(i=0;i<nNeuronSample;i++) HiddenCfg1[offset+i] = hiddenCfg1[i];
+  for(i=0;i<nSizeHiddenCfg;i++) HiddenCfg1[offset+i] = hiddenCfg1[i];
   #pragma loop noalias
-  for(i=0;i<nNeuronSample;i++) HiddenCfg2[offset+i] = hiddenCfg2[i];
+  for(i=0;i<nSizeHiddenCfg;i++) HiddenCfg2[offset+i] = hiddenCfg2[i];
 
   offset = sample*nSizeTheta;
   #pragma loop noalias

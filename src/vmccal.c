@@ -72,6 +72,7 @@ void VMCMainCal(MPI_Comm comm) {
   const int offset2=2*NProj+2*NHiddenVariable+2*NSlater; 
   const int nSetHidden=NSetHidden;
   const int nNeuronSample=NNeuronSample;
+  const int nVMCSampleHidden=NVMCSampleHidden;
   const int nIntPerNeuron=NIntPerNeuron;
   const int nNeuronPerSet=NNeuronPerSet;
   /* added by YN */
@@ -95,8 +96,8 @@ void VMCMainCal(MPI_Comm comm) {
     eleCfg = EleCfg + sample*Nsite2;
     eleNum = EleNum + sample*Nsite2;
     eleProjCnt = EleProjCnt + sample*NProj;
-    hiddenCfg1 = HiddenCfg1 + sample*NSampleNeuron; /* added by YN */
-    hiddenCfg2 = HiddenCfg2 + sample*NSampleNeuron; /* added by YN */
+    hiddenCfg1 = HiddenCfg1 + sample*NSizeHiddenCfg; /* added by YN */
+    hiddenCfg2 = HiddenCfg2 + sample*NSizeHiddenCfg; /* added by YN */
     thetaHidden1 = ThetaHidden1 + sample*NSizeTheta; /* added by YN */
     thetaHidden2 = ThetaHidden2 + sample*NSizeTheta; /* added by YN */
 //DEBUG
