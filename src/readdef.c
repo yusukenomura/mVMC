@@ -196,6 +196,9 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
 	    else if(CheckWords(ctmp, "NSROptStaDelShift")==0){ 
 	      bufInt[IdxSROptStaDelShift]=(int)dtmp;
 	    }
+	    else if(CheckWords(ctmp, "NVMCSampleHidden")==0){
+	      bufInt[IdxVMCSampleHidden]=(int)dtmp;
+	    }	
 	    else if(CheckWords(ctmp, "DSROptConstShiftRatio")==0){
 	      bufDouble[IdxSROptConstShiftRatio]=(double)dtmp;
 	    }	
@@ -413,6 +416,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NVMCWarmUp             =  bufInt[IdxVMCWarmUp];
   NVMCInterval          =  bufInt[IdxVMCInterval];
   NVMCSample             =  bufInt[IdxVMCSample];
+  NVMCSampleHidden       =  bufInt[IdxVMCSampleHidden]; /* added by YN */
   NExUpdatePath          =  bufInt[IdxExUpdatePath];
   RndSeed                =  bufInt[IdxRndSeed];
   NSplitSize             =  bufInt[IdxSplitSize];
@@ -1444,6 +1448,7 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufInt[IdxVMCWarmUp]=10;
   bufInt[IdxVMCInterval]=1;
   bufInt[IdxVMCSample]=10;
+  bufInt[IdxVMCSampleHidden]=10; /* added by YN */
   bufInt[IdxExUpdatePath]=0;
   bufInt[IdxRndSeed]=11272;
   bufInt[IdxSplitSize]=1;

@@ -78,7 +78,7 @@ enum ParamIdxInt{
   IdxNExchange, IdxNGutz, IdxNJast,
   IdxNDH2, IdxNDH4, IdxNOrbit,
   IdxSetHidden, IdxFlagNeuronTrans, IdxSROptConstShift, IdxSROptStaDelShift,/* added by YN */
-  IdxFlagFTCalc, /* added by YN */
+  IdxVMCSampleHidden, IdxFlagFTCalc, /* added by YN */
   IdxNQPTrans, IdxNOneBodyG, IdxNTwoBodyG,
   IdxNTwoBodyGEx, IdxNInterAll, IdxNQPOptTrans,
   ParamIdxInt_End

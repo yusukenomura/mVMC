@@ -49,8 +49,9 @@ void calculateQCACAQ(double *qcacaq, const double *lslca, const double w,
 void VMCMainCal(MPI_Comm comm) {
   int *eleIdx,*eleCfg,*eleNum,*eleProjCnt;
 /* added by YN */ 
-  int *hiddenCfg1,*hiddenCfg2;
-  int f,j,offset,idx,rsi;
+  int *hiddenCfg1,*tmpHiddenCfg1;
+  int *hiddenCfg2,*tmpHiddenCfg2;
+  int samplehidden,f,j,offset,idx,rsi;
   double complex *thetaHidden1,*tmpTheta1; /* modified by KI */
   double complex *thetaHidden2,*tmpTheta2; /* modified by KI */
   double x,y1,y2;  
@@ -70,6 +71,7 @@ void VMCMainCal(MPI_Comm comm) {
   /* added by YN */
   const int offset1=2*NProj+2*NHiddenVariable; 
   const int offset2=2*NProj+2*NHiddenVariable+2*NSlater; 
+  const int nSizeTheta=NSizeTheta;
   const int nSetHidden=NSetHidden;
   const int nNeuronSample=NNeuronSample;
   const int nVMCSampleHidden=NVMCSampleHidden;
@@ -208,9 +210,18 @@ void VMCMainCal(MPI_Comm comm) {
       tmp_i = nProj; 
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(f=0;f<nSetHidden;f++){ 
-        tmpTheta = thetaHidden + f*nNeuronPerSet; 
         x = 0.0;
-        for(i=0;i<nNeuronPerSet;i++) x += cTanh(tmpTheta[i]);  /* modified by KI */
+        for(samplehidden=0;samplehidden<nVMCSampleHidden,samplehidden++){
+          tmpTheta1 = thetaHidden1 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+          tmpTheta2 = thetaHidden2 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+          /* change */
+          tmpHiddenCfg1 = hiddenCfg1 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+          tmpHiddenCfg2 = hiddenCfg2 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+          for(i=0;i<nNeuronPerSet;i++) x += (double)(tmpHiddenCfg1[i])//cTanh(tmpTheta1[i]);  /* modified by KI */
+          for(i=0;i<nNeuronPerSet;i++) x += (double)(tmpHiddenCfg2[i])//cTanh(tmpTheta2[i]);  /* modified by KI */
+          /* change */
+        }
+        x /= 2.0*(double)(nVMCSampleHidden);
         srOptO[(tmp_i+1)*2]   = x;         // even real
         srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp   /* modified by KI */
         tmp_i++;
@@ -221,15 +232,26 @@ void VMCMainCal(MPI_Comm comm) {
          HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable. */
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(f=0;f<nSetHidden;f++){ 
-        tmpTheta = thetaHidden + f*nNeuronPerSet; 
         offset = f*NIntPerNeuron;
         for(j=0;j<nIntPerNeuron;j++) {
           idx = offset + j; 
           x = 0.0;
-          for(i=0;i<nNeuronPerSet;i++) {
-           rsi = HiddenPhysIntIdx2[idx][i]; 
-           x += cTanh(tmpTheta[i])*(double complex)(2*eleNum[rsi]-1);  /* modified by KI */
+          for(samplehidden=0;samplehidden<nVMCSampleHidden,samplehidden++){
+            tmpTheta1 = thetaHidden1 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+            tmpTheta2 = thetaHidden2 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+            /* change */
+            tmpHiddenCfg1 = hiddenCfg1 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+            tmpHiddenCfg2 = hiddenCfg2 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+            for(i=0;i<nNeuronPerSet;i++) {
+             rsi = HiddenPhysIntIdx2[idx][i]; 
+             //x += cTanh(tmpTheta1[i])*(double complex)(2*eleNum[rsi]-1);  /* modified by KI */
+             //x += cTanh(tmpTheta2[i])*(double complex)(2*eleNum[rsi]-1);  /* modified by KI */
+             x += double(tmpHiddenCfg1[i])*(double)(2*eleNum[rsi]-1);  /* modified by KI */
+             x += double(tmpHiddenCfg2[i])*(double)(2*eleNum[rsi]-1);  /* modified by KI */
+            /* change */
+            }
           }
+          x /= 2.0*(double)(nVMCSampleHidden);
           srOptO[(tmp_i+1)*2]   = x;               // even real
           srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */
           tmp_i++;
@@ -299,7 +321,8 @@ void VMCMainCal(MPI_Comm comm) {
     } else if(NVMCCalMode==1) {
       StartTimer(42);
       /* Calculate Green Function */
-      CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt,thetaHidden);
+      CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt, /* modified by YN */
+                         hiddenCfg1,hiddenCfg2,thetaHidden1,thetaHidden2); /* modified by YN */
       StopTimer(42);
 
       if(NLanczosMode>0){
