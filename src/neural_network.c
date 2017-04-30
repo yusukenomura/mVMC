@@ -42,7 +42,7 @@ inline double LogHiddenWeightVal(const double complex *thetaHidden){
   int idx;
   double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
-    z += creal(thetaHidden[idx])
+    z += creal(thetaHidden[idx]);
   }
   return z;
 }
@@ -52,7 +52,7 @@ inline double LogHiddenWeightRatio(const double complex *thetaHiddenNew, const d
   int idx;
   double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
-    z += creal(thetaHiddenNew[idx]) - creal(thetaHiddenOld[idx])
+    z += creal(thetaHiddenNew[idx]) - creal(thetaHiddenOld[idx]);
   }
   return z;
 }
@@ -62,7 +62,7 @@ inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const doub
   int idx;
   double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
-    z += creal(thetaHiddenNew[idx]) - creal(thetaHiddenOld[idx]) 
+    z += creal(thetaHiddenNew[idx]) - creal(thetaHiddenOld[idx]); 
   }
   return exp(z);
 }
@@ -150,7 +150,7 @@ void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHidden){
   int hi;
   double x; 
 
-  if( nNeuronSample /= NSizeTheta ){
+  if( nNeuronSample != NSizeTheta ){
     fprintf(stderr,"currently not implemented \n");
     MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
   }

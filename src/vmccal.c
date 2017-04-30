@@ -236,12 +236,12 @@ void VMCMainCal(MPI_Comm comm) {
         for(j=0;j<nIntPerNeuron;j++) {
           idx = offset + j; 
           x = 0.0;
-          for(samplehidden=0;samplehidden<nVMCSampleHidden,samplehidden++){
-            tmpTheta1 = thetaHidden1 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
-            tmpTheta2 = thetaHidden2 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+          for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
+            tmpTheta1 = thetaHidden1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
+            tmpTheta2 = thetaHidden2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
             /* change */
-            tmpHiddenCfg1 = hiddenCfg1 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
-            tmpHiddenCfg2 = hiddenCfg2 + f*nNeuronPerSet + sampleHidden*nSizeTheta; 
+            tmpHiddenCfg1 = hiddenCfg1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
+            tmpHiddenCfg2 = hiddenCfg2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
             for(i=0;i<nNeuronPerSet;i++) {
              rsi = HiddenPhysIntIdx2[idx][i]; 
              //x += cTanh(tmpTheta1[i])*(double complex)(2*eleNum[rsi]-1);  /* modified by KI */

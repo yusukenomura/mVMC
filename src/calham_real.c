@@ -28,11 +28,11 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 /* modified by YN */
 double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                 const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                 const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                  const double complex *thetaHidden1, const double complex *thetaHidden2);
 
 double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                 const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                 const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                  const double complex *thetaHidden1, const double complex *thetaHidden2){
 /* modified by YN */
   const int *n0 = eleNum;
@@ -50,7 +50,7 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
   double  *myBuffer;
   double  myEnergy;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfg); /* modified by YN */
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NNeuronSample); /* modified by YN */
   RequestWorkSpaceThreadDouble(NQPFull+2*Nsize);
   RequestWorkSpaceThreadComplex(2*NSizeTheta); /* added by YN */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
@@ -70,8 +70,8 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
     /* added by YN */
-    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
-    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
+    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NNeuronSample); 
+    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NNeuronSample); 
     myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
     myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
     /* added by YN */

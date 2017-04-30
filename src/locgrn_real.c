@@ -62,8 +62,8 @@ double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
   int nVMCSampleHidden = NVMCSampleHidden;
   int nSizeTheta = NSizeTheta;
   int samplehidden; 
-  int *tmpHiddenCfg1, *tmpHiddenCfg2;
-  double complex *tmpTheta1, *tmpTheta2;
+  const int *tmpHiddenCfg1, *tmpHiddenCfg2;
+  const double complex *tmpTheta1, *tmpTheta2;
   double x;
   /* added by YN */
 
@@ -88,12 +88,12 @@ double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
 
   /* added by YN */
   x = 0.0;
-  for(samplehidden=0;samplehidden<nVMCSampleHidden,samplehidden++){
-    tmpTheta1 = thetaHidden1 + sampleHidden*nSizeTheta; 
-    tmpTheta2 = thetaHidden2 + sampleHidden*nSizeTheta; 
+  for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
+    tmpTheta1 = thetaHidden1 + samplehidden*nSizeTheta; 
+    tmpTheta2 = thetaHidden2 + samplehidden*nSizeTheta; 
     /* change */
-    tmpHiddenCfg1 = hiddenCfg1 + sampleHidden*nSizeTheta; 
-    tmpHiddenCfg2 = hiddenCfg2 + sampleHidden*nSizeTheta; 
+    tmpHiddenCfg1 = hiddenCfg1 + samplehidden*nSizeTheta; 
+    tmpHiddenCfg2 = hiddenCfg2 + samplehidden*nSizeTheta; 
     /* change */
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew1, tmpTheta1, tmpHiddenCfg1); 
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew2, tmpTheta2, tmpHiddenCfg2); 
@@ -131,8 +131,8 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   int nVMCSampleHidden = NVMCSampleHidden;
   int nSizeTheta = NSizeTheta;
   int samplehidden; 
-  int *tmpHiddenCfg1, *tmpHiddenCfg2;
-  double complex *tmpTheta1, *tmpTheta2;
+  const int *tmpHiddenCfg1, *tmpHiddenCfg2;
+  const double complex *tmpTheta1, *tmpTheta2;
   double x;
   /* added by YN */
 
@@ -209,12 +209,12 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
 
   /* added by YN */
   x = 0.0;
-  for(samplehidden=0;samplehidden<nVMCSampleHidden,samplehidden++){
-    tmpTheta1 = thetaHidden1 + sampleHidden*nSizeTheta; 
-    tmpTheta2 = thetaHidden2 + sampleHidden*nSizeTheta; 
+  for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
+    tmpTheta1 = thetaHidden1 + samplehidden*nSizeTheta; 
+    tmpTheta2 = thetaHidden2 + samplehidden*nSizeTheta; 
     /* change */
-    tmpHiddenCfg1 = hiddenCfg1 + sampleHidden*nSizeTheta; 
-    tmpHiddenCfg2 = hiddenCfg2 + sampleHidden*nSizeTheta; 
+    tmpHiddenCfg1 = hiddenCfg1 + samplehidden*nSizeTheta; 
+    tmpHiddenCfg2 = hiddenCfg2 + samplehidden*nSizeTheta; 
     /* change */
     UpdateThetaHidden(rl, rk, t, thetaHiddenNew1, tmpTheta1, tmpHiddenCfg1); 
     UpdateThetaHidden(rl, rk, t, thetaHiddenNew2, tmpTheta2, tmpHiddenCfg2); 

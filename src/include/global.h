@@ -132,6 +132,8 @@ int NNeuronPerSet;       /* Number of neurons per one set                       
 int FlagNeuronTrans;     /* FlagNeuronTrans=1: use translational symmetry, 0: symmetry not used */
 int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron                   */
 int NHiddenVariable;     /* Total number of hidden variables = NHiddenMagField + NHiddenPhysInt */  
+int NSizeTheta;          /* Number of theta angles per set =  NSetHidden * NNeuronPerSet        */  
+int NSizeThetaSave;      /* Number of theta angles for saving = NSizeTheta * NVMCSampleHidden   */  
 int NNeuronSample;       /* Number of neurons whose spins are sampled by Monte Carlo method     */
 int NVMCSampleHidden;    /* Number of Monte Carlo Sampling for neuron spins                     */
 int NSizeHiddenCfgSave;  /* Array Size for HiddenCfg for saving= NNeuronSample*NVMCSampleHidden */
@@ -221,8 +223,8 @@ int *TmpEleIdx;
 int *TmpEleCfg;
 int *TmpEleNum;
 int *TmpEleProjCnt;
-int *TmpHiddenCfg1
-int *TmpHiddenCfg2
+int *TmpHiddenCfg1;
+int *TmpHiddenCfg2;
 double complex *TmpThetaHidden1; /* added by YN, modified by KI*/
 double complex *TmpThetaHidden2; /* added by YN, modified by KI*/
 
@@ -314,7 +316,7 @@ int NThread;
 int LapackLWork;
 
 /***** counter for vmcMake *****/
-int Counter[4] = {0,0,0,0};
-/* 0: hopping, 1: hopping accept, 2: exchange try, 3: exchange accept */
+int Counter[6] = {0,0,0,0,0,0}; /* modified by YN */
+/* 0: hopping, 1: hopping accept, 2: exchange try, 3: exchange accept 4: hidden spinflip try 5: hidden spinflip accept */ /* modified by YN */
 
 #endif /*  _INCLUDE_GLOBAL */

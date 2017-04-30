@@ -28,18 +28,18 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 /* modified by YN */
 double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                    const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                    const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                     const double complex *thetaHidden1, const double complex *thetaHidden2);
 double complex CalculateHamiltonian0(const int *eleNum);
 double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                     const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                     const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                      const double complex *thetaHidden1, const double complex *thetaHidden2);
 double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                     const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                     const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                      const double complex *thetaHidden1, const double complex *thetaHidden2);
 
 double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                    const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                    const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                     const double complex *thetaHidden1, const double complex *thetaHidden2){
 /* modified by YN */
   const int *n0 = eleNum;
@@ -57,7 +57,7 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
   double complex *myBuffer;
   double complex myEnergy;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfg); /* modified by YN */
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NNeuronSample); /* modified by YN */
   RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+2*NSizeTheta); /* modified by KI  */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
@@ -81,8 +81,8 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
     /* added by YN */
-    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
-    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
+    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NNeuronSample); 
+    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NNeuronSample); 
     myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); /* modified by KI */
     myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); /* modified by KI */
     /* added by YN */
@@ -250,7 +250,7 @@ double complex CalculateHamiltonian0(const int *eleNum) {
 /* This function will be used in the Lanczos mode */
 /* modified by YN */
 double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                     const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                     const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                      const double complex *thetaHidden1, const double complex *thetaHidden2){
 /* modified by YN */
   double complex e=0.0;
@@ -266,7 +266,7 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
   double complex *myBuffer;
   double complex myEnergy;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfg);
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NNeuronSample);
   RequestWorkSpaceThreadComplex(NQPFull+2*NSizeTheta); /* modified by KI */
   /* GreenFunc1: NQPFull */
 
@@ -281,8 +281,8 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
     /* added by YN */
-    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfg);
-    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfg);
+    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NNeuronSample);
+    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NNeuronSample);
     myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
     myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
     /* added by YN */
@@ -321,7 +321,7 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
 /* which can be calculated by 2-body Green function. */
 /* This function will be used in the Lanczos mode */
 double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                     const int *eleProjCnt, const int *hiddenCfg1, const int hiddenCfg2, 
+                                     const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                      const double complex *thetaHidden1, const double complex *thetaHidden2){
   double complex e=0.0, tmp; /* modified by KI */
   int idx;
@@ -336,7 +336,7 @@ double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const
   double complex *myBuffer;
   double complex myEnergy;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfg); /* modified by YN */
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NNeuronSample); /* modified by YN */
   RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+2*NSizeTheta); /* modified by KI */
   /* GreenFunc2: NQPFull+2*Nsize */
 
@@ -351,8 +351,8 @@ double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
     /* added by YN */
-    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
-    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
+    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NNeuronSample); 
+    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NNeuronSample); 
     myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
     myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
     /* added by YN */
