@@ -26,13 +26,19 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  * by Satoshi Morita
  *-------------------------------------------------------------*/
 
+/* modified by YN */
 double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double *buffer); /* modified by YN */
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer); 
 double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
                   const int s, const int t, const double  ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double *buffer); /* modified by YN */
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer); 
+/* modified by YN */
 /*
 double complex GreenFuncN(const int n, int *rsi, int *rsj, const double complex  ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
@@ -42,12 +48,24 @@ double complex calculateNewPfMN_child(const int qpidx, const int n, const int *m
 */
 /* Calculate 1-body Green function <CisAjs> */
 /* buffer size = NQPFull */
-double  GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double *buffer) { /* modified by YN */
+/* modified by YN */
+double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer){ 
+/* modified by YN */
   double  z;
   int mj,msj,rsi,rsj;
   double  *pfMNew_real = buffer; /* NQPFull */
+  /* added by YN */
+  int nVMCSampleHidden = NVMCSampleHidden;
+  int nSizeTheta = NSizeTheta;
+  int samplehidden; 
+  int *tmpHiddenCfg1, *tmpHiddenCfg2;
+  double complex *tmpTheta1, *tmpTheta2;
+  double x;
+  /* added by YN */
 
   if(ri==rj) return eleNum[ri+s*Nsite];
   if(eleNum[ri+s*Nsite]==1 || eleNum[rj+s*Nsite]==0) return 0.0;
@@ -62,13 +80,29 @@ double  GreenFunc1_real(const int ri, const int rj, const int s, const double ip
   eleNum[rsj] = 0;
   eleNum[rsi] = 1;
   UpdateProjCnt(rj, ri, s, projCntNew, eleProjCnt, eleNum);
-  UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHidden); /* added by YN */
   z = ProjRatio(projCntNew,eleProjCnt);
-  z *= creal(HiddenWeightRatio(thetaHiddenNew,thetaHidden));  /* added by YN */
 
   /* calculate Pfaffian */
   CalculateNewPfM_real(mj, s, pfMNew_real, eleIdx, 0, NQPFull);
   z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
+
+  /* added by YN */
+  x = 0.0;
+  for(samplehidden=0;samplehidden<nVMCSampleHidden,samplehidden++){
+    tmpTheta1 = thetaHidden1 + sampleHidden*nSizeTheta; 
+    tmpTheta2 = thetaHidden2 + sampleHidden*nSizeTheta; 
+    /* change */
+    tmpHiddenCfg1 = hiddenCfg1 + sampleHidden*nSizeTheta; 
+    tmpHiddenCfg2 = hiddenCfg2 + sampleHidden*nSizeTheta; 
+    /* change */
+    UpdateThetaHidden(rj, ri, s, thetaHiddenNew1, tmpTheta1, tmpHiddenCfg1); 
+    UpdateThetaHidden(rj, ri, s, thetaHiddenNew2, tmpTheta2, tmpHiddenCfg2); 
+    x += HiddenWeightRatio(thetaHiddenNew1,tmpTheta1);  
+    x += HiddenWeightRatio(thetaHiddenNew2,tmpTheta2);  
+  }
+  x /= 2.0*(double)(nVMCSampleHidden);
+  z *= (double complex)(x);
+  /* added by YN */
 
   /* revert hopping */
   eleIdx[msj] = rj;
@@ -80,15 +114,27 @@ double  GreenFunc1_real(const int ri, const int rj, const int s, const double ip
 
 /* Calculate 2-body Green function <psi|CisAjsCktAlt|x>/<psi|x> */
 /* buffer size = NQPFull+2*Nsize */
+/* modified by YN */
 double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
-                  const int s, const int t, const double ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, double *buffer) { /* modified by YN */
+                  const int s, const int t, const double  ip,
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer){ 
+/* modified by YN */
   double z;
   int mj,msj,ml,mtl;
   int rsi,rsj,rtk,rtl;
   double *pfMNew_real = buffer; /* [NQPFull] */
   double *bufV   = buffer+NQPFull; /* 2*Nsize */
+  /* added by YN */
+  int nVMCSampleHidden = NVMCSampleHidden;
+  int nSizeTheta = NSizeTheta;
+  int samplehidden; 
+  int *tmpHiddenCfg1, *tmpHiddenCfg2;
+  double complex *tmpTheta1, *tmpTheta2;
+  double x;
+  /* added by YN */
 
   rsi = ri + s*Nsite;
   rsj = rj + s*Nsite;
@@ -144,19 +190,36 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   eleNum[rtl] = 0;
   eleNum[rtk] = 1;
   UpdateProjCnt(rl, rk, t, projCntNew, eleProjCnt, eleNum);
-  UpdateThetaHidden(rl, rk, t, thetaHiddenNew, thetaHidden); /* added by YN */
   eleIdx[msj] = ri;
   eleNum[rsj] = 0;
   eleNum[rsi] = 1;
   UpdateProjCnt(rj, ri, s, projCntNew, projCntNew, eleNum);
-  UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHiddenNew); /* added by YN */
 
   z = ProjRatio(projCntNew,eleProjCnt);
-  z *= creal(HiddenWeightRatio(thetaHiddenNew,thetaHidden));  /* added by YN */
 
   /* calculate Pfaffian */
   CalculateNewPfMTwo_real(ml, t, mj, s, pfMNew_real, eleIdx, 0, NQPFull, bufV);
   z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
+
+  /* added by YN */
+  x = 0.0;
+  for(samplehidden=0;samplehidden<nVMCSampleHidden,samplehidden++){
+    tmpTheta1 = thetaHidden1 + sampleHidden*nSizeTheta; 
+    tmpTheta2 = thetaHidden2 + sampleHidden*nSizeTheta; 
+    /* change */
+    tmpHiddenCfg1 = hiddenCfg1 + sampleHidden*nSizeTheta; 
+    tmpHiddenCfg2 = hiddenCfg2 + sampleHidden*nSizeTheta; 
+    /* change */
+    UpdateThetaHidden(rl, rk, t, thetaHiddenNew1, tmpTheta1, tmpHiddenCfg1); 
+    UpdateThetaHidden(rl, rk, t, thetaHiddenNew2, tmpTheta2, tmpHiddenCfg2); 
+    UpdateThetaHidden(rj, ri, s, thetaHiddenNew1, thetaHiddenNew1, tmpHiddenCfg1); 
+    UpdateThetaHidden(rj, ri, s, thetaHiddenNew2, thetaHiddenNew2, tmpHiddenCfg2); 
+    x += HiddenWeightRatio(thetaHiddenNew1,tmpTheta1);  
+    x += HiddenWeightRatio(thetaHiddenNew2,tmpTheta2);  
+  }
+  x /= 2.0*(double)(nVMCSampleHidden);
+  z *= (double complex)(x);
+  /* added by YN */
 
   /* revert hopping */
   eleIdx[mtl] = rl;

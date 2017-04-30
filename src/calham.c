@@ -57,8 +57,8 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
   double complex *myBuffer;
   double complex myEnergy;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfgSave); /* modified by YN */
-  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+2*NSizeThetaSave); /* modified by KI  */
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfg); /* modified by YN */
+  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+2*NSizeTheta); /* modified by KI  */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
   /*
@@ -81,10 +81,10 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
     /* added by YN */
-    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave); 
-    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave); 
-    myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeThetaSave); /* modified by KI */
-    myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeThetaSave); /* modified by KI */
+    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
+    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
+    myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); /* modified by KI */
+    myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); /* modified by KI */
     /* added by YN */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
 
@@ -266,8 +266,8 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
   double complex *myBuffer;
   double complex myEnergy;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfgSave);
-  RequestWorkSpaceThreadComplex(NQPFull+2*NSizeThetaSave); /* modified by KI */
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfg);
+  RequestWorkSpaceThreadComplex(NQPFull+2*NSizeTheta); /* modified by KI */
   /* GreenFunc1: NQPFull */
 
 /* modified by YN */
@@ -281,10 +281,10 @@ double complex CalculateHamiltonian1(const double complex ip, int *eleIdx, const
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
     /* added by YN */
-    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave);
-    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave);
-    myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeThetaSave); 
-    myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeThetaSave); 
+    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfg);
+    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfg);
+    myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
+    myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
     /* added by YN */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull);
 
@@ -336,8 +336,8 @@ double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const
   double complex *myBuffer;
   double complex myEnergy;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfgSave); /* modified by YN */
-  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+2*NSizeThetaSave); /* modified by KI */
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfg); /* modified by YN */
+  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+2*NSizeTheta); /* modified by KI */
   /* GreenFunc2: NQPFull+2*Nsize */
 
 /* modified by YN */
@@ -351,10 +351,10 @@ double complex CalculateHamiltonian2(const double complex ip, int *eleIdx, const
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
     /* added by YN */
-    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave); 
-    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfgSave); 
-    myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeThetaSave); 
-    myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeThetaSave); 
+    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
+    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfg); 
+    myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
+    myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
     /* added by YN */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
 
