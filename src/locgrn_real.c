@@ -144,37 +144,43 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   if(s==t) {
     if(rk==rl) { /* CisAjsNks */
       if(eleNum[rtk]==0) return 0.0;
-      else return GreenFunc1_real(ri,rj,s,ip,eleIdx,eleCfg,eleNum,
-                             eleProjCnt,projCntNew,thetaHidden,thetaHiddenNew,buffer); /* CisAjs */ /* modified by YN */
+      else return GreenFunc1_real(ri,rj,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
+                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
+                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CisAjs */ /* modified by YN */
     }else if(rj==rl) {
       return 0.0; /* CisAjsCksAjs (j!=k) */
     }else if(ri==rl) { /* AjsCksNis */
       if(eleNum[rsi]==0) return 0.0;
       else if(rj==rk) return 1.0-eleNum[rsj];
-      else return -GreenFunc1_real(rk,rj,s,ip,eleIdx,eleCfg,eleNum,
-                              eleProjCnt,projCntNew,thetaHidden,thetaHiddenNew,buffer); /* -CksAjs */ /* modified by YN */
+      else return -GreenFunc1_real(rk,rj,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
+                              hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
+                              thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* -CksAjs */ /* modified by YN */
     }else if(rj==rk) { /* CisAls(1-Njs) */
       if(eleNum[rsj]==1) return 0.0;
       else if(ri==rl) return eleNum[rsi];
-      else return GreenFunc1_real(ri,rl,s,ip,eleIdx,eleCfg,eleNum,
-                             eleProjCnt,projCntNew,thetaHidden,thetaHiddenNew,buffer); /* CisAls */ /* modified by YN */
+      else return GreenFunc1_real(ri,rl,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
+                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
+                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CisAls */ /* modified by YN */
     }else if(ri==rk) {
       return 0.0; /* CisAjsCisAls (i!=j) */
     }else if(ri==rj) { /* NisCksAls (i!=k,l) */
       if(eleNum[rsi]==0) return 0.0;
-      else return GreenFunc1_real(rk,rl,s,ip,eleIdx,eleCfg,eleNum,
-                             eleProjCnt,projCntNew,thetaHidden,thetaHiddenNew,buffer); /* CksAls */ /* modified by YN */
+      else return GreenFunc1_real(rk,rl,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
+                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
+                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CksAls */ /* modified by YN */
     }
   } if(s!=t) {
     if(rk==rl) { /* CisAjsNkt */
       if(eleNum[rtk]==0) return 0.0;
       else if(ri==rj) return eleNum[rsi];
-      else return GreenFunc1_real(ri,rj,s,ip,eleIdx,eleCfg,eleNum,
-                             eleProjCnt,projCntNew,thetaHidden,thetaHiddenNew,buffer); /* CisAjs */ /* modified by YN */
+      else return GreenFunc1_real(ri,rj,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
+                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
+                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CisAjs */ /* modified by YN */
     }else if(ri==rj) { /* NisCktAlt */
       if(eleNum[rsi]==0) return 0.0;
-      else return GreenFunc1_real(rk,rl,t,ip,eleIdx,eleCfg,eleNum,
-                             eleProjCnt,projCntNew,thetaHidden,thetaHiddenNew,buffer); /* CktAlt */ /* modified by YN */
+      else return GreenFunc1_real(rk,rl,t,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
+                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
+                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CktAlt */ /* modified by YN */
     }
   }
 
