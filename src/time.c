@@ -107,6 +107,7 @@ void OutputTimerParaOpt() {
   fprintf(fp,"      UpdateMAllTwo        [68] %12.5lf\n",Timer[68]);
   fprintf(fp,"    recal PfM and InvM     [34] %12.5lf\n",Timer[34]);
   fprintf(fp,"    save electron config   [35] %12.5lf\n",Timer[35]);
+  fprintf(fp,"    MC for hidden variable [73] %12.5lf\n",Timer[73]);
   fprintf(fp,"  VMCMainCal                [4] %12.5lf\n",Timer[4]);
   fprintf(fp,"    CalculateMAll          [40] %12.5lf\n",Timer[40]);
   fprintf(fp,"    LocEnergyCal           [41] %12.5lf\n",Timer[41]);
