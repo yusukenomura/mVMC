@@ -145,7 +145,7 @@ void VMCMainCal(MPI_Comm comm) {
     /* modified by YN */
     x = LogProjVal(eleProjCnt);
     y1 = LogHiddenWeightVal(thetaHidden1);
-    y2 = LogHiddenWeightVal(thetaHidden1);
+    y2 = LogHiddenWeightVal(thetaHidden2);
     /* calculate reweight */
     w = 2.0*(log(fabs(ip))+x) + y1 + y2 - logSqPfFullSlater[sample];
     if( fabs(w) > 0.0001 ){
