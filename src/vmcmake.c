@@ -67,7 +67,8 @@ void VMCMakeSample(MPI_Comm comm) {
   double complex pfMNew[NQPFull];
   /* added by YN */
   int nVMCSampleHidden = NVMCSampleHidden; 
-  int nNeuronSample = nNeuronSample;       
+  int nNeuronSample = NNeuronSample;       
+  int nSizeTheta = NSizeTheta; 
   int tmpHiddenCfg1[NSizeHiddenCfgSave];
   int tmpHiddenCfg2[NSizeHiddenCfgSave]; 
   double complex tmpThetaHidden1[NSizeThetaSave];
@@ -276,13 +277,13 @@ void VMCMakeSample(MPI_Comm comm) {
       UpdateHiddenCfg(TmpHiddenCfg2,TmpThetaHidden2);
       offset = inStep*nNeuronSample; 
       for(hi=0;hi<nNeuronSample;hi++){
-        tmpHiddenCfg1[offset+hi] = TmpHiddenCfg1[hi]
-        tmpHiddenCfg2[offset+hi] = TmpHiddenCfg2[hi]
+        tmpHiddenCfg1[offset+hi] = TmpHiddenCfg1[hi];
+        tmpHiddenCfg2[offset+hi] = TmpHiddenCfg2[hi];
       }
       offset = inStep*nSizeTheta; 
-      for(i=0;i<nSizeThea;hi++){
-        tmpThetaHidden1[offset+i] = TmpThetaHidden1;
-        tmpThetaHidden2[offset+i] = TmpThetaHidden2;
+      for(i=0;i<nSizeTheta;i++){
+        tmpThetaHidden1[offset+i] = TmpThetaHidden1[i];
+        tmpThetaHidden2[offset+i] = TmpThetaHidden2[i];
       }
     }
     StopTimer(73);
@@ -358,8 +359,8 @@ int makeInitialSample(int *eleIdx, int *eleCfg, int *eleNum, int *eleProjCnt,
     MakeProjCnt(eleProjCnt,eleNum);
 
     /* added by YN */
-    for(hi=0;hi<nNeuronSample;hi++) hiddenCfg1(hi) = (genrand_real2()<0.5) ? 1 : -1;
-    for(hi=0;hi<nNeuronSample;hi++) hiddenCfg2(hi) = (genrand_real2()<0.5) ? 1 : -1;
+    for(hi=0;hi<nNeuronSample;hi++) hiddenCfg1[hi] = (genrand_real2()<0.5) ? 1 : -1;
+    for(hi=0;hi<nNeuronSample;hi++) hiddenCfg2[hi] = (genrand_real2()<0.5) ? 1 : -1;
     CalcThetaHidden(thetaHidden1,eleNum,hiddenCfg1); 
     CalcThetaHidden(thetaHidden2,eleNum,hiddenCfg2); 
     /* added by YN */

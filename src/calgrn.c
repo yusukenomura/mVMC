@@ -41,27 +41,27 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
   double complex tmp;
   int *myEleIdx, *myEleNum, *myProjCntNew;
   /* added by YN */
-  int *myhiddenCfgNew1;
-  int *myhiddenCfgNew2;
+  int *myHiddenCfgNew1;
+  int *myHiddenCfgNew2;
   double complex *myThetaHiddenNew1; 
   double complex *myThetaHiddenNew2; 
   /* added by YN */
   double complex *myBuffer;
 
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NSizeHiddenCfg); /* modified by YN */
+  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NNeuronSample); /* modified by YN */
   RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+2*NSizeTheta); /* modified by KI */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
 #pragma omp parallel default(shared)\
   private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx,\
-          myhiddenCfgNew1,myhiddenCfgNew2,myThetaHiddenNew1,myThetaHiddenNew2) /* modified by YN */
+          myHiddenCfgNew1,myHiddenCfgNew2,myThetaHiddenNew1,myThetaHiddenNew2) /* modified by YN */
   {
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew = GetWorkSpaceThreadInt(NProj);
     /* added by YN */
-    myhiddenCfgNew1 = GetWorkSpaceThreadInt(NSizeHiddenCfg)
-    myhiddenCfgNew2 = GetWorkSpaceThreadInt(NSizeHiddenCfg)
+    myHiddenCfgNew1 = GetWorkSpaceThreadInt(NNeuronSample);
+    myHiddenCfgNew2 = GetWorkSpaceThreadInt(NNeuronSample);
     myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
     myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
     /* added by YN */

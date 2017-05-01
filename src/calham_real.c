@@ -59,7 +59,7 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
   #pragma omp parallel default(none) \
     private(myEleIdx,myEleNum,myProjCntNew,myBuffer,myEnergy, idx, ri, rj, rk, rl, s, t, \
             myHiddenCfgNew1,myHiddenCfgNew2,myThetaHiddenNew1,myThetaHiddenNew2) \
-    firstprivate(Nsize, Nsite2, NProj, NSizeTheta, NQPFull, NCoulombIntra, CoulombIntra, ParaCoulombIntra,   \
+    firstprivate(Nsize, Nsite2, NProj, NSizeTheta, NNeuronSample, NQPFull, NCoulombIntra, CoulombIntra, ParaCoulombIntra,   \
     NCoulombInter, CoulombInter, ParaCoulombInter, NHundCoupling, HundCoupling, ParaHundCoupling,    \
     NTransfer, Transfer, ParaTransfer, NPairHopping, PairHopping, ParaPairHopping,    \
     NExchangeCoupling, ExchangeCoupling, ParaExchangeCoupling, NInterAll, InterAll, ParaInterAll, n0, n1)\
