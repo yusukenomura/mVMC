@@ -160,6 +160,7 @@ void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHidden){
     x = exp( -2.0*(double)(hiddenCfg[hi])*creal(thetaHidden[hi]) );   
     if( genrand_real2() < x ) {
       hiddenCfg[hi] *= -1;
+      thetaHidden[hi] *= -1.0;
       Counter[5]++;  
     }
   }
