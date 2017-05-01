@@ -118,6 +118,8 @@ void VMCMakeSample(MPI_Comm comm) {
   for(outStep=0;outStep<nOutStep;outStep++) {
     for(inStep=0;inStep<nInStep;inStep++) {
 
+      UpdateHiddenCfg(TmpHiddenCfg1,TmpThetaHidden1); /* added by YN */
+      UpdateHiddenCfg(TmpHiddenCfg2,TmpThetaHidden2); /* added by YN */
       updateType = getUpdateType(NExUpdatePath);
 
       if(updateType==HOPPING) { /* hopping */
