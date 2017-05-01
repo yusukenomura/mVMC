@@ -204,6 +204,7 @@ void VMCMainCal(MPI_Comm comm) {
       }
 
       /* added by YN */
+      StartTimer(74);
       /* Hidden-layer magnetic field 
          This part assumes that the magnetic field is uniform for each set of Hidden variables. 
          In this case, NHiddenMagField = NSetHidden */
@@ -261,6 +262,7 @@ void VMCMainCal(MPI_Comm comm) {
         fprintf(stderr, " 2*tmp_i != offset1 \n");
         MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
       }
+      StopTimer(74);
       /* added by YN */
 
       StartTimer(42);
