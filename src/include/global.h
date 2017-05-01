@@ -223,8 +223,8 @@ int *TmpEleIdx;
 int *TmpEleCfg;
 int *TmpEleNum;
 int *TmpEleProjCnt;
-int *TmpHiddenCfg1;
-int *TmpHiddenCfg2;
+int *TmpHiddenCfg1; /* added by YN */
+int *TmpHiddenCfg2; /* added by YN */
 double complex *TmpThetaHidden1; /* added by YN, modified by KI*/
 double complex *TmpThetaHidden2; /* added by YN, modified by KI*/
 
@@ -232,6 +232,8 @@ int *BurnEleIdx;
 int *BurnEleCfg;
 int *BurnEleNum;
 int *BurnEleProjCnt;
+int *BurnHiddenCfg1; /* added by YN */
+int *BurnHiddenCfg2; /* added by YN */
 int BurnFlag=0; /* 0: off, 1: on */
 
 /***** Slater Elements ******/

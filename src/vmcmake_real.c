@@ -273,7 +273,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
     if(outStep >= nOutStep-NVMCSample) {
       sample = outStep-(nOutStep-NVMCSample);
       saveEleConfig(sample,logIpOld,TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt, /* modified by YN */
-                    tmpHiddenCfg1,tmpHiddenCfg2,TmpThetaHidden1,TmpThetaHidden2); /* modified by YN */
+                    tmpHiddenCfg1,tmpHiddenCfg2,tmpThetaHidden1,tmpThetaHidden2); /* modified by YN */
     }
     StopTimer(35);
 

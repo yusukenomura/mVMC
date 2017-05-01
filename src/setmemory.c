@@ -252,19 +252,21 @@ void SetMemory() {
   ThetaHidden1      = (double complex*)malloc(sizeof(double complex)*(NVMCSample*NSizeThetaSave)); /* added by YN, modified by KI */
   ThetaHidden2      = (double complex*)malloc(sizeof(double complex)*(NVMCSample*NSizeThetaSave)); /* added by YN, modified by KI */
 
-  TmpEleIdx         = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj+2*NNeuronSample)); /* added by YN */
+  TmpEleIdx         = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj+2*NNeuronSample)); /* modified by YN */
   TmpEleCfg         = TmpEleIdx + 2*Ne;
   TmpEleNum         = TmpEleCfg + 2*Nsite;
   TmpEleProjCnt     = TmpEleNum + 2*Nsite;
-  TmpHiddenCfg1     = TmpEleProjCnt + NProj;
-  TmpHiddenCfg2     = TmpHiddenCfg1 + NNeuronSample;
+  TmpHiddenCfg1     = TmpEleProjCnt + NProj;  /* added by YN */
+  TmpHiddenCfg2     = TmpHiddenCfg1 + NNeuronSample; /* added by YN */
   TmpThetaHidden1   = (double complex*)malloc(sizeof(double complex)*(NSizeTheta)); /* added by YN, modified by KI */
   TmpThetaHidden2   = (double complex*)malloc(sizeof(double complex)*(NSizeTheta)); /* added by YN, modified by KI */
 
-  BurnEleIdx = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj));
+  BurnEleIdx = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj+2*NNeuronSample)); /* modified by YN */
   BurnEleCfg = BurnEleIdx + 2*Ne;
   BurnEleNum = BurnEleCfg + 2*Nsite;
   BurnEleProjCnt = BurnEleNum + 2*Nsite;
+  BurnHiddenCfg1 = BurnEleProjCnt + NProj; /* added by YN */
+  BurnHiddenCfg2 = BurnHiddenCfg1 + NNeuronSample; /* added by YN */
 
   /***** Slater Elements ******/
   SlaterElm = (double complex*)malloc( sizeof(double complex)*(NQPFull*(2*Nsite)*(2*Nsite)) );
