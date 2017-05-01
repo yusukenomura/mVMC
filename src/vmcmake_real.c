@@ -46,7 +46,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
   /* added by YN */
   int nVMCSampleHidden = NVMCSampleHidden; 
   int nNeuronSample = NNeuronSample;       
-  int nSizeTheta = NSizeTheta;       
+  int nSizeTheta = NSizeTheta; 
   int tmpHiddenCfg1[NSizeHiddenCfgSave];
   int tmpHiddenCfg2[NSizeHiddenCfgSave]; 
   double complex tmpThetaHidden1[NSizeThetaSave];
