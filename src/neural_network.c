@@ -72,6 +72,7 @@ inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const doub
 void CalcThetaHidden(double complex *thetaHidden, const int *eleNum, const int *hiddenCfg) {
   int f,i,j;
   int idx,rsi,offset1,offset2;
+  const int *tmpHiddenCfg;
   double complex *tmpTheta;
 
   const int nSetHidden=NSetHidden;
@@ -80,6 +81,7 @@ void CalcThetaHidden(double complex *thetaHidden, const int *eleNum, const int *
 
   for(f=0;f<nSetHidden;f++) { 
     tmpTheta = thetaHidden + f*nNeuronPerSet; 
+    tmpHiddenCfg = hiddenCfg + f*nNeuronPerSet; 
     offset1 = f*nNeuronPerSet;
     offset2 = f*nIntPerNeuron;
     for(i=0;i<nNeuronPerSet;i++) { 
@@ -95,7 +97,7 @@ void CalcThetaHidden(double complex *thetaHidden, const int *eleNum, const int *
         rsi = HiddenPhysIntIdx1[idx][j]; 
         tmpTheta[i] += HiddenPhysInt[offset2+j] * (double complex)(2*eleNum[rsi]-1); // TBC 
       }
-      tmpTheta[i] *= (double complex)(hiddenCfg[i]); // TBC 
+      tmpTheta[i] *= (double complex)(tmpHiddenCfg[i]); // TBC 
     }
   } 
 
@@ -108,6 +110,7 @@ void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *
                        const double complex *thetaHiddenOld, const int *hiddenCfg) { 
   int f,i,j,rsi,rsj;
   int idx,offset1,offset2;
+  const int *tmpHiddenCfg;
   double complex *tmpTheta;
 
   const int nSizeTheta=NSizeTheta;
@@ -126,6 +129,7 @@ void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *
   rsj = rj + s*nSite; 
   for(f=0;f<nSetHidden;f++) { 
     tmpTheta = thetaHiddenNew + f*nNeuronPerSet; 
+    tmpHiddenCfg = hiddenCfg + f*nNeuronPerSet; /* change */ 
     offset1 = f*nNeuronPerSet;
     offset2 = f*nIntPerNeuron;
     for(i=0;i<nNeuronPerSet;i++) { 
@@ -135,9 +139,9 @@ void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *
          i-th neuron in f-th set interacts with rsi-th physical variable 
          through HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]-th type of interaction. */
       j = HiddenPhysIntIdx3[idx][rsi]; 
-      tmpTheta[i] -= 2.0*HiddenPhysInt[offset2+j]*(double complex)(hiddenCfg[i]); // TBC 
+      tmpTheta[i] -= 2.0*HiddenPhysInt[offset2+j]*(double complex)(tmpHiddenCfg[i]); // TBC 
       j = HiddenPhysIntIdx3[idx][rsj]; 
-      tmpTheta[i] += 2.0*HiddenPhysInt[offset2+j]*(double complex)(hiddenCfg[i]); // TBC
+      tmpTheta[i] += 2.0*HiddenPhysInt[offset2+j]*(double complex)(tmpHiddenCfg[i]); // TBC
     }
   }
 
