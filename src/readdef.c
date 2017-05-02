@@ -485,7 +485,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NHiddenVariable    = NHiddenMagField + NHiddenPhysInt + NHiddenHiddenInt; 
   NNeuronPerSet      = (FlagNeuronTrans) ? Nsite2 : 1;
   NSizeTheta         = NSetHidden * NNeuronPerSet; 
-  NNeuronSample      = NSetDeepHidden * NNeuronPerSet; 
+  NNeuronSample      = NSetDeepHidden * NIntPerNeuron; 
   NSizeThetaSave     = NSizeTheta * NVMCSampleHidden; 
   NSizeHiddenCfgSave = NNeuronSample * NVMCSampleHidden; 
   /* added by YN */ 
