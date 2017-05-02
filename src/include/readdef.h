@@ -38,7 +38,7 @@ static char cKWListOfFileNameList[][D_CharTmpReadDef]={
   "DH2", "DH4", "Orbital", "HiddenPhysInt", /* modified by YN */
   "TransSym", "InGutzwiller", "InJastrow",
   "InDH2", "InDH4", "InOrbital",
-  "InHiddenMagField", "InHiddenPhysInt", /* added by YN */
+  "InHiddenMagField", "InHiddenPhysInt", "InHiddenHiddenInt", /* added by YN */
   "OneBodyG", "TwoBodyG", "TwoBodyGEx",
   "InterAll", "OptTrans", "InOptTrans"
 };
@@ -54,7 +54,7 @@ enum KWIdxInt{
   KWDH2, KWDH4, KWOrbital, KWHiddenPhysInt, /* modified by YN */
   KWTransSym, KWInGutzwiller, KWInJastrow,
   KWInDH2, KWInDH4, KWInOrbital,
-  KWInHiddenMagField, KWInHiddenPhysInt, /* added by YN */
+  KWInHiddenMagField, KWInHiddenPhysInt, KWInHiddenHiddenInt,/* added by YN */
   KWOneBodyG, KWTwoBodyG, KWTwoBodyGEx,
   KWInterAll, KWOptTrans, KWInOptTrans,
   KWIdxInt_end
@@ -77,7 +77,7 @@ enum ParamIdxInt{
   IdxNCoulombInter, IdxNHund, IdxNPairHop, 
   IdxNExchange, IdxNGutz, IdxNJast,
   IdxNDH2, IdxNDH4, IdxNOrbit,
-  IdxSetHidden, IdxFlagNeuronTrans, IdxSROptConstShift, IdxSROptStaDelShift,/* added by YN */
+  IdxSetHidden, IdxSetDeepHidden, IdxFlagNeuronTrans, IdxSROptConstShift, IdxSROptStaDelShift,/* added by YN */
   IdxVMCSampleHidden, IdxFlagFTCalc, /* added by YN */
   IdxNQPTrans, IdxNOneBodyG, IdxNTwoBodyG,
   IdxNTwoBodyGEx, IdxNInterAll, IdxNQPOptTrans,

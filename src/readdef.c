@@ -187,6 +187,9 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
 	    else if(CheckWords(ctmp, "NSetHidden")==0){ 
 	      bufInt[IdxSetHidden]=(int)dtmp;
 	    }
+	    else if(CheckWords(ctmp, "NSetDeepHidden")==0){ 
+	      bufInt[IdxSetDeepHidden]=(int)dtmp;
+	    }
 	    else if(CheckWords(ctmp, "FlagNeuronTrans")==0){ 
 	      bufInt[IdxFlagNeuronTrans]=(int)dtmp;
 	    }
@@ -432,6 +435,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NDoublonHolon2siteIdx  =  bufInt[IdxNDH2];
   NDoublonHolon4siteIdx  =  bufInt[IdxNDH4];
   NSetHidden             =  bufInt[IdxSetHidden]; /* added by YN */
+  NSetDeepHidden         =  bufInt[IdxSetDeepHidden]; /* added by YN */
   FlagNeuronTrans        =  bufInt[IdxFlagNeuronTrans];  /* added by YN */
   NSROptConstShift       =  bufInt[IdxSROptConstShift];  /* added by YN */
   NSROptStaDelShift      =  bufInt[IdxSROptStaDelShift]; /* added by YN */
@@ -474,14 +478,15 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   /* added by YN */
   NPfUpdate0 = (Nsite > 100) ? Nsite : 100; 
   NPfUpdate = NPfUpdate0; 
-  NHiddenMagField = NSetHidden; 
-  NIntPerNeuron   = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
-  NHiddenPhysInt  = NSetHidden * NIntPerNeuron; 
-  NHiddenVariable = NHiddenMagField + NHiddenPhysInt; 
-  NNeuronPerSet   = (FlagNeuronTrans) ? Nsite2 : 1;
-  NSizeTheta      = NSetHidden * NNeuronPerSet; 
-  NNeuronSample   = NSizeTheta; 
-  NSizeThetaSave  = NSizeTheta * NVMCSampleHidden; 
+  NHiddenMagField    = NSetHidden; 
+  NIntPerNeuron      = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
+  NHiddenPhysInt     = NSetHidden * NIntPerNeuron; 
+  NHiddenHiddenInt   = NSetHidden * NSetDeepHidden * NIntPerNeuron; /* TBC */ 
+  NHiddenVariable    = NHiddenMagField + NHiddenPhysInt + NHiddenHiddenInt; 
+  NNeuronPerSet      = (FlagNeuronTrans) ? Nsite2 : 1;
+  NSizeTheta         = NSetHidden * NNeuronPerSet; 
+  NNeuronSample      = NSetDeepHidden * NNeuronPerSet; 
+  NSizeThetaSave     = NSizeTheta * NVMCSampleHidden; 
   NSizeHiddenCfgSave = NNeuronSample * NVMCSampleHidden; 
   /* added by YN */ 
   NOptTrans = (FlagOptTrans>0) ? NQPOptTrans : 0;
@@ -1189,6 +1194,19 @@ int ReadInputParameters(char *xNameListFile, MPI_Comm comm)
         }  
         for(i=idx;i<NHiddenPhysInt;i++) HiddenPhysInt[i] = 0.005*(genrand_real2()-0.5);
         break;
+
+
+      case KWInHiddenHiddenInt:
+        if(idx > NHiddenHiddenInt){
+          info=1;
+          continue;
+        }
+        for(i=0; i<idx; i++){
+          fscanf(fp, "%d %lf %lf ", &j, &tmp_real,&tmp_comp);
+          HiddenHiddenInt[i]=tmp_real+I*tmp_comp;
+        }  
+        for(i=idx;i<NHiddenHiddenInt;i++) HiddenHiddenInt[i] = 0.005*(genrand_real2()-0.5);
+        break;
       /* added by YN */ 
         
       case KWInOrbital:
@@ -1464,6 +1482,7 @@ void SetDefultValuesModPara(int *bufInt, double* bufDouble){
   bufInt[IdxNDH2]=0;
   bufInt[IdxNDH4]=0;
   bufInt[IdxSetHidden]=0; /* added by YN */
+  bufInt[IdxSetDeepHidden]=0; /* added by YN */
   bufInt[IdxFlagNeuronTrans]=1;  /* added by YN */
   bufInt[IdxSROptConstShift]=0;  /* added by YN */
   bufInt[IdxSROptStaDelShift]=0; /* added by YN */
