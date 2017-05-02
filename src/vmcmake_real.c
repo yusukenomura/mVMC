@@ -281,7 +281,6 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
   } /* end of outstep */
 
-printf("accept %lf",(double)Counter[5] / (double)Counter[4]);
   copyToBurnSample(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpHiddenCfg1,TmpHiddenCfg2); /* modified by YN */
   BurnFlag=1;
   return;
