@@ -51,7 +51,7 @@ void VMCMainCal(MPI_Comm comm) {
 /* added by YN */ 
   int *hiddenCfg1,*tmpHiddenCfg1;
   int *hiddenCfg2,*tmpHiddenCfg2;
-  int samplehidden,f,j,idx,rsi;
+  int samplehidden,f,j,k,idx,rsi;
   int offset1, offset2, offset4; /* offset3 is skipped to follow the notation in neural_network.c */ 
   double complex *thetaHidden1,*tmpTheta1; /* modified by KI */
   double complex *thetaHidden2,*tmpTheta2; /* modified by KI */
@@ -74,6 +74,7 @@ void VMCMainCal(MPI_Comm comm) {
   const int offset6=2*NProj+2*NHiddenVariable+2*NSlater; 
   const int nSizeTheta=NSizeTheta;
   const int nSetHidden=NSetHidden;
+  const int nSetDeepHidden=NSetDeepHidden;
   const int nNeuronSample=NNeuronSample;
   const int nVMCSampleHidden=NVMCSampleHidden;
   const int nIntPerNeuron=NIntPerNeuron;
@@ -248,6 +249,37 @@ void VMCMainCal(MPI_Comm comm) {
           srOptO[(tmp_i+1)*2]   = x;               // even real
           srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */
           tmp_i++;
+        }
+      }
+
+      /* Interaction between hidden neuron and deep hidden neuron in k-th set.  
+         (j+k*nIntPerNeuron)-th type of interaction in f-th set connects i-th neuron with 
+         (HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]+k*nIntPerNeuron)-th deep hidden neuron. */
+      // #pragma loop noalias  /* comment by YN: is this line needed? */
+      for(f=0;f<nSetHidden;f++){ 
+        offset1 = f*nNeuronPerSet;
+        offset2 = f*nIntPerNeuron;
+        for(k=0;k<nSetDeepHidden;k++) {
+          offset4 = k*nIntPerNeuron;
+          for(j=0;j<nIntPerNeuron;j++) {
+            idx = offset2 + j; 
+            x = 0.0;
+            for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
+              tmpTheta1 = thetaHidden1 + offset1 + samplehidden*nSizeTheta; 
+              tmpTheta2 = thetaHidden2 + offset1 + samplehidden*nSizeTheta; 
+              tmpHiddenCfg1 = hiddenCfg1 + offset4 + samplehidden*nNeuronSample; 
+              tmpHiddenCfg2 = hiddenCfg2 + offset4 + samplehidden*nNeuronSample; 
+              for(i=0;i<nNeuronPerSet;i++) {
+                rsi = HiddenPhysIntIdx2[idx][i]; 
+                x += tanh(creal(tmpTheta1[i]))*(double complex)(tmpHiddenCfg1[rsi]);  
+                x += tanh(creal(tmpTheta2[i]))*(double complex)(tmpHiddenCfg2[rsi]);  
+              }
+            }
+            x /= 2.0*(double)(nVMCSampleHidden);
+            srOptO[(tmp_i+1)*2]   = x;               // even real
+            srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */
+            tmp_i++;
+          }
         }
       }
       if( 2*tmp_i != offset5 ) {
