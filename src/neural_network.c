@@ -33,7 +33,7 @@ inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const doub
 void CalcThetaHidden(double complex *thetaHidden, const int *eleNum, const int *hiddenCfg);
 void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *thetaHiddenNew, 
                        const double complex *thetaHiddenOld, const int *hiddenCfg);
-void UpdateHiddenCfg(const int nUpdate, int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden);
+void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden);
 void CompleteHiddenPhysIntIdx();  
 
 
@@ -151,7 +151,7 @@ void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *
 }
 
 
-void UpdateHiddenCfg(const int nUpdate, int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden){
+void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden){
   int i,j,hi,f,rsi,idx;
   int offset1,offset3,offset4;
   double x; 
@@ -167,36 +167,32 @@ void UpdateHiddenCfg(const int nUpdate, int *hiddenCfg, double complex *thetaHid
     for(idx=0;idx<nSizeTheta;idx++) thetaHiddenNew[idx] = thetaHidden[idx];
   }
 
-  for(i=0;i<nUpdate;i++){
-    Counter[4]++;  
-    hi = gen_rand32()%nNeuronSample;
-    offset4 = (hi/nIntPerNeuron) * nIntPerNeuron;
-    rsi = hi - offset4;  
+  Counter[4]++;  
+  hi = gen_rand32()%nNeuronSample;
+  offset4 = (hi/nIntPerNeuron) * nIntPerNeuron;
+  rsi = hi - offset4;  
 
-    /* calculate new theta */
-    for(f=0;f<nSetHidden;f++) { 
-      tmpTheta = thetaHiddenNew + f*nNeuronPerSet; 
-      offset1 = f*nNeuronPerSet;
-      offset3 = f*nNeuronSample; // = f*nIntPerNeuron*nSetDeepHidden;
+  /* calculate new theta */
+  for(f=0;f<nSetHidden;f++) { 
+    tmpTheta = thetaHiddenNew + f*nNeuronPerSet; 
+    offset1 = f*nNeuronPerSet;
+    offset3 = f*nNeuronSample; // = f*nIntPerNeuron*nSetDeepHidden;
 
-      for(i=0;i<nNeuronPerSet;i++) { 
-        idx = offset1 + i; 
+    for(i=0;i<nNeuronPerSet;i++) { 
+      idx = offset1 + i; 
 
-        /* Interaction between hidden and deep hidden variables  
-           i-th neuron in f-th set interacts with rsi-th deep hidden neuron in (hi/nIntPerNeuron)-th set 
-           through (HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]+f*NNeuronSample+(hi/nIntPerNeuron)*nIntPerNeuron)-th type of interaction. */
-        j = HiddenPhysIntIdx3[idx][rsi]; 
-        tmpTheta[i] -= 2.0*HiddenHiddenInt[offset3+offset4+j] * (double complex)(hiddenCfg[hi]); // TBC
-      }
+      /* Interaction between hidden and deep hidden variables  
+         i-th neuron in f-th set interacts with rsi-th deep hidden neuron in (hi/nIntPerNeuron)-th set 
+         through (HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]+f*NNeuronSample+(hi/nIntPerNeuron)*nIntPerNeuron)-th type of interaction. */
+      j = HiddenPhysIntIdx3[idx][rsi]; 
+      tmpTheta[i] -= 2.0*HiddenHiddenInt[offset3+offset4+j] * (double complex)(hiddenCfg[hi]); // TBC
     }
-    x = HiddenWeightRatio(thetaHiddenNew,thetaHidden);
-    if( genrand_real2() < x ) {
-      hiddenCfg[hi] *= -1;
-      for(idx=0;idx<nSizeTheta;idx++) thetaHidden[idx] = thetaHiddenNew[idx];
-      Counter[5]++;  
-    } else {
-      for(idx=0;idx<nSizeTheta;idx++) thetaHiddenNew[idx] = thetaHidden[idx];
-    }
+  }
+  x = HiddenWeightRatio(thetaHiddenNew,thetaHidden);
+  if( genrand_real2() < x ) {
+    hiddenCfg[hi] *= -1;
+    for(idx=0;idx<nSizeTheta;idx++) thetaHidden[idx] = thetaHiddenNew[idx];
+    Counter[5]++;  
   }
 
   return;

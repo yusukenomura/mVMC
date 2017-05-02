@@ -215,12 +215,8 @@ void VMCMainCal(MPI_Comm comm) {
         for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
           tmpTheta1 = thetaHidden1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
           tmpTheta2 = thetaHidden2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
-          /* change */
-          tmpHiddenCfg1 = hiddenCfg1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
-          tmpHiddenCfg2 = hiddenCfg2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
-          for(i=0;i<nNeuronPerSet;i++) x += (double)(tmpHiddenCfg1[i]);//cTanh(tmpTheta1[i]);  /* modified by KI */
-          for(i=0;i<nNeuronPerSet;i++) x += (double)(tmpHiddenCfg2[i]);//cTanh(tmpTheta2[i]);  /* modified by KI */
-          /* change */
+          for(i=0;i<nNeuronPerSet;i++) x += tanh(creal(tmpTheta1[i]));  
+          for(i=0;i<nNeuronPerSet;i++) x += tanh(creal(tmpTheta2[i]));  
         }
         x /= 2.0*(double)(nVMCSampleHidden);
         srOptO[(tmp_i+1)*2]   = x;         // even real
@@ -240,16 +236,10 @@ void VMCMainCal(MPI_Comm comm) {
           for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
             tmpTheta1 = thetaHidden1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
             tmpTheta2 = thetaHidden2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
-            /* change */
-            tmpHiddenCfg1 = hiddenCfg1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
-            tmpHiddenCfg2 = hiddenCfg2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
             for(i=0;i<nNeuronPerSet;i++) {
              rsi = HiddenPhysIntIdx2[idx][i]; 
-             //x += cTanh(tmpTheta1[i])*(double complex)(2*eleNum[rsi]-1);  /* modified by KI */
-             //x += cTanh(tmpTheta2[i])*(double complex)(2*eleNum[rsi]-1);  /* modified by KI */
-             x += (double)(tmpHiddenCfg1[i])*(double)(2*eleNum[rsi]-1);  /* modified by KI */
-             x += (double)(tmpHiddenCfg2[i])*(double)(2*eleNum[rsi]-1);  /* modified by KI */
-            /* change */
+             x += tanh(creal(tmpTheta1[i]))*(double complex)(2*eleNum[rsi]-1);  
+             x += tanh(creal(tmpTheta2[i]))*(double complex)(2*eleNum[rsi]-1);  
             }
           }
           x /= 2.0*(double)(nVMCSampleHidden);
