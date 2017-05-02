@@ -118,8 +118,8 @@ void VMCMakeSample(MPI_Comm comm) {
   for(outStep=0;outStep<nOutStep;outStep++) {
     for(inStep=0;inStep<nInStep;inStep++) {
 
-      UpdateHiddenCfg(TmpHiddenCfg1,TmpThetaHidden1); /* added by YN */
-      UpdateHiddenCfg(TmpHiddenCfg2,TmpThetaHidden2); /* added by YN */
+      UpdateHiddenCfg(TmpHiddenCfg1,thetaHiddenNew1,TmpThetaHidden1); /* added by YN */
+      UpdateHiddenCfg(TmpHiddenCfg2,thetaHiddenNew2,TmpThetaHidden2); /* added by YN */
       updateType = getUpdateType(NExUpdatePath);
 
       if(updateType==HOPPING) { /* hopping */
@@ -275,8 +275,8 @@ void VMCMakeSample(MPI_Comm comm) {
     /* added by YN */
     StartTimer(73);
     for(inStep=0;inStep<nVMCSampleHidden;inStep++) {
-      UpdateHiddenCfg(TmpHiddenCfg1,TmpThetaHidden1);
-      UpdateHiddenCfg(TmpHiddenCfg2,TmpThetaHidden2);
+      UpdateHiddenCfg(TmpHiddenCfg1,thetaHiddenNew1,TmpThetaHidden1);
+      UpdateHiddenCfg(TmpHiddenCfg2,thetaHiddenNew2,TmpThetaHidden2);
       offset = inStep*nNeuronSample; 
       for(hi=0;hi<nNeuronSample;hi++){
         tmpHiddenCfg1[offset+hi] = TmpHiddenCfg1[hi];

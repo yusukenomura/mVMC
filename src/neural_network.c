@@ -33,7 +33,7 @@ inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const doub
 void CalcThetaHidden(double complex *thetaHidden, const int *eleNum, const int *hiddenCfg);
 void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *thetaHiddenNew, 
                        const double complex *thetaHiddenOld, const int *hiddenCfg);
-void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHidden);
+void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden);
 void CompleteHiddenPhysIntIdx();  
 
 
@@ -152,7 +152,7 @@ void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *
 
 
 void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden){
-  int i,hi,f,rsi,idx;
+  int i,j,hi,f,rsi,idx;
   int offset1,offset3,offset4;
   double x; 
   double complex *tmpTheta;
