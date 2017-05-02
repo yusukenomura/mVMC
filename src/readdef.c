@@ -479,11 +479,11 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NPfUpdate0 = (Nsite > 100) ? Nsite : 100; 
   NPfUpdate = NPfUpdate0; 
   NHiddenMagField     = NSetHidden; 
-  NDeepHiddenMagField = NDeepSetHidden; 
   NIntPerNeuron       = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
   NHiddenPhysInt      = NSetHidden * NIntPerNeuron; 
   NHiddenHiddenInt    = NSetHidden * NSetDeepHidden * NIntPerNeuron; /* TBC */ 
-  NHiddenVariable     = NHiddenMagField + NHiddenPhysInt + NHiddenHiddenInt; 
+  NDeepHiddenMagField = NSetDeepHidden; 
+  NHiddenVariable     = NHiddenMagField + NHiddenPhysInt + NHiddenHiddenInt + NDeepHiddenMagField; 
   NNeuronPerSet       = (FlagNeuronTrans) ? Nsite2 : 1;
   NSizeTheta          = NSetHidden * NNeuronPerSet; 
   NNeuronSample       = NSetDeepHidden * NIntPerNeuron; 

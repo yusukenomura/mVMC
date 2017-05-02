@@ -166,6 +166,13 @@ void OutputOptData() {
 			  NHiddenHiddenInt, NHiddenHiddenInt, count_i, n);
       count_i += NHiddenHiddenInt;
     }
+
+    if(NDeepHiddenMagField !=0){
+      sprintf(fileName, "%s_deep_hidden_mag_field_opt.dat", CParaFileHead);
+      Child_OutputOptData(fp, fileName, "NDeepHiddenMagField",
+			  NDeepHiddenMagField, NDeepHiddenMagField, count_i, n);
+      count_i += NDeepHiddenMagField;
+    }
 /* added by YN */
 
     if(NSlater != 0){

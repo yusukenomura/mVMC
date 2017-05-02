@@ -60,6 +60,7 @@ void InitParameter() {
     } 
   } 
   for(i=0;i<NHiddenHiddenInt;i++) HiddenHiddenInt[i] = 0.05*(genrand_real2()-0.5);   /* TBC */
+  for(i=0;i<NDeepHiddenMagField;i++) DeepHiddenMagField[i] = 0.1*(genrand_real2()-0.5);   /* TBC */
   /* added by YN */ 
   if(AllComplexFlag==0){
     for(i=0;i<NSlater;i++){
