@@ -59,6 +59,7 @@ void InitParameter() {
       if( i == j ) HiddenPhysInt[f*NIntPerNeuron+i] *= 25.0;
     } 
   } 
+  for(i=0;i<NHiddenHiddenInt;i++) HiddenHiddenInt[i] = 0.05*(genrand_real2()-0.5);   /* TBC */
   /* added by YN */ 
   if(AllComplexFlag==0){
     for(i=0;i<NSlater;i++){

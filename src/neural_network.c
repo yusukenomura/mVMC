@@ -33,7 +33,7 @@ inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const doub
 void CalcThetaHidden(double complex *thetaHidden, const int *eleNum, const int *hiddenCfg);
 void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *thetaHiddenNew, 
                        const double complex *thetaHiddenOld, const int *hiddenCfg);
-void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden);
+void UpdateHiddenCfg(const int nUpdate, int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden);
 void CompleteHiddenPhysIntIdx();  
 
 
@@ -151,7 +151,7 @@ void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *
 }
 
 
-void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden){
+void UpdateHiddenCfg(const int nUpdate, int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden){
   int i,j,hi,f,rsi,idx;
   int offset1,offset3,offset4;
   double x; 
@@ -167,7 +167,7 @@ void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double comp
     for(idx=0;idx<nSizeTheta;idx++) thetaHiddenNew[idx] = thetaHidden[idx];
   }
 
-  for(i=0;i<nNeuronSample;i++){
+  for(i=0;i<nUpdate;i++){
     Counter[4]++;  
     hi = gen_rand32()%nNeuronSample;
     offset4 = (hi/nIntPerNeuron) * nIntPerNeuron;
