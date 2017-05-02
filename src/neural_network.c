@@ -152,13 +152,15 @@ void UpdateThetaHidden(const int ri, const int rj, const int s, double complex *
 
 
 void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double complex *thetaHidden){
-  int i,j,hi,f,rsi,idx;
+  int i,j,k,dhi,f,idx;
   int offset1,offset3,offset4;
   double x; 
+  int *tmpHiddenCfg;
   double complex *tmpTheta;
 
   const int nSizeTheta=NSizeTheta;
   const int nSetHidden=NSetHidden;
+  const int nSetDeepHidden=NSetDeepHidden;
   const int nNeuronSample=NNeuronSample;
   const int nIntPerNeuron=NIntPerNeuron;
   const int nNeuronPerSet=NNeuronPerSet;
@@ -168,9 +170,10 @@ void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double comp
   }
 
   Counter[4]++;  
-  hi = gen_rand32()%nNeuronSample;
-  offset4 = (hi/nIntPerNeuron) * nIntPerNeuron;
-  rsi = hi - offset4;  
+  k = gen_rand32()%nSetDeepHidden;
+  dhi = gen_rand32()%nIntPerNeuron;
+  offset4 = k*nIntPerNeuron;
+  tmpHiddenCfg = hiddenCfg + offset4;
 
   /* calculate new theta */
   for(f=0;f<nSetHidden;f++) { 
@@ -182,15 +185,16 @@ void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double comp
       idx = offset1 + i; 
 
       /* Interaction between hidden and deep hidden variables  
-         i-th neuron in f-th set interacts with rsi-th deep hidden neuron in (hi/nIntPerNeuron)-th set 
-         through (HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]+f*NNeuronSample+(hi/nIntPerNeuron)*nIntPerNeuron)-th type of interaction. */
-      j = HiddenPhysIntIdx3[idx][rsi]; 
-      tmpTheta[i] -= 2.0*HiddenHiddenInt[offset3+offset4+j] * (double complex)(hiddenCfg[hi]); // TBC
+         i-th neuron in f-th set interacts with dhi-th deep hidden neuron in k-th set 
+         through (HiddenPhysIntIdx3[f*NNeuronPerSet+i][dhi]+f*NNeuronSample+k*nIntPerNeuron)-th type of interaction. */
+      j = HiddenPhysIntIdx3[idx][dhi]; 
+      tmpTheta[i] -= 2.0*HiddenHiddenInt[offset3+offset4+j] * (double complex)(tmpHiddenCfg[dhi]); // TBC
     }
   }
   x = HiddenWeightRatio(thetaHiddenNew,thetaHidden);
+  x *= exp(-2.0*DeepHiddenMagField[k]*(double)(tmpHiddenCfg[dhi]))
   if( genrand_real2() < x ) {
-    hiddenCfg[hi] *= -1;
+    tmpHiddenCfg[dhi] *= -1;
     for(idx=0;idx<nSizeTheta;idx++) thetaHidden[idx] = thetaHiddenNew[idx];
     Counter[5]++;  
   }
