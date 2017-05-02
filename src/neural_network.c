@@ -192,7 +192,7 @@ void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHiddenNew, double comp
     }
   }
   x = HiddenWeightRatio(thetaHiddenNew,thetaHidden);
-  x *= exp(-2.0*DeepHiddenMagField[k]*(double)(tmpHiddenCfg[dhi]))
+  x *= exp(-2.0*DeepHiddenMagField[k]*(double)(tmpHiddenCfg[dhi]));
   if( genrand_real2() < x ) {
     tmpHiddenCfg[dhi] *= -1;
     for(idx=0;idx<nSizeTheta;idx++) thetaHidden[idx] = thetaHiddenNew[idx];
