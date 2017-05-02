@@ -51,7 +51,7 @@ void VMCMainCal(MPI_Comm comm) {
 /* added by YN */ 
   int *hiddenCfg1,*tmpHiddenCfg1;
   int *hiddenCfg2,*tmpHiddenCfg2;
-  int samplehidden,f,j,k,idx,rsi;
+  int samplehidden,f,j,k,idx,rsi,dhi;
   int offset1, offset2, offset4; /* offset3 is skipped to follow the notation in neural_network.c */ 
   double complex *thetaHidden1,*tmpTheta1; /* modified by KI */
   double complex *thetaHidden2,*tmpTheta2; /* modified by KI */
@@ -213,10 +213,11 @@ void VMCMainCal(MPI_Comm comm) {
       tmp_i = nProj; 
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(f=0;f<nSetHidden;f++){ 
+        offset1 = f*nNeuronPerSet;
         x = 0.0;
         for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
-          tmpTheta1 = thetaHidden1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
-          tmpTheta2 = thetaHidden2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
+          tmpTheta1 = thetaHidden1 + offset1 + samplehidden*nSizeTheta; 
+          tmpTheta2 = thetaHidden2 + offset1 + samplehidden*nSizeTheta; 
           for(i=0;i<nNeuronPerSet;i++) x += tanh(creal(tmpTheta1[i]));  
           for(i=0;i<nNeuronPerSet;i++) x += tanh(creal(tmpTheta2[i]));  
         }
@@ -270,9 +271,9 @@ void VMCMainCal(MPI_Comm comm) {
               tmpHiddenCfg1 = hiddenCfg1 + offset4 + samplehidden*nNeuronSample; 
               tmpHiddenCfg2 = hiddenCfg2 + offset4 + samplehidden*nNeuronSample; 
               for(i=0;i<nNeuronPerSet;i++) {
-                rsi = HiddenPhysIntIdx2[idx][i]; 
-                x += tanh(creal(tmpTheta1[i]))*(double complex)(tmpHiddenCfg1[rsi]);  
-                x += tanh(creal(tmpTheta2[i]))*(double complex)(tmpHiddenCfg2[rsi]);  
+                dhi = HiddenPhysIntIdx2[idx][i]; 
+                x += tanh(creal(tmpTheta1[i]))*(double complex)(tmpHiddenCfg1[dhi]);  
+                x += tanh(creal(tmpTheta2[i]))*(double complex)(tmpHiddenCfg2[dhi]);  
               }
             }
             x /= 2.0*(double)(nVMCSampleHidden);
@@ -282,6 +283,26 @@ void VMCMainCal(MPI_Comm comm) {
           }
         }
       }
+
+      /* Deep-Hidden-layer magnetic field 
+         This part assumes that the magnetic field is uniform for each set of deep hidden variables. 
+         In this case, NDeepHiddenMagField = NSetDeepHidden */
+      // #pragma loop noalias  /* comment by YN: is this line needed? */
+      for(k=0;k<nSetDeepHidden;k++) {
+        offset4 = k*nIntPerNeuron;
+        x = 0.0;
+        for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
+          tmpHiddenCfg1 = hiddenCfg1 + offset4 + samplehidden*nNeuronSample; 
+          tmpHiddenCfg2 = hiddenCfg2 + offset4 + samplehidden*nNeuronSample; 
+          for(dhi=0;dhi<nIntPerNeuron;dhi++) x += (double)(tmpHiddenCfg1[dhi]);
+          for(dhi=0;dhi<nIntPerNeuron;dhi++) x += (double)(tmpHiddenCfg2[dhi]);
+        }
+        x /= 2.0*(double)(nVMCSampleHidden);
+        srOptO[(tmp_i+1)*2]   = x;         // even real
+        srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp   /* modified by KI */
+        tmp_i++;
+      }
+
       if( 2*tmp_i != offset5 ) {
         fprintf(stderr, " 2*tmp_i != offset5 \n");
         MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
