@@ -51,7 +51,8 @@ void VMCMainCal(MPI_Comm comm) {
 /* added by YN */ 
   int *hiddenCfg1,*tmpHiddenCfg1;
   int *hiddenCfg2,*tmpHiddenCfg2;
-  int samplehidden,f,j,offset,idx,rsi;
+  int samplehidden,f,j,idx,rsi;
+  int offset1, offset2, offset4; /* offset3 is skipped to follow the notation in neural_network.c */ 
   double complex *thetaHidden1,*tmpTheta1; /* modified by KI */
   double complex *thetaHidden2,*tmpTheta2; /* modified by KI */
   double x,y1,y2;  
@@ -69,8 +70,8 @@ void VMCMainCal(MPI_Comm comm) {
   /* optimazation for Kei */
   const int nProj=NProj;
   /* added by YN */
-  const int offset1=2*NProj+2*NHiddenVariable; 
-  const int offset2=2*NProj+2*NHiddenVariable+2*NSlater; 
+  const int offset5=2*NProj+2*NHiddenVariable; 
+  const int offset6=2*NProj+2*NHiddenVariable+2*NSlater; 
   const int nSizeTheta=NSizeTheta;
   const int nSetHidden=NSetHidden;
   const int nNeuronSample=NNeuronSample;
@@ -229,17 +230,18 @@ void VMCMainCal(MPI_Comm comm) {
          HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable. */
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(f=0;f<nSetHidden;f++){ 
-        offset = f*NIntPerNeuron;
+        offset1 = f*nNeuronPerSet;
+        offset2 = f*nIntPerNeuron;
         for(j=0;j<nIntPerNeuron;j++) {
-          idx = offset + j; 
+          idx = offset2 + j; 
           x = 0.0;
           for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
-            tmpTheta1 = thetaHidden1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
-            tmpTheta2 = thetaHidden2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
+            tmpTheta1 = thetaHidden1 + offset1 + samplehidden*nSizeTheta; 
+            tmpTheta2 = thetaHidden2 + offset1 + samplehidden*nSizeTheta; 
             for(i=0;i<nNeuronPerSet;i++) {
-             rsi = HiddenPhysIntIdx2[idx][i]; 
-             x += tanh(creal(tmpTheta1[i]))*(double complex)(2*eleNum[rsi]-1);  
-             x += tanh(creal(tmpTheta2[i]))*(double complex)(2*eleNum[rsi]-1);  
+              rsi = HiddenPhysIntIdx2[idx][i]; 
+              x += tanh(creal(tmpTheta1[i]))*(double complex)(2*eleNum[rsi]-1);  
+              x += tanh(creal(tmpTheta2[i]))*(double complex)(2*eleNum[rsi]-1);  
             }
           }
           x /= 2.0*(double)(nVMCSampleHidden);
@@ -248,8 +250,8 @@ void VMCMainCal(MPI_Comm comm) {
           tmp_i++;
         }
       }
-      if( 2*tmp_i != offset1 ) {
-        fprintf(stderr, " 2*tmp_i != offset1 \n");
+      if( 2*tmp_i != offset5 ) {
+        fprintf(stderr, " 2*tmp_i != offset5 \n");
         MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
       }
       StopTimer(74);
@@ -257,11 +259,11 @@ void VMCMainCal(MPI_Comm comm) {
 
       StartTimer(42);
       /* SlaterElmDiff */
-      SlaterElmDiff_fcmp(SROptO+offset1+2,ip,eleIdx); //TBC: using InvM not InvM_real /* modified by YN */
+      SlaterElmDiff_fcmp(SROptO+offset5+2,ip,eleIdx); //TBC: using InvM not InvM_real /* modified by YN */
       StopTimer(42);
       
       if(FlagOptTrans>0) { // this part will be not used
-        calculateOptTransDiff(SROptO+offset2+2, ip); //TBC /* modified by YN */
+        calculateOptTransDiff(SROptO+offset6+2, ip); //TBC /* modified by YN */
       }
 //[s] this part will be used for real varaibles
       if(AllComplexFlag==0){
