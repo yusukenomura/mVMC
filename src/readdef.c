@@ -1207,6 +1207,18 @@ int ReadInputParameters(char *xNameListFile, MPI_Comm comm)
         }  
         for(i=idx;i<NHiddenHiddenInt;i++) HiddenHiddenInt[i] = 0.005*(genrand_real2()-0.5);
         break;
+
+      case KWInDeepHiddenMagField:
+        if(idx > NDeepHiddenMagField){
+          info=1;
+          continue;
+        }
+        for(i=0; i<idx; i++){
+          fscanf(fp, "%d %lf %lf ", &j, &tmp_real,&tmp_comp);
+          DeepHiddenMagField[i]=tmp_real+I*tmp_comp;
+        }  
+        break;
+
       /* added by YN */ 
         
       case KWInOrbital:

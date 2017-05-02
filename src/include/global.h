@@ -130,10 +130,12 @@ int NSetDeepHidden;      /* Number of the set of Deep Hidden neurons            
 int NHiddenMagField;     /* Total number of magnetic-field variabls in hidden layers            */
 int NHiddenPhysInt;      /* Total number of (hidden layer)-(physical layer) interactions        */
 int NHiddenHiddenInt;    /* Total number of (hidden layer)-(deep hidden layer) interactions     */
+int NDeepHiddenMagField; /* Total number of magnetic-field variabls in deep hidden layers       */
 int NNeuronPerSet;       /* Number of neurons per one set                                       */
 int FlagNeuronTrans;     /* FlagNeuronTrans=1: use translational symmetry, 0: symmetry not used */
 int NIntPerNeuron;       /* Number of hidden-phys interactions per one neuron                   */
-int NHiddenVariable;     /* Total number of hidden variables = NHiddenMagField + NHiddenPhysInt */  
+int NHiddenVariable;     /* Total number of hidden variables = NHiddenMagField + NHiddenPhysInt 
+                                                       + NHiddenHiddenInt + NDeepHiddenMagField */  
 int NSizeTheta;          /* Number of theta angles per set =  NSetHidden * NNeuronPerSet        */  
 int NSizeThetaSave;      /* Number of theta angles for saving = NSizeTheta * NVMCSampleHidden   */  
 int NNeuronSample;       /* Number of neurons whose spins are sampled by Monte Carlo method     */
@@ -207,7 +209,9 @@ double complex *Proj;   /* correlation factor (Proj    =Para) */
 double complex *HiddenMagField; /* magnetic field acting on hidden neurons (HiddenMagField=Para+NProj)  */ 
 double complex *HiddenPhysInt;  /* Interaction between hidden and physical variables (HiddenPhysInt=Para+NProj+NHiddenMagField)*/ 
 double complex *HiddenHiddenInt;  /* Interaction between hidden and deep hidden variables 
-                                    (HiddenHiddenInt=Para+NProj+NHiddenMagField+HiddenPhysInt) */ 
+                                    (HiddenHiddenInt=HiddenPhysInt+NHiddenPhysInt) */ 
+double complex *DeepHiddenMagField; /* magnetic field acting on deep hidden neurons 
+                                    (DeepHiddenMagField=HiddenHiddenInt+NHiddenHiddenInt)  */ 
 /* added by YN */
 double complex *Slater; /* pair orbital (Slater  =Para+NProj+NHiddenVariable) */         /* modified by YN */
 double complex *OptTrans; /* weights    (OptTrans=Para+NProj+NHiddenVariable+NSlater) */ /* modified by YN */
