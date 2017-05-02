@@ -159,6 +159,13 @@ void OutputOptData() {
 			  NHiddenPhysInt, NHiddenPhysInt, count_i, n);
       count_i += NHiddenPhysInt;
     }
+
+    if(NHiddenHiddenInt !=0){
+      sprintf(fileName, "%s_hidden-hidden_int_opt.dat", CParaFileHead);
+      Child_OutputOptData(fp, fileName, "NHiddenHiddenInt",
+			  NHiddenHiddenInt, NHiddenHiddenInt, count_i, n);
+      count_i += NHiddenHiddenInt;
+    }
 /* added by YN */
 
     if(NSlater != 0){
