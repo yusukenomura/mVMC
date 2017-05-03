@@ -41,7 +41,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
   double complex *myTmp; /* modified by YN */
   int *myEleIdx, *myEleNum, *myProjCntNew;
   /* added by YN */
-  const int nVMCSampleHidden2 = nVMCSampleHidden*2
+  const int nVMCSampleHidden2 = 2*NVMCSampleHidden;
   int i; 
   int *myHiddenCfgNew1;
   int *myHiddenCfgNew2;
@@ -90,7 +90,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
                  hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
                  thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
       LocalCisAjs[idx] = 0.0; /* change */
-      for(i=0;i<nVMCSampleHidden2,i++) LocalCisAjs[idx] += myTmp[i]; /* change */
+      for(i=0;i<nVMCSampleHidden2;i++) LocalCisAjs[idx] += myTmp[i]; /* change */
       /* modified by YN */
     }
 
@@ -118,7 +118,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
       GreenFunc2(myTmp,ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, 
                  hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
                  thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
-      for(i=0;i<nVMCSampleHidden2,i++) PhysCisAjsCktAltDC[idx] += w*myTmp[i];
+      for(i=0;i<nVMCSampleHidden2;i++) PhysCisAjsCktAltDC[idx] += w*myTmp[i];
       /* modified by YN */
     }
     

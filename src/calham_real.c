@@ -37,7 +37,7 @@ void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, 
 /* modified by YN */
   const int *n0 = eleNum;
   const int *n1 = eleNum + Nsite;
-  double myTmp; /* added by YN */
+  double *myTmp; /* modified by YN */
   int idx;
   int ri,rj,s,rk,rl,t;
   int *myEleIdx, *myEleNum, *myProjCntNew;
@@ -77,8 +77,8 @@ void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, 
     myHiddenCfgNew2 = GetWorkSpaceThreadInt(NNeuronSample); 
     myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
     myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
-    myEnergy = GetWorkSpaceThreadDouble(nVCMSampleHidden2);
-    myTmp = GetWorkSpaceThreadDouble(nVCMSampleHidden2);
+    myEnergy = GetWorkSpaceThreadDouble(nVMCSampleHidden2);
+    myTmp = GetWorkSpaceThreadDouble(nVMCSampleHidden2);
     /* added by YN */
     myBuffer = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
 

@@ -191,11 +191,13 @@ void VMCMainCal(MPI_Comm comm) {
         continue;
       }
     }
-    /* modified by YN */
 
     Wc += w;
-    Etot  += w * e;
-    Etot2 += w * conj(e) * e;
+    for(i=0;i<nVMCSampleHidden2;i++){
+      Etot  += w * e[i];
+      Etot2 += w * conj(e[i]) * e[i];
+    }
+    /* modified by YN */
 #ifdef _DEBUG
     printf("  Debug: sample=%d: calculateOpt \n",sample);
 #endif

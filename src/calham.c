@@ -60,7 +60,7 @@ void CalculateHamiltonian(double complex *e, const double complex ip, int *eleId
   double complex *myEnergy, myEnergy_tmp; /* modified by YN */
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NNeuronSample); /* modified by YN */
-  RequestWorkSpaceThreadComplex(2*NSizeTheta+4*NVMCSampleHidden,NQPFull+2*Nsize); /* modified by KI  */
+  RequestWorkSpaceThreadComplex(2*NSizeTheta+4*NVMCSampleHidden+NQPFull+2*Nsize); /* modified by KI  */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
   for(i=0;i<2*NVMCSampleHidden;i++) e[i] = 0.0; /* added by YN */
 
@@ -288,7 +288,7 @@ void CalculateHamiltonian1(double complex *e, const double complex ip, int *eleI
   double complex *myThetaHiddenNew2; 
   /* added by YN */
   double complex *myBuffer;
-  double complex myEnergy;
+  double complex *myEnergy; /* modified by YN */
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NNeuronSample);
   RequestWorkSpaceThreadComplex(2*NSizeTheta+4*NVMCSampleHidden+NQPFull); /* modified by KI, modified by YN */
