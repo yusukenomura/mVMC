@@ -27,43 +27,46 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 /* modified by YN */
-double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                 const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
-                                 const double complex *thetaHidden1, const double complex *thetaHidden2);
+void CalculateHamiltonian_real(double *e, const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
+                               const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
+                               const double complex *thetaHidden1, const double complex *thetaHidden2);
 
-double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
-                                 const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
-                                 const double complex *thetaHidden1, const double complex *thetaHidden2){
+void CalculateHamiltonian_real(double *e, const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
+                               const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
+                               const double complex *thetaHidden1, const double complex *thetaHidden2){
 /* modified by YN */
   const int *n0 = eleNum;
   const int *n1 = eleNum + Nsite;
-  double e=0.0, tmp;
+  double myTmp; /* added by YN */
   int idx;
   int ri,rj,s,rk,rl,t;
   int *myEleIdx, *myEleNum, *myProjCntNew;
   /* added by YN */
+  const int nVMCSampleHidden2 = 2*NVMCSampleHidden;
+  int i;
   int *myHiddenCfgNew1;
   int *myHiddenCfgNew2;
   double complex *myThetaHiddenNew1; 
   double complex *myThetaHiddenNew2; 
   /* added by YN */
   double  *myBuffer;
-  double  myEnergy;
+  double  *myEnergy, myEnergy_tmp; /* modified by YN */
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NNeuronSample); /* modified by YN */
-  RequestWorkSpaceThreadDouble(NQPFull+2*Nsize);
+  RequestWorkSpaceThreadDouble(4*NVMCSampleHidden+NQPFull+2*Nsize); /* modified by YN */
   RequestWorkSpaceThreadComplex(2*NSizeTheta); /* added by YN */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
+  for(i=0;i<2*NVMCSampleHidden;i++) e[i] = 0.0; /* added by YN */
 
 /* modified by YN */
-  #pragma omp parallel default(none) \
-    private(myEleIdx,myEleNum,myProjCntNew,myBuffer,myEnergy, idx, ri, rj, rk, rl, s, t, \
-            myHiddenCfgNew1,myHiddenCfgNew2,myThetaHiddenNew1,myThetaHiddenNew2) \
-    firstprivate(Nsize, Nsite2, NProj, NSizeTheta, NNeuronSample, NQPFull, NCoulombIntra, CoulombIntra, ParaCoulombIntra,   \
-    NCoulombInter, CoulombInter, ParaCoulombInter, NHundCoupling, HundCoupling, ParaHundCoupling,    \
-    NTransfer, Transfer, ParaTransfer, NPairHopping, PairHopping, ParaPairHopping,    \
-    NExchangeCoupling, ExchangeCoupling, ParaExchangeCoupling, NInterAll, InterAll, ParaInterAll, n0, n1)\
-    shared(eleCfg, eleProjCnt, hiddenCfg1, hiddenCfg2, thetaHidden1, thetaHidden2, eleIdx, eleNum) reduction(+:e)
+#pragma omp parallel default(none) \
+  private(myEleIdx, myEleNum, myProjCntNew, myBuffer, myEnergy, myEnergy_tmp, myTmp, idx, i, ri, rj, rk, rl, s, t, \
+          myHiddenCfgNew1, myHiddenCfgNew2, myThetaHiddenNew1, myThetaHiddenNew2) \
+  firstprivate(ip, Nsize, Nsite2, NProj, NSizeTheta, NNeuronSample, NQPFull, NCoulombIntra, CoulombIntra, ParaCoulombIntra, \
+               NCoulombInter, CoulombInter, ParaCoulombInter, NHundCoupling, HundCoupling, ParaHundCoupling, \
+               NTransfer, Transfer, ParaTransfer, NPairHopping, PairHopping, ParaPairHopping, nVMCSampleHidden2, \
+               NExchangeCoupling, ExchangeCoupling, ParaExchangeCoupling, NInterAll, InterAll, ParaInterAll, n0, n1) \
+  shared(eleCfg, eleProjCnt, hiddenCfg1, hiddenCfg2, thetaHidden1, thetaHidden2, eleIdx, eleNum, e) 
 /* modified by YN */
   {
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
@@ -74,6 +77,8 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
     myHiddenCfgNew2 = GetWorkSpaceThreadInt(NNeuronSample); 
     myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
     myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
+    myEnergy = GetWorkSpaceThreadDouble(nVCMSampleHidden2);
+    myTmp = GetWorkSpaceThreadDouble(nVCMSampleHidden2);
     /* added by YN */
     myBuffer = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
 
@@ -83,7 +88,11 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
     for(idx=0;idx<Nsite2;idx++) myEleNum[idx] = eleNum[idx];
     #pragma omp barrier
     
-    myEnergy = 0.0;
+    /* modified by YN */
+    #pragma loop noalias
+    for(i=0;i<nVMCSampleHidden2;i++) myEnergy[i] = 0.0;
+    myEnergy_tmp = 0.0;
+    /* modified by YN */
 
     #pragma omp master
     {StartTimer(70);}
@@ -95,7 +104,7 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
     #pragma omp for private(idx,ri) nowait
     for(idx=0;idx<NCoulombIntra;idx++) {
       ri = CoulombIntra[idx];
-      myEnergy += ParaCoulombIntra[idx] * n0[ri] * n1[ri];
+      myEnergy_tmp += ParaCoulombIntra[idx] * n0[ri] * n1[ri]; /* modified by YN */
     }
 
 #ifdef _DEBUG
@@ -107,7 +116,7 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
     for(idx=0;idx<NCoulombInter;idx++) {
       ri = CoulombInter[idx][0];
       rj = CoulombInter[idx][1];
-      myEnergy += ParaCoulombInter[idx] * (n0[ri]+n1[ri]) * (n0[rj]+n1[rj]);
+      myEnergy_tmp += ParaCoulombInter[idx] * (n0[ri]+n1[ri]) * (n0[rj]+n1[rj]); /* modified by YN */
     }
 
 #ifdef _DEBUG
@@ -119,7 +128,7 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
     for(idx=0;idx<NHundCoupling;idx++) {
       ri = HundCoupling[idx][0];
       rj = HundCoupling[idx][1];
-      myEnergy -= ParaHundCoupling[idx] * (n0[ri]*n0[rj] + n1[ri]*n1[rj]);
+      myEnergy_tmp -= ParaHundCoupling[idx] * (n0[ri]*n0[rj] + n1[ri]*n1[rj]); /* modified by YN */
       /* Caution: negative sign */
     }
 
@@ -137,10 +146,12 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
       rj = Transfer[idx][2];
       s  = Transfer[idx][3];
       
-      myEnergy -= creal(ParaTransfer[idx])
-        * GreenFunc1_real(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
-                          hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
-                          thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
+      /* modified by YN */
+      GreenFunc1_real(myTmp,ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, 
+                      hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
+                      thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
+      for(i=0;i<nVMCSampleHidden2;i++) myEnergy[i] -= creal(ParaTransfer[idx]) * myTmp[i];
+      /* modified by YN */
       /* Caution: negative sign */
     }
 
@@ -157,10 +168,12 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
       ri = PairHopping[idx][0];
       rj = PairHopping[idx][1];
     
-      myEnergy += ParaPairHopping[idx]
-        * GreenFunc2_real(ri,rj,ri,rj,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
-                          hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
-                          thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
+      /* modified by YN */
+      GreenFunc2_real(myTmp,ri,rj,ri,rj,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, 
+                      hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
+                      thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
+      for(i=0;i<nVMCSampleHidden2;i++) myEnergy[i] += ParaPairHopping[idx] * myTmp[i];
+      /* modified by YN */
     }
 
 #ifdef _DEBUG
@@ -168,20 +181,21 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
     printf("    Debug: ExchangeCoupling, NExchangeCoupling=%d\n", NExchangeCoulpling);
 #endif
     /* Exchange Coupling */
-    #pragma omp for private(idx,ri,rj,tmp) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,myTmp) schedule(dynamic) nowait
     for(idx=0;idx<NExchangeCoupling;idx++) {
       ri = ExchangeCoupling[idx][0];
       rj = ExchangeCoupling[idx][1];
     
       /* modified by YN */
-      tmp =  GreenFunc2_real(ri,rj,rj,ri,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,
-                             hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
-                             thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
-      tmp += GreenFunc2_real(ri,rj,rj,ri,1,0,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,
-                             hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
-                             thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
+      GreenFunc2_real(myTmp,ri,rj,rj,ri,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,
+                      hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
+                      thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
+      for(i=0;i<nVMCSampleHidden2;i++) myEnergy[i] += ParaExchangeCoupling[idx] * myTmp[i];
+      GreenFunc2_real(myTmp,ri,rj,rj,ri,1,0,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,
+                      hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
+                      thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
+      for(i=0;i<nVMCSampleHidden2;i++) myEnergy[i] += ParaExchangeCoupling[idx] * myTmp[i];
       /* modified by YN */
-      myEnergy += ParaExchangeCoupling[idx] * tmp;
     }
     
 #ifdef _DEBUG
@@ -198,10 +212,12 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
       rl = InterAll[idx][6];
       t  = InterAll[idx][7];
       
-      myEnergy += ParaInterAll[idx]
-        * GreenFunc2_real(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
-                          hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
-                          thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
+      /* modified by YN */
+      GreenFunc2_real(myTmp,ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, 
+                      hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
+                      thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
+      for(i=0;i<nVMCSampleHidden2;i++) myEnergy[i] += ParaInterAll[idx] * myTmp[i];
+      /* modified by YN */
     }
 
     #pragma omp master
@@ -209,7 +225,12 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
 #ifdef _DEBUG    
     printf("    Debug: myEnergy=%lf\n", myEnergy);
 #endif
-    e += myEnergy;
+    /* modified by YN */
+    #pragma omp critical
+    {
+      for(i=0;i<nVMCSampleHidden2;i++) e[i] += myEnergy[i] + myEnergy_tmp;
+    }
+    /* modified by YN */
   }
 #ifdef _DEBUG
 #pragma omp master
@@ -222,5 +243,5 @@ double CalculateHamiltonian_real(const double complex ip, int *eleIdx, const int
 #pragma omp master
   printf("    Debug: HamRealFinish\n", NInterAll);
 #endif
-  return e;
+  return; /* modified by YN */
 }

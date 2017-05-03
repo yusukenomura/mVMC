@@ -27,17 +27,17 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 /* modified by YN */
-double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
-                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
-                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
-                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer); 
-double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
-                  const int s, const int t, const double  ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
-                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
-                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
-                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer); 
+void GreenFunc1_real(double *g1, const int ri, const int rj, const int s, const double ip,
+                int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer); 
+void GreenFunc2_real(double *g2, const int ri, const int rj, const int rk, const int rl,
+                const int s, const int t, const double  ip,
+                int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer); 
 /* modified by YN */
 /*
 double complex GreenFuncN(const int n, int *rsi, int *rsj, const double complex  ip,
@@ -49,26 +49,30 @@ double complex calculateNewPfMN_child(const int qpidx, const int n, const int *m
 /* Calculate 1-body Green function <CisAjs> */
 /* buffer size = NQPFull */
 /* modified by YN */
-double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
-                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
-                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
-                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer){ 
+void GreenFunc1_real(double *g1, const int ri, const int rj, const int s, const double ip,
+                int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer){ 
 /* modified by YN */
   double  z;
   int mj,msj,rsi,rsj;
   double  *pfMNew_real = buffer; /* NQPFull */
   /* added by YN */
-  const int nVMCSampleHidden = NVMCSampleHidden;
+  const int nVMCSampleHidden  = NVMCSampleHidden;
+  const int nVMCSampleHidden2 = NVMCSampleHidden2;
   const int nSizeTheta = NSizeTheta;
-  int samplehidden; 
+  const int nNeuronSample = NNeuronSample;
+  int i, samplehidden; 
   const int *tmpHiddenCfg1, *tmpHiddenCfg2;
   const double complex *tmpTheta1, *tmpTheta2;
   double x;
   /* added by YN */
 
-  if(ri==rj) return eleNum[ri+s*Nsite];
-  if(eleNum[ri+s*Nsite]==1 || eleNum[rj+s*Nsite]==0) return 0.0;
+  /* modified by YN */
+  if(ri==rj) for(i=0;i<nVMCSampleHidden2;i++) g1[i] = (double)(eleNum[ri+s*Nsite]);
+  if(eleNum[ri+s*Nsite]==1 || eleNum[rj+s*Nsite]==0) for(i=0;i<nVMCSampleHidden2;i++) g1[i] = 0.0;
+  /* modified by YN */
 
   mj = eleCfg[rj+s*Nsite];
   msj = mj + s*Ne;
@@ -87,21 +91,20 @@ double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
   z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
 
   /* added by YN */
-  x = 0.0;
   for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
     tmpTheta1 = thetaHidden1 + samplehidden*nSizeTheta; 
     tmpTheta2 = thetaHidden2 + samplehidden*nSizeTheta; 
     /* change */
-    tmpHiddenCfg1 = hiddenCfg1 + samplehidden*nSizeTheta; 
-    tmpHiddenCfg2 = hiddenCfg2 + samplehidden*nSizeTheta; 
+    tmpHiddenCfg1 = hiddenCfg1 + samplehidden*nNeuronSample; 
+    tmpHiddenCfg2 = hiddenCfg2 + samplehidden*nNeuronSample; 
     /* change */
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew1, tmpTheta1, tmpHiddenCfg1); 
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew2, tmpTheta2, tmpHiddenCfg2); 
-    x += HiddenWeightRatio(thetaHiddenNew1,tmpTheta1);  
-    x += HiddenWeightRatio(thetaHiddenNew2,tmpTheta2);  
+    x = HiddenWeightRatio(thetaHiddenNew1,tmpTheta1);  
+    g1[samplehidden*2  ] = x*z/ip; // TBC
+    x = HiddenWeightRatio(thetaHiddenNew2,tmpTheta2);  
+    g1[samplehidden*2+1] = x*z/ip; // TBC
   }
-  x /= 2.0*(double)(nVMCSampleHidden);
-  z *= (double complex)(x);
   /* added by YN */
 
   /* revert hopping */
@@ -109,18 +112,18 @@ double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
   eleNum[rsj] = 1;
   eleNum[rsi] = 0;
 
-  return z/ip;//TBC
+  return; /* mofieid by YN */
 }
 
 /* Calculate 2-body Green function <psi|CisAjsCktAlt|x>/<psi|x> */
 /* buffer size = NQPFull+2*Nsize */
 /* modified by YN */
-double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
-                  const int s, const int t, const double  ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
-                  const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
-                  const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
-                  const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer){ 
+void GreenFunc2_real(double *g2, const int ri, const int rj, const int rk, const int rl,
+                const int s, const int t, const double  ip,
+                int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt, int *projCntNew,
+                const int *hiddenCfg1, int *hiddenCfgNew1, const int *hiddenCfg2, int *hiddenCfgNew2,
+                const double complex *thetaHidden1, double complex *thetaHiddenNew1, 
+                const double complex *thetaHidden2, double complex *thetaHiddenNew2, double *buffer){ 
 /* modified by YN */
   double z;
   int mj,msj,ml,mtl;
@@ -128,9 +131,11 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   double *pfMNew_real = buffer; /* [NQPFull] */
   double *bufV   = buffer+NQPFull; /* 2*Nsize */
   /* added by YN */
-  int nVMCSampleHidden = NVMCSampleHidden;
-  int nSizeTheta = NSizeTheta;
-  int samplehidden; 
+  const int nVMCSampleHidden  = NVMCSampleHidden;
+  const int nVMCSampleHidden2 = NVMCSampleHidden2;
+  const int nSizeTheta = NSizeTheta;
+  const int nNeuronSample = NNeuronSample;
+  int i, samplehidden; 
   const int *tmpHiddenCfg1, *tmpHiddenCfg2;
   const double complex *tmpTheta1, *tmpTheta2;
   double x;
@@ -141,50 +146,55 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   rtk = rk + t*Nsite;
   rtl = rl + t*Nsite;
 
+  /* modified by YN */
   if(s==t) {
     if(rk==rl) { /* CisAjsNks */
-      if(eleNum[rtk]==0) return 0.0;
-      else return GreenFunc1_real(ri,rj,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
-                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
-                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CisAjs */ /* modified by YN */
+      if(eleNum[rtk]==0) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = 0.0;
+      else GreenFunc1_real(g2,ri,rj,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, 
+                      hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, 
+                      thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CisAjs */ 
     }else if(rj==rl) {
-      return 0.0; /* CisAjsCksAjs (j!=k) */
+      for(i=0;i<nVMCSampleHidden2;i++) g2[i] = 0.0; /* CisAjsCksAjs (j!=k) */
     }else if(ri==rl) { /* AjsCksNis */
-      if(eleNum[rsi]==0) return 0.0;
-      else if(rj==rk) return 1.0-eleNum[rsj];
-      else return -GreenFunc1_real(rk,rj,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
-                              hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
-                              thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* -CksAjs */ /* modified by YN */
+      if(eleNum[rsi]==0) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = 0.0;
+      else if(rj==rk) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = (double)(1.0-eleNum[rsj]);
+      else {
+        GreenFunc1_real(g2,rk,rj,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, 
+                   hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, 
+                   thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* -CksAjs */ 
+        for(i=0;i<nVMCSampleHidden2;i++) g2[i] *= -1.0;
+      }
     }else if(rj==rk) { /* CisAls(1-Njs) */
-      if(eleNum[rsj]==1) return 0.0;
-      else if(ri==rl) return eleNum[rsi];
-      else return GreenFunc1_real(ri,rl,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
-                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
-                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CisAls */ /* modified by YN */
+      if(eleNum[rsj]==1) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = 0.0;
+      else if(ri==rl) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = (double)(eleNum[rsi]);
+      else GreenFunc1_real(g2,ri,rl,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, 
+                      hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, 
+                      thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CisAls */ 
     }else if(ri==rk) {
-      return 0.0; /* CisAjsCisAls (i!=j) */
+      for(i=0;i<nVMCSampleHidden2;i++) g2[i] = 0.0; /* CisAjsCisAls (i!=j) */
     }else if(ri==rj) { /* NisCksAls (i!=k,l) */
-      if(eleNum[rsi]==0) return 0.0;
-      else return GreenFunc1_real(rk,rl,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
-                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
-                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CksAls */ /* modified by YN */
+      if(eleNum[rsi]==0) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = 0.0;
+      else GreenFunc1_real(g2,rk,rl,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, 
+                      hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, 
+                      thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CksAls */ 
     }
   } if(s!=t) {
     if(rk==rl) { /* CisAjsNkt */
-      if(eleNum[rtk]==0) return 0.0;
-      else if(ri==rj) return eleNum[rsi];
-      else return GreenFunc1_real(ri,rj,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
-                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
-                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CisAjs */ /* modified by YN */
+      if(eleNum[rtk]==0) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = 0.0;
+      else if(ri==rj) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = eleNum[rsi];
+      else GreenFunc1_real(g2,ri,rj,s,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, 
+                      hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, 
+                      thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CisAjs */ 
     }else if(ri==rj) { /* NisCktAlt */
-      if(eleNum[rsi]==0) return 0.0;
-      else return GreenFunc1_real(rk,rl,t,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, /* modified by YN */
-                             hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, /* added by YN */
-                             thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CktAlt */ /* modified by YN */
+      if(eleNum[rsi]==0) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = 0.0;
+      else GreenFunc1_real(g2,rk,rl,t,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew, 
+                      hiddenCfg1,hiddenCfgNew1,hiddenCfg2,hiddenCfgNew2, 
+                      thetaHidden1,thetaHiddenNew1,thetaHidden2,thetaHiddenNew2,buffer); /* CktAlt */ 
     }
   }
 
-  if(eleNum[rsi]==1 || eleNum[rsj]==0 || eleNum[rtk]==1 || eleNum[rtl]==0) return 0.0;
+  if(eleNum[rsi]==1 || eleNum[rsj]==0 || eleNum[rtk]==1 || eleNum[rtl]==0) for(i=0;i<nVMCSampleHidden2;i++) g2[i] = 0.0;
+  /* modified by YN */
 
   mj = eleCfg[rj+s*Nsite];
   ml = eleCfg[rl+t*Nsite];
@@ -208,23 +218,22 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
 
   /* added by YN */
-  x = 0.0;
   for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
     tmpTheta1 = thetaHidden1 + samplehidden*nSizeTheta; 
     tmpTheta2 = thetaHidden2 + samplehidden*nSizeTheta; 
     /* change */
-    tmpHiddenCfg1 = hiddenCfg1 + samplehidden*nSizeTheta; 
-    tmpHiddenCfg2 = hiddenCfg2 + samplehidden*nSizeTheta; 
+    tmpHiddenCfg1 = hiddenCfg1 + samplehidden*nNeuronSample; 
+    tmpHiddenCfg2 = hiddenCfg2 + samplehidden*nNeuronSample; 
     /* change */
     UpdateThetaHidden(rl, rk, t, thetaHiddenNew1, tmpTheta1, tmpHiddenCfg1); 
     UpdateThetaHidden(rl, rk, t, thetaHiddenNew2, tmpTheta2, tmpHiddenCfg2); 
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew1, thetaHiddenNew1, tmpHiddenCfg1); 
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew2, thetaHiddenNew2, tmpHiddenCfg2); 
-    x += HiddenWeightRatio(thetaHiddenNew1,tmpTheta1);  
-    x += HiddenWeightRatio(thetaHiddenNew2,tmpTheta2);  
+    x = HiddenWeightRatio(thetaHiddenNew1,tmpTheta1);  
+    g2[samplehidden*2  ] = x*z/ip; //TBC
+    x = HiddenWeightRatio(thetaHiddenNew2,tmpTheta2);  
+    g2[samplehidden*2+1] = x*z/ip; //TBC
   }
-  x /= 2.0*(double)(nVMCSampleHidden);
-  z *= (double complex)(x);
   /* added by YN */
 
   /* revert hopping */
@@ -235,7 +244,7 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   eleNum[rsj] = 1;
   eleNum[rsi] = 0;
 
-  return z/ip;//TBC
+  return; /* modified by YN */
 }
 
 
