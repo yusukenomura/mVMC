@@ -319,6 +319,7 @@ int LapackLWork;
 
 /***** counter for vmcMake *****/
 int Counter[6] = {0,0,0,0,0,0}; /* modified by YN */
+double Counterhidden[6] = {0.0,0.0,0.0,0.0,0.0,0.0}; /* modified by YN */
 /* 0: hopping, 1: hopping accept, 2: exchange try, 3: exchange accept 4: hidden spinflip try 5: hidden spinflip accept */ /* modified by YN */
 
 #endif /*  _INCLUDE_GLOBAL */

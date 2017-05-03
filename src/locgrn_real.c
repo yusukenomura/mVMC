@@ -59,8 +59,8 @@ double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
   int mj,msj,rsi,rsj;
   double  *pfMNew_real = buffer; /* NQPFull */
   /* added by YN */
-  int nVMCSampleHidden = NVMCSampleHidden;
-  int nSizeTheta = NSizeTheta;
+  const int nVMCSampleHidden = NVMCSampleHidden;
+  const int nSizeTheta = NSizeTheta;
   int samplehidden; 
   const int *tmpHiddenCfg1, *tmpHiddenCfg2;
   const double complex *tmpTheta1, *tmpTheta2;

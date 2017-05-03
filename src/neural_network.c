@@ -160,12 +160,12 @@ void UpdateHiddenCfg(int *hiddenCfg, double complex *thetaHidden){
   }
  
   for(hi=0;hi<nNeuronSample;hi++){
-    Counter[4]++;  
+    Counterhidden[4] += 1.0;  
     x = exp( -2.0*creal(thetaHidden[hi]) );   
     if( genrand_real2() < x ) {
       hiddenCfg[hi] *= -1;
       thetaHidden[hi] *= -1.0;
-      Counter[5]++;  
+      Counterhidden[5] += 1.0;  
     }
   }
 

@@ -114,6 +114,7 @@ void VMCMakeSample(MPI_Comm comm) {
   nInStep = NVMCInterval * Nsite;
 
   for(i=0;i<6;i++) Counter[i]=0;  /* reset counter */
+  for(i=0;i<6;i++) Counterhidden[i]=0.0;  /* reset counter */
 
   for(outStep=0;outStep<nOutStep;outStep++) {
     for(inStep=0;inStep<nInStep;inStep++) {

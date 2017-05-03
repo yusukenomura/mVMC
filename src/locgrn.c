@@ -59,8 +59,8 @@ double complex GreenFunc1(const int ri, const int rj, const int s, const double 
   int mj,msj,rsi,rsj;
   double complex *pfMNew = buffer; /* NQPFull */
   /* added by YN */
-  int nVMCSampleHidden = NVMCSampleHidden;
-  int nSizeTheta = NSizeTheta;
+  const int nVMCSampleHidden = NVMCSampleHidden;
+  const int nSizeTheta = NSizeTheta;
   int samplehidden; 
   const int *tmpHiddenCfg1, *tmpHiddenCfg2;
   const double complex *tmpTheta1, *tmpTheta2;
