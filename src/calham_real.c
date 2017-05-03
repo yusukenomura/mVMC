@@ -27,11 +27,11 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 /* modified by YN */
-void CalculateHamiltonian_real(double *e, const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
+void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, const int *eleCfg, int *eleNum, 
                                const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                const double complex *thetaHidden1, const double complex *thetaHidden2);
 
-void CalculateHamiltonian_real(double *e, const double complex ip, int *eleIdx, const int *eleCfg, int *eleNum, 
+void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, const int *eleCfg, int *eleNum, 
                                const int *eleProjCnt, const int *hiddenCfg1, const int *hiddenCfg2, 
                                const double complex *thetaHidden1, const double complex *thetaHidden2){
 /* modified by YN */

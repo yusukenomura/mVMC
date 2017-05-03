@@ -57,7 +57,8 @@ void VMCMainCal(MPI_Comm comm) {
   double x,y1,y2;  
   int nFail = 0; 
 /* added by YN */ 
-  double complex we,e,ip; /* modified by YN */
+  double complex we,ip; /* modified by YN */
+  double complex e[2*NVMCSampleHidden]; 
   double w;
   double sqrtw; /* modified by YN */
 
@@ -75,6 +76,7 @@ void VMCMainCal(MPI_Comm comm) {
   const int nSetHidden=NSetHidden;
   const int nNeuronSample=NNeuronSample;
   const int nVMCSampleHidden=NVMCSampleHidden;
+  const int nVMCSampleHidden2=2*NVMCSampleHidden;
   const int nIntPerNeuron=NIntPerNeuron;
   const int nNeuronPerSet=NNeuronPerSet;
   /* added by YN */
@@ -171,21 +173,25 @@ void VMCMainCal(MPI_Comm comm) {
 #ifdef _DEBUG
       printf("  Debug: sample=%d: calculateHam_real \n",sample);
 #endif
-      e = CalculateHamiltonian_real(creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt, /* modified by YN */
-                                    hiddenCfg1,hiddenCfg2,thetaHidden1,thetaHidden2); /* added by YN */
+      CalculateHamiltonian_real(e,creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt, /* modified by YN */
+                                hiddenCfg1,hiddenCfg2,thetaHidden1,thetaHidden2); /* added by YN */
     }else{
 #ifdef _DEBUG
       printf("  Debug: sample=%d: calculateHam_cmp \n",sample);
 #endif
-      e = CalculateHamiltonian(ip,eleIdx,eleCfg,eleNum,eleProjCnt, /* modified by YN */
-                               hiddenCfg1,hiddenCfg2,thetaHidden1,thetaHidden2); /* added by YN */
+      CalculateHamiltonian(e,ip,eleIdx,eleCfg,eleNum,eleProjCnt, /* modified by YN */
+                           hiddenCfg1,hiddenCfg2,thetaHidden1,thetaHidden2); /* added by YN */
     }
     //printf("DEBUG: rank=%d: sample=%d ip= %lf %lf\n",rank,sample,creal(ip),cimag(ip));
     StopTimer(41);
-    if( !isfinite(creal(e) + cimag(e)) ) {
-      fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d e=%e\n",rank,sample,creal(e)); //TBC
-      continue;
+    /* modified by YN */
+    for(i=0;i<nVMCSampleHidden2;i++){
+      if( !isfinite(creal(e[i]) + cimag(e[i])) ) {
+        fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d e=%e\n",rank,sample,creal(e[i])); //TBC
+        continue;
+      }
     }
+    /* modified by YN */
 
     Wc += w;
     Etot  += w * e;
