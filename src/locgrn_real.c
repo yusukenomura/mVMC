@@ -60,7 +60,7 @@ void GreenFunc1_real(double *g1, const int ri, const int rj, const int s, const 
   double  *pfMNew_real = buffer; /* NQPFull */
   /* added by YN */
   const int nVMCSampleHidden  = NVMCSampleHidden;
-  const int nVMCSampleHidden2 = NVMCSampleHidden2;
+  const int nVMCSampleHidden2 = 2*NVMCSampleHidden;
   const int nSizeTheta = NSizeTheta;
   const int nNeuronSample = NNeuronSample;
   int i, samplehidden; 
@@ -132,7 +132,7 @@ void GreenFunc2_real(double *g2, const int ri, const int rj, const int rk, const
   double *bufV   = buffer+NQPFull; /* 2*Nsize */
   /* added by YN */
   const int nVMCSampleHidden  = NVMCSampleHidden;
-  const int nVMCSampleHidden2 = NVMCSampleHidden2;
+  const int nVMCSampleHidden2 = 2*NVMCSampleHidden;
   const int nSizeTheta = NSizeTheta;
   const int nNeuronSample = NNeuronSample;
   int i, samplehidden; 

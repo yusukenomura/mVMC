@@ -38,9 +38,11 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
 
   int idx,idx0,idx1;
   int ri,rj,s,rk,rl,t;
-  double complex tmp;
+  double complex *myTmp; /* modified by YN */
   int *myEleIdx, *myEleNum, *myProjCntNew;
   /* added by YN */
+  const int nVMCSampleHidden2 = nVMCSampleHidden*2
+  int i; 
   int *myHiddenCfgNew1;
   int *myHiddenCfgNew2;
   double complex *myThetaHiddenNew1; 
@@ -49,12 +51,14 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
   double complex *myBuffer;
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj+2*NNeuronSample); /* modified by YN */
-  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+2*NSizeTheta); /* modified by KI */
+  RequestWorkSpaceThreadComplex(2*NSizeTheta+2*NVMCSampleHidden+NQPFull+2*Nsize); /* modified by KI */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
 
+/* modified by YN */
 #pragma omp parallel default(shared)\
-  private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx,\
-          myHiddenCfgNew1,myHiddenCfgNew2,myThetaHiddenNew1,myThetaHiddenNew2) /* modified by YN */
+  private(myEleIdx,myEleNum,myProjCntNew,myBuffer,myTmp,idx,i,\
+          myHiddenCfgNew1,myHiddenCfgNew2,myThetaHiddenNew1,myThetaHiddenNew2) 
+/* modified by YN */
   {
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
@@ -64,6 +68,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
     myHiddenCfgNew2 = GetWorkSpaceThreadInt(NNeuronSample);
     myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
     myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
+    myTmp = GetWorkSpaceThreadComplex(nVMCSampleHidden2); 
     /* added by YN */
     myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
 
@@ -75,21 +80,24 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
     #pragma omp master
     {StartTimer(50);}
 
-    #pragma omp for private(idx,ri,rj,s,tmp) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,s,myTmp) schedule(dynamic) nowait
     for(idx=0;idx<NCisAjs;idx++) {
       ri = CisAjsIdx[idx][0];
       rj = CisAjsIdx[idx][2];
       s  = CisAjsIdx[idx][3];
-      tmp = GreenFunc1(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
-                       hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
-                       thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
-      LocalCisAjs[idx] = tmp;
+      /* modified by YN */
+      GreenFunc1(myTmp,ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, 
+                 hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
+                 thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
+      LocalCisAjs[idx] = 0.0; /* change */
+      for(i=0;i<nVMCSampleHidden2,i++) LocalCisAjs[idx] += myTmp[i]; /* change */
+      /* modified by YN */
     }
 
     #pragma omp master
     {StopTimer(50);StartTimer(51);}
     
-    #pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic)
+    #pragma omp for private(idx,ri,rj,s,rk,rl,t,myTmp) schedule(dynamic)
     for(idx=0;idx<NCisAjsCktAltDC;idx++) {
       /*
       ri = CisAjsCktAltDCIdx[idx][0];
@@ -106,10 +114,12 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
       rl = CisAjsCktAltDCIdx[idx][6];
       t  = CisAjsCktAltDCIdx[idx][5];
 
-      tmp = GreenFunc2(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, /* modified by YN */
-                       hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
-                       thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
-      PhysCisAjsCktAltDC[idx] += w*tmp;
+      /* modified by YN */
+      GreenFunc2(myTmp,ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, 
+                 hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, /* added by YN */
+                 thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); /* modified by YN */
+      for(i=0;i<nVMCSampleHidden2,i++) PhysCisAjsCktAltDC[idx] += w*myTmp[i];
+      /* modified by YN */
     }
     
     #pragma omp master
