@@ -101,9 +101,9 @@ void GreenFunc1_real(double *g1, const int ri, const int rj, const int s, const 
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew1, tmpTheta1, tmpHiddenCfg1); 
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew2, tmpTheta2, tmpHiddenCfg2); 
     x = HiddenWeightRatio(thetaHiddenNew1,tmpTheta1);  
-    g1[samplehidden*2  ] = x*z/ip; // TBC
+    g1[2*samplehidden  ] = x*z/ip; // TBC
     x = HiddenWeightRatio(thetaHiddenNew2,tmpTheta2);  
-    g1[samplehidden*2+1] = x*z/ip; // TBC
+    g1[2*samplehidden+1] = x*z/ip; // TBC
   }
   /* added by YN */
 
@@ -230,9 +230,9 @@ void GreenFunc2_real(double *g2, const int ri, const int rj, const int rk, const
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew1, thetaHiddenNew1, tmpHiddenCfg1); 
     UpdateThetaHidden(rj, ri, s, thetaHiddenNew2, thetaHiddenNew2, tmpHiddenCfg2); 
     x = HiddenWeightRatio(thetaHiddenNew1,tmpTheta1);  
-    g2[samplehidden*2  ] = x*z/ip; //TBC
+    g2[2*samplehidden  ] = x*z/ip; //TBC
     x = HiddenWeightRatio(thetaHiddenNew2,tmpTheta2);  
-    g2[samplehidden*2+1] = x*z/ip; //TBC
+    g2[2*samplehidden+1] = x*z/ip; //TBC
   }
   /* added by YN */
 

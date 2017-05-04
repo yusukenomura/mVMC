@@ -301,7 +301,7 @@ void SetMemory() {
     }
     /* modified by YN */ /* Warning !! Temporal Treatment */ 
     SROptOO = (double complex*)malloc( sizeof(double complex)*((SROptSmatDim*AllComplexFlag+2)*(SROptSmatDim*AllComplexFlag+2)
-                                                                + 2*SROptSize + 2*SROptSize*NVMCSampleHidden) ) ; //TBC 
+                                                                + 2*SROptSize + 2*SROptSize*(2*NVMCSampleHidden) ) ) ; //TBC 
     SROptHO = SROptOO + (SROptSmatDim*AllComplexFlag+2)*(SROptSmatDim*AllComplexFlag+2); //TBC 
     /* modified by YN */ /* Warning !! Temporal Treatment */ 
     SROptO  = SROptHO + (2*SROptSize);  //TBC
@@ -311,16 +311,16 @@ void SetMemory() {
       fprintf(stderr, "error: SROptSize != SROptSmatDim+1 \n");
       MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
     }
-    SROptOO_real = (double*)malloc( sizeof(double)*(SROptSize*SROptSize + SROptSize + SROptSize*NVMCSampleHidden) ); //TBC /* modified by YN */ 
+    SROptOO_real = (double*)malloc( sizeof(double)*(SROptSize*SROptSize + SROptSize + SROptSize*(2*NVMCSampleHidden)) ); //TBC /* modified by YN */ 
     SROptHO_real = SROptOO_real + (SROptSize)*(SROptSize); //TBC
     SROptO_real  = SROptHO_real + (SROptSize);  //TBC
     } /* added by YN */
 
     if(NStoreO!=0){
       if(AllComplexFlag==0){
-        SROptO_Store_real = (double *)malloc(sizeof(double)*(SROptSize*NVMCSample*NVMCSampleHidden) ); /* modified by YN */
+        SROptO_Store_real = (double *)malloc(sizeof(double)*(SROptSize*NVMCSample*(2*NVMCSampleHidden)) ); /* modified by YN */
       }else{
-        SROptO_Store      = (double complex*)malloc( sizeof(double complex)*((SROptSmatDim+2)*NVMCSample*NVMCSampleHidden) ); /* modified by YN */ /* Warning !! Temporal Treatment */
+        SROptO_Store      = (double complex*)malloc( sizeof(double complex)*((SROptSmatDim+2)*NVMCSample*(2*NVMCSampleHidden)) ); /* modified by YN */ /* Warning !! Temporal Treatment */
       }
     }
     SROptData = (double complex*)malloc( sizeof(double complex)*(NSROptItrSmp*(2+NPara)) );
@@ -329,7 +329,7 @@ void SetMemory() {
   /***** Physical Quantity *****/
   if(NVMCCalMode==1){
     PhysCisAjs  = (double complex*)malloc(sizeof(double complex)
-                    *(2*NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC));
+                    *(NCisAjs + NCisAjsCktAlt + NCisAjsCktAltDC + NCisAjs*(2*NVMCSampleHidden))); /* modified by YN */
     PhysCisAjsCktAlt   = PhysCisAjs       + NCisAjs;
     PhysCisAjsCktAltDC = PhysCisAjsCktAlt + NCisAjsCktAlt;
     LocalCisAjs = PhysCisAjsCktAltDC + NCisAjsCktAltDC;

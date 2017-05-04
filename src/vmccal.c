@@ -266,17 +266,19 @@ void VMCMainCal(MPI_Comm comm) {
             /* change */
             tmpHiddenCfg1 = hiddenCfg1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
             tmpHiddenCfg2 = hiddenCfg2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
+
             x = 0.0;
             for(i=0;i<nNeuronPerSet;i++) {
-             rsi = HiddenPhysIntIdx2[idx][i]; 
-             x += (double)(tmpHiddenCfg1[i])*(double)(2*eleNum[rsi]-1);  /* modified by KI */
+              rsi = HiddenPhysIntIdx2[idx][i]; 
+              x += (double)(tmpHiddenCfg1[i])*(double)(2*eleNum[rsi]-1);  /* modified by KI */
             }
             srOptO[(tmp_i+1)*2]   = x;               // even real
             srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */
+
             x = 0.0;
             for(i=0;i<nNeuronPerSet;i++) {
-             rsi = HiddenPhysIntIdx2[idx][i]; 
-             x += (double)(tmpHiddenCfg2[i])*(double)(2*eleNum[rsi]-1);  /* modified by KI */
+              rsi = HiddenPhysIntIdx2[idx][i]; 
+              x += (double)(tmpHiddenCfg2[i])*(double)(2*eleNum[rsi]-1);  /* modified by KI */
             }
             srOptO[(2*SROptSize)+(tmp_i+1)*2]   = x;               // even real
             srOptO[(2*SROptSize)+(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */
@@ -330,7 +332,7 @@ void VMCMainCal(MPI_Comm comm) {
       if(NStoreO==0){
         //calculateOO_matvec(SROptOO,SROptHO,SROptO,w,e,SROptSize);
         /* added by YN */ /* Warning !! Temporal treatment */
-        fprintf(stderr,"NStoreO=0, not implemented \n");
+        fprintf(stderr,"NStoreO=0, not implemented (need to make loop for samplehidden) \n");
         MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE); 
         /* added by YN */ /* Warning !! Temporal treatment */
         if(AllComplexFlag==0){
@@ -361,7 +363,7 @@ void VMCMainCal(MPI_Comm comm) {
           offset7 = sample*(SROptSmatDim+2)*nVMCSampleHidden2;
           for(samplehidden=0;samplehidden<nVMCSampleHidden2;samplehidden++){
             we = w*e[samplehidden];
-            srOptO = SROptO + samplehidden*(SROptSmatDim+2);
+            srOptO = SROptO + samplehidden*(2*SROptSize);
             srOptO_Store = SROptO_Store + offset7 + samplehidden*(SROptSmatDim+2);
             srOptO_Store[0] = sqrtw*srOptO[0]; 
             srOptO_Store[1] = sqrtw*srOptO[1]; 
@@ -439,13 +441,14 @@ void clearPhysQuantity(){
   Wc = Etot = Etot2 = 0.0;
   if(NVMCCalMode==0) {
     /* SROptOO, SROptHO, SROptO */
-    n = (SROptSmatDim*AllComplexFlag+2)*(SROptSmatDim*AllComplexFlag+2) + 4*SROptSize; // TBC /* modified by YN */ /* Warning!! Temporal Treatment */  
+    n = (SROptSmatDim*AllComplexFlag+2)*(SROptSmatDim*AllComplexFlag+2) /* modified by YN */ /* Warning!! Temporal Treatment */ 
+      + 2*SROptSize + 2*SROptSize*(2*NVMCSampleHidden); /* modified by YN */
     vec = SROptOO;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec[i] = 0.0+0.0*I;
 // only for real variables
     if(AllComplexFlag==0){ /* added by YN */
-    n = (SROptSize)*(SROptSize+2); // TBC
+    n = SROptSize*SROptSize + SROptSize + SROptSize*(2*NVMCSampleHidden); // TBC /* modified by YN */
     vec_real = SROptOO_real;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec_real[i] = 0.0;

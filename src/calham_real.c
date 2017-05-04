@@ -78,7 +78,7 @@ void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, 
     myThetaHiddenNew1 = GetWorkSpaceThreadComplex(NSizeTheta); 
     myThetaHiddenNew2 = GetWorkSpaceThreadComplex(NSizeTheta); 
     myEnergy = GetWorkSpaceThreadDouble(nVMCSampleHidden2);
-    myTmp = GetWorkSpaceThreadDouble(nVMCSampleHidden2);
+    myTmp    = GetWorkSpaceThreadDouble(nVMCSampleHidden2);
     /* added by YN */
     myBuffer = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
 
@@ -140,7 +140,7 @@ void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, 
     printf("    Debug: Transfer\n");
 #endif
     /* Transfer */
-#pragma omp for private(idx,ri,rj,s) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,s,i) schedule(dynamic) nowait
     for(idx=0;idx<NTransfer;idx++) {
       ri = Transfer[idx][0];
       rj = Transfer[idx][2];
@@ -163,7 +163,7 @@ void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, 
     printf("    Debug: PairHopping\n");
 #endif
     /* Pair Hopping */
-    #pragma omp for private(idx,ri,rj) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,i) schedule(dynamic) nowait
     for(idx=0;idx<NPairHopping;idx++) {
       ri = PairHopping[idx][0];
       rj = PairHopping[idx][1];
@@ -181,7 +181,7 @@ void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, 
     printf("    Debug: ExchangeCoupling, NExchangeCoupling=%d\n", NExchangeCoulpling);
 #endif
     /* Exchange Coupling */
-    #pragma omp for private(idx,ri,rj,myTmp) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,myTmp,i) schedule(dynamic) nowait
     for(idx=0;idx<NExchangeCoupling;idx++) {
       ri = ExchangeCoupling[idx][0];
       rj = ExchangeCoupling[idx][1];
@@ -191,6 +191,7 @@ void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, 
                       hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
                       thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
       for(i=0;i<nVMCSampleHidden2;i++) myEnergy[i] += ParaExchangeCoupling[idx] * myTmp[i];
+
       GreenFunc2_real(myTmp,ri,rj,rj,ri,1,0,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,
                       hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
                       thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
@@ -203,7 +204,7 @@ void CalculateHamiltonian_real(double complex *e, const double ip, int *eleIdx, 
     printf("    Debug: InterAll, NInterAll=%d\n", NInterAll);
 #endif
     /* Inter All */
-    #pragma omp for private(idx,ri,rj,s,rk,rl,t) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,s,rk,rl,t,i) schedule(dynamic) nowait
     for(idx=0;idx<NInterAll;idx++) {
       ri = InterAll[idx][0];
       rj = InterAll[idx][2];

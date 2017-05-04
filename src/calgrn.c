@@ -42,7 +42,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
   int *myEleIdx, *myEleNum, *myProjCntNew;
   /* added by YN */
   const int nVMCSampleHidden2 = 2*NVMCSampleHidden;
-  int i; 
+  int i,offset0,offset1; 
   int *myHiddenCfgNew1;
   int *myHiddenCfgNew2;
   double complex *myThetaHiddenNew1; 
@@ -56,7 +56,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
 
 /* modified by YN */
 #pragma omp parallel default(shared)\
-  private(myEleIdx,myEleNum,myProjCntNew,myBuffer,myTmp,idx,i,\
+  private(myEleIdx,myEleNum,myProjCntNew,myBuffer,myTmp,idx,i,offset0,offset1,\
           myHiddenCfgNew1,myHiddenCfgNew2,myThetaHiddenNew1,myThetaHiddenNew2) 
 /* modified by YN */
   {
@@ -80,7 +80,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
     #pragma omp master
     {StartTimer(50);}
 
-    #pragma omp for private(idx,ri,rj,s,myTmp) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,s,myTmp,offset1,i) schedule(dynamic) nowait
     for(idx=0;idx<NCisAjs;idx++) {
       ri = CisAjsIdx[idx][0];
       rj = CisAjsIdx[idx][2];
@@ -89,15 +89,15 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
       GreenFunc1(myTmp,ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew, 
                  hiddenCfg1,myHiddenCfgNew1,hiddenCfg2,myHiddenCfgNew2, 
                  thetaHidden1,myThetaHiddenNew1,thetaHidden2,myThetaHiddenNew2,myBuffer); 
-      LocalCisAjs[idx] = 0.0; /* change */
-      for(i=0;i<nVMCSampleHidden2;i++) LocalCisAjs[idx] += myTmp[i]; /* change */
+      offset1 = idx*nVMCSampleHidden2; 
+      for(i=0;i<nVMCSampleHidden2;i++) LocalCisAjs[offset1+i] = myTmp[i]; 
       /* modified by YN */
     }
 
     #pragma omp master
     {StopTimer(50);StartTimer(51);}
     
-    #pragma omp for private(idx,ri,rj,s,rk,rl,t,myTmp) schedule(dynamic)
+    #pragma omp for private(idx,ri,rj,s,rk,rl,t,myTmp,i) schedule(dynamic)
     for(idx=0;idx<NCisAjsCktAltDC;idx++) {
       /*
       ri = CisAjsCktAltDCIdx[idx][0];
@@ -125,19 +125,27 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
     #pragma omp master
     {StopTimer(51);StartTimer(52);}
 
-    #pragma omp for private(idx) nowait
+    #pragma omp for private(idx,offset1,i) nowait
     for(idx=0;idx<NCisAjs;idx++) {
-      PhysCisAjs[idx] += w*LocalCisAjs[idx];
+      /* modified by YN */
+      offset1 = idx*nVMCSampleHidden2; 
+      for(i=0;i<nVMCSampleHidden2;i++) PhysCisAjs[idx] += w*LocalCisAjs[offset1+i];
+      /* modified by YN */
     }
     
     #pragma omp master
     {StopTimer(52);StartTimer(53);}
 
-    #pragma omp for private(idx,idx0,idx1) nowait
+    #pragma omp for private(idx,idx0,idx1,i,offset0,offset1) nowait
     for(idx=0;idx<NCisAjsCktAlt;idx++) {
       idx0 = CisAjsCktAltIdx[idx][0];
       idx1 = CisAjsCktAltIdx[idx][1];
-      PhysCisAjsCktAlt[idx] += w*LocalCisAjs[idx0]*conj(LocalCisAjs[idx1]);// TBC conj ok?
+      /* modified by YN */
+      offset0 = idx0*nVMCSampleHidden2; 
+      offset1 = idx1*nVMCSampleHidden2; 
+      for(i=0;i<nVMCSampleHidden2;i++)
+      PhysCisAjsCktAlt[idx] += w*LocalCisAjs[offset0+i]*conj(LocalCisAjs[offset1+i]);// TBC conj ok?
+      /* modified by YN */
     }
 
     #pragma omp master

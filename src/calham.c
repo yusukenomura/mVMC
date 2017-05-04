@@ -136,7 +136,7 @@ void CalculateHamiltonian(double complex *e, const double complex ip, int *eleId
     {StopTimer(70);StartTimer(71);}
 
     /* Transfer */
-    #pragma omp for private(idx,ri,rj,s) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,s,i) schedule(dynamic) nowait
     for(idx=0;idx<NTransfer;idx++) {
       ri = Transfer[idx][0];
       rj = Transfer[idx][2];
@@ -155,7 +155,7 @@ void CalculateHamiltonian(double complex *e, const double complex ip, int *eleId
     {StopTimer(71);StartTimer(72);}
 
     /* Pair Hopping */
-    #pragma omp for private(idx,ri,rj) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,i) schedule(dynamic) nowait
     for(idx=0;idx<NPairHopping;idx++) {
       ri = PairHopping[idx][0];
       rj = PairHopping[idx][1];
@@ -169,7 +169,7 @@ void CalculateHamiltonian(double complex *e, const double complex ip, int *eleId
     }
 
     /* Exchange Coupling */
-    #pragma omp for private(idx,ri,rj,myTmp) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,myTmp,i) schedule(dynamic) nowait
     for(idx=0;idx<NExchangeCoupling;idx++) {
       ri = ExchangeCoupling[idx][0];
       rj = ExchangeCoupling[idx][1];
@@ -188,7 +188,7 @@ void CalculateHamiltonian(double complex *e, const double complex ip, int *eleId
     }
 
     /* Inter All */
-    #pragma omp for private(idx,ri,rj,s,rk,rl,t) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,s,rk,rl,t,i) schedule(dynamic) nowait
     for(idx=0;idx<NInterAll;idx++) {
       ri = InterAll[idx][0];
       rj = InterAll[idx][2];
@@ -325,7 +325,7 @@ void CalculateHamiltonian1(double complex *e, const double complex ip, int *eleI
     /* modified by YN */
 
     /* Transfer */
-    #pragma omp for private(idx,ri,rj,s) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,s,i) schedule(dynamic) nowait
     for(idx=0;idx<NTransfer;idx++) {
       ri = Transfer[idx][0];
       rj = Transfer[idx][2];
@@ -410,7 +410,7 @@ void CalculateHamiltonian2(double complex *e, const double complex ip, int *eleI
     /* modified by YN */
 
     /* Pair Hopping */
-    #pragma omp for private(idx,ri,rj) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,i) schedule(dynamic) nowait
     for(idx=0;idx<NPairHopping;idx++) {
       ri = PairHopping[idx][0];
       rj = PairHopping[idx][1];
@@ -424,7 +424,7 @@ void CalculateHamiltonian2(double complex *e, const double complex ip, int *eleI
     }
 
     /* Exchange Coupling */
-    #pragma omp for private(idx,ri,rj,myTmp) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,myTmp,i) schedule(dynamic) nowait
     for(idx=0;idx<NExchangeCoupling;idx++) {
       ri = ExchangeCoupling[idx][0];
       rj = ExchangeCoupling[idx][1];
@@ -443,7 +443,7 @@ void CalculateHamiltonian2(double complex *e, const double complex ip, int *eleI
     }
 
     /* Inter All */
-    #pragma omp for private(idx,ri,rj,s,rk,rl,t) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,s,rk,rl,t,i) schedule(dynamic) nowait
     for(idx=0;idx<NInterAll;idx++) {
       ri = InterAll[idx][0];
       rj = InterAll[idx][2];
