@@ -35,10 +35,8 @@ void calculateOO(double complex *srOptOO, double complex *srOptHO, const double 
                  const double  w, const double complex e, const int srOptSize);
 void calculateOO_real(double *srOptOO, double *srOptHO, const double *srOptO,
                  const double w, const double e, const int srOptSize);
-void calculateOO_Store_real(double *srOptOO_real, double *srOptHO_real,  double *srOptO_real,
-                 const double w, const double e,  int srOptSize, int sampleSize);
-void calculateOO_Store(double complex *srOptOO, double complex *srOptHO,  double complex *srOptO,
-                 const double w, const double complex e,  int srOptSize, int sampleSize);
+void calculateOO_Store_real(double *srOptOO_real, double *srOptO_Store_real, int srOptSize, int sampleSize); /* modified by YN */
+void calculateOO_Store(double complex *srOptOO, double complex *srOptO_Store, int srOptSize, int sampleSize); /* modified by YN */
 void calculateQQQQ(double *qqqq, const double *lslq, const double w, const int nLSHam);
 void calculateQCAQ(double *qcaq, const double *lslca, const double *lslq,
                    const double w, const int nLSHam, const int nCA);
@@ -207,7 +205,7 @@ void VMCMainCal(MPI_Comm comm) {
       /* Calculate O for correlation fauctors */
       /* modified by YN */
       for(samplehidden=0;samplehidden<nVMCSampleHidden2;samplehidden++){
-        srOptO = SROptO + samplehidden*(SROptSmatDim+2);
+        srOptO = SROptO + samplehidden*(2*SROptSize);
         srOptO[0] = 1.0+0.0*I;//   real 
         srOptO[1] = 0.0+0.0*I;//   real 
         #pragma loop noalias
@@ -226,7 +224,7 @@ void VMCMainCal(MPI_Comm comm) {
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
         tmp_i = nProj; 
-        srOptO = SROptO + 2*samplehidden*(SROptSmatDim+2);
+        srOptO = SROptO + 2*samplehidden*(2*SROptSize);
         for(f=0;f<nSetHidden;f++){ 
           tmpTheta1 = thetaHidden1 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
           tmpTheta2 = thetaHidden2 + f*nNeuronPerSet + samplehidden*nSizeTheta; 
@@ -241,12 +239,12 @@ void VMCMainCal(MPI_Comm comm) {
 
           x = 0.0;
           for(i=0;i<nNeuronPerSet;i++) x += (double)(tmpHiddenCfg2[i]);//cTanh(tmpTheta2[i]);  /* modified by KI */
-          srOptO[(SROptSmatDim+2)+(tmp_i+1)*2]   = x;         // even real
-          srOptO[(SROptSmatDim+2)+(tmp_i+1)*2+1] = x*I;       // odd  comp   /* modified by KI */
+          srOptO[(2*SROptSize)+(tmp_i+1)*2]   = x;         // even real
+          srOptO[(2*SROptSize)+(tmp_i+1)*2+1] = x*I;       // odd  comp   /* modified by KI */
           /* change */
           tmp_i++;
         }
-        if( tmp_i != N_Proj+NHiddenMagField ) {
+        if( tmp_i != NProj+NHiddenMagField ) {
           fprintf(stderr, " tmp_i != NProj+NHiddenMagField \n");
           MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
         }
@@ -258,7 +256,7 @@ void VMCMainCal(MPI_Comm comm) {
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(samplehidden=0;samplehidden<nVMCSampleHidden;samplehidden++){
         tmp_i = nProj+NHiddenMagField; 
-        srOptO = SROptO + 2*samplehidden*(SROptSmatDim+2);
+        srOptO = SROptO + 2*samplehidden*(2*SROptSize);
         for(f=0;f<nSetHidden;f++){ 
           offset = f*NIntPerNeuron;
           for(j=0;j<nIntPerNeuron;j++) {
@@ -280,12 +278,12 @@ void VMCMainCal(MPI_Comm comm) {
              rsi = HiddenPhysIntIdx2[idx][i]; 
              x += (double)(tmpHiddenCfg2[i])*(double)(2*eleNum[rsi]-1);  /* modified by KI */
             }
-            srOptO[(SROptSmatDim+2)+(tmp_i+1)*2]   = x;               // even real
-            srOptO[(SROptSmatDim+2)+(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */
+            srOptO[(2*SROptSize)+(tmp_i+1)*2]   = x;               // even real
+            srOptO[(2*SROptSize)+(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */
             tmp_i++;
           }
         }
-        if( tmp_i != N_Proj+NHiddenMagField+NHiddenPhysInt ) {
+        if( tmp_i != NProj+NHiddenMagField+NHiddenPhysInt ) {
           fprintf(stderr, " tmp_i != NProj+NHiddenMagField+NHiddenPhysInt \n");
           MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
         }
@@ -299,16 +297,29 @@ void VMCMainCal(MPI_Comm comm) {
 
       StartTimer(42);
       /* SlaterElmDiff */
-      SlaterElmDiff_fcmp(SROptO+offset1+2,ip,eleIdx); //TBC: using InvM not InvM_real /* modified by YN */
+      srOptO = SROptO; /* added by YN */   
+      SlaterElmDiff_fcmp(srOptO+offset1+2,ip,eleIdx); //TBC: using InvM not InvM_real /* modified by YN */
       StopTimer(42);
       
       if(FlagOptTrans>0) { // this part will be not used
-        calculateOptTransDiff(SROptO+offset2+2, ip); //TBC /* modified by YN */
+        calculateOptTransDiff(srOptO+offset2+2, ip); //TBC /* modified by YN */
       }
+
+      /* added by YN */
+      for(samplehidden=1;samplehidden<nVMCSampleHidden2;samplehidden++){
+        srOptO = SROptO + samplehidden*(2*SROptSize);
+        for(i=offset1+2;i<2*SROptSize;i++){
+          srOptO[i] = SROptO[i];
+        }
+      }
+      /* added by YN */
+
 //[s] this part will be used for real varaibles
       if(AllComplexFlag==0){
+        srOptO = SROptO;           /* added by YN */   
+        srOptO_real = SROptO_real; /* added by YN */   
         #pragma loop noalias
-        for(i=0;i<SROptSize;i++){ 
+        for(i=0;i<SROptSize*nVMCSampleHidden2;i++){ /* modified by YN */
           srOptO_real[i] = creal(srOptO[2*i]);       
         }
       }
@@ -410,11 +421,11 @@ void VMCMainCal(MPI_Comm comm) {
     sampleSize=sampleEnd-sampleStart;
     if(AllComplexFlag==0){
       StartTimer(45);
-      calculateOO_Store_real(SROptOO_real,SROptHO_real,SROptO_Store_real,creal(w),creal(e),SROptSize,sampleSize*nVMCSampleHidden2); /* modified by YN */
+      calculateOO_Store_real(SROptOO_real,SROptO_Store_real,SROptSize,sampleSize*nVMCSampleHidden2); /* modified by YN */
       StopTimer(45);
     }else{
       StartTimer(45);
-      calculateOO_Store(SROptOO,SROptHO,SROptO_Store,w,e,SROptSmatDim+2,sampleSize*nVMCSampleHidden2); /* modified by YN */ /* Warning!! Temporal Treatment */
+      calculateOO_Store(SROptOO,SROptO_Store,SROptSmatDim+2,sampleSize*nVMCSampleHidden2); /* modified by YN */ /* Warning!! Temporal Treatment */
       StopTimer(45);
     }
   }
@@ -478,8 +489,7 @@ void calculateOptTransDiff(double complex *srOptO, const double complex ipAll) {
   return;
 }
 
-void calculateOO_Store_real(double *srOptOO_real, double *srOptHO_real, double *srOptO_Store_real,
-                 const double w, const double e, int srOptSize, int sampleSize) {
+void calculateOO_Store_real(double *srOptOO_real, double *srOptO_Store_real, int srOptSize, int sampleSize) { /* modified by YN */
 
 //#define M_DGEM dgemm_
 
@@ -502,8 +512,7 @@ dgemm_(char *jobz, char *uplo, int *m, int *n, int *k, double *alpha, double *a,
 
 
 
-void calculateOO_Store(double complex *srOptOO, double complex *srOptHO, double complex *srOptO_Store,
-                 const double w, const double complex e, int srOptSize, int sampleSize) {
+void calculateOO_Store(double complex *srOptOO, double complex *srOptO_Store, int srOptSize, int sampleSize) { /* modified by YN */
 
   //#define M_DGEM dgemm_
 
