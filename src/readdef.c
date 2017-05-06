@@ -1180,7 +1180,7 @@ int ReadInputParameters(char *xNameListFile, MPI_Comm comm)
           fscanf(fp, "%d %lf %lf ", &j, &tmp_real,&tmp_comp);
           HiddenPhysInt[i]=tmp_real+I*tmp_comp;
         }  
-        for(i=idx;i<NHiddenPhysInt;i++) HiddenPhysInt[i] = 0.005*(genrand_real2()-0.5);
+        //for(i=idx;i<NHiddenPhysInt;i++) HiddenPhysInt[i] = 0.1*(genrand_real2()-0.5);
         break;
       /* added by YN */ 
         
