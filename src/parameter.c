@@ -54,7 +54,7 @@ void InitParameter() {
       if( j > NIntPerNeuron-1 ) j = NIntPerNeuron-1; 
     }
     for(i=0;i<NIntPerNeuron;i++) { 
-      HiddenPhysInt[f*NIntPerNeuron+i] = 0.004*(genrand_real2()-0.5);     /* TBC */
+      HiddenPhysInt[f*NIntPerNeuron+i] = 0.01*(genrand_real2()-0.5);     /* TBC */
       //HiddenPhysInt[f*NIntPerNeuron+i] += I*0.004*(genrand_real2()-0.5);  /* TBC */
       if( i == j ) HiddenPhysInt[f*NIntPerNeuron+i] *= 25.0;
     } 
