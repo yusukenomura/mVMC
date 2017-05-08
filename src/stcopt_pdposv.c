@@ -160,7 +160,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
     /* modified by YN */ 
     /* TBC */
     sDiag = r[pi];
-    if(sDiag < diagCutThreshold*1.0e-5) { 
+    if(sDiag < diagCutThreshold*1.0e-8) { 
       /* if sDiag is extremely small, the corresponding variable is not optimized */ 
       cutNum++;
       continue; //skip

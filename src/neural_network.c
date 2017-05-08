@@ -52,7 +52,7 @@ inline double complex cTanh(const double complex x) {
 
 inline double complex LogHiddenWeightVal(const double complex *thetaHidden) {
   int idx;
-  double z=0;
+  double complex z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
     z += clog(cCosh(thetaHidden[idx]));
   }
