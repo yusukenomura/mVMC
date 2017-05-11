@@ -463,7 +463,6 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     } else {
       x = 0.0;
     }
-    if( ! FlagFTCalc ) x = x + DSROptRedCut;
     if( NSROptStaDelShift > 0 && step < NSROptStaDelShift ) {
       y = (double)(NSROptStaDelShift-step)/(double)(NSROptStaDelShift);
     } else {

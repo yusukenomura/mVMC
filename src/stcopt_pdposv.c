@@ -197,6 +197,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 // optNum = number of parameters 
 // cutNum: number of paramers that are cut
   diagShift = sDiagMax*DSROptConstShiftRatio*x;  /* added by YN */
+  if( ! FlagFTCalc ) diagShift = diagShift + sDiagMax*DSROptRedCut; /* added by YN */
   staDelShift = DSROptStaDelShiftAmp*y;        /* added by YN */
   diagCutThreshold = (sDiagMax+diagShift)*DSROptRedCut; /* modified by YN */
   si = 0;
