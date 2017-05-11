@@ -40,7 +40,7 @@ void CompleteHiddenPhysIntIdx();
 
 inline double LogHiddenWeightVal(const double complex *thetaHidden){
   int idx;
-  double z=0;
+  double complex z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
     z += log(cosh(creal(thetaHidden[idx])));
   }
