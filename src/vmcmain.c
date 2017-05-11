@@ -377,8 +377,8 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       y = ( 0.5*NSROptItrStep > 1000.0 ) ? 1000.0 : 0.5*NSROptItrStep;
       if( rank == 0 && step == 0 ) printf("Finite Temperature Calculation: Condition for sigmoid: %lf  %lf  %lf  %lf \n", dt_i, dt_f, x, y); 
     } else {
-      x = 0.2; // TBC
-      y = ( 0.05*NSROptItrStep > 50.0 ) ? 50.0 : 0.05*NSROptItrStep;
+      x = 0.005; // TBC
+      y = ( 0.5*NSROptItrStep > 1000.0 ) ? 1000.0 : 0.5*NSROptItrStep;
       if( rank == 0 && step == 0 ) printf("Ground State Calculation: Condition for sigmoid: %lf  %lf  %lf  %lf\n", dt_i, dt_f, x, y); 
     } 
     DSROptStepDt = dt_i + (dt_f-dt_i)*sigmoid(x, y, (double)step);

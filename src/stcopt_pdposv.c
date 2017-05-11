@@ -71,11 +71,21 @@ int stcOptMainDiag(double *const r, int const nSmat, int *const smatToParaIdx,
 int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified by YN */
   const int nPara=NPara;
   const int srOptSmatDim=SROptSmatDim; /* added by YN */ /* Warning !! Temporal Treatment */
+  const int nSetHidden = NSetHidden; /* added by YN */ 
+  const int nHiddenMagField = NHiddenMagField; /* added by YN */ 
+  const int nHiddenVariable = NHiddenVariable; /* added by YN */ 
+  const int nIntPerNeuron = NIntPerNeuron; /* added by YN */ 
   const int srOptSize=SROptSize;
-  const double *srOptOO=SROptOO_real; /* modified by YN */
+  double *srOptOO=SROptOO_real; /* modified by YN */
+  double *srOptHO=SROptHO_real; /* modified by YN */
   //const double         *srOptOO= SROptOO_real;
 
   double r[SROptSmatDim]; /* the parameter change */ /* modified by YN */ /* Warning!! Temporal Treatment */
+  /* added by YN */ 
+  double dtratio[SROptSmatDim]; /* small OO component will have small change */
+  double avOOdiagHidden[NSetHidden], avOOdiagSlater;
+  double rtmp;
+  /* added by YN */ 
   int nSmat;
   int smatOptIdx[SROptSmatDim];//TBC /* modified by YN */ /* Warning !! Temporal Treatment */
 
@@ -87,6 +97,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
   int si; /* index for matrix S */
   int sj; /* index for matrix S */ /* added by YN */
   int pi; /* index for variational parameters */
+  int pj; /* index for variational parameters */ /* added by YN */
 
   double rmax;
   int simax;
@@ -94,6 +105,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 
 // for real
   int int_x,int_y,j,i;
+  int f,offset; /* added by YN */
 
   double complex *para=Para;
 
@@ -132,6 +144,46 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
     //printf("DEBUG: pi=%d: %lf %lf \n",pi,creal(srOptOO[pi]),cimag(srOptOO[pi]));
   }
 
+// rescale parameters 
+  /* added by YN */
+  /* Warning!! we do not consider usual projection here */
+  for(pi=0;pi<srOptSmatDim;pi++) dtratio[pi] = 1.0;
+  if(AllComplexFlag==0){
+
+    if( srOptSmatDim != nPara ) {
+      fprintf(stderr, "error: srOptSmatDim != nPara \n");
+      MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+    }
+
+    for(f=0;f<nSetHidden;f++) {
+      offset = f*nIntPerNeuron + nHiddenMagField;
+      avOOdiagHidden[f] = r[f]; // magnetic field 
+      for(j=0;j<nIntPerNeuron;j++) avOOdiagHidden[f] += r[offset+j]; // HiddenPhysInt  
+      avOOdiagHidden[f] /= (double)(nIntPerNeuron+1);
+      rtmp = sqrt(1.0/avOOdiagHidden[f]);
+      dtratio[f] *= rtmp;
+      for(j=0;j<nIntPerNeuron;j++) dtratio[offset+j] *= rtmp; 
+    }
+
+    avOOdiagSlater = 0.0;
+    for(i=nHiddenVariable;i<nPara;i++) avOOdiagSlater += r[i];
+    avOOdiagSlater /= (double)(nPara-nHiddenVariable); 
+    rtmp = sqrt(1.0/avOOdiagSlater); 
+    for(i=nHiddenVariable;i<nPara;i++) dtratio[i] *= rtmp;
+
+  }
+
+  for(pi=0;pi<srOptSmatDim;pi++) { 
+    offset = (pi+1)*(srOptSmatDim+1); 
+    r[pi] *= dtratio[pi]*dtratio[pi];
+    srOptOO[pi+1] *= dtratio[pi]; 
+    srOptHO[pi+1] *= dtratio[pi]; 
+    for(pj=0;pj<srOptSmatDim;pj++) {
+      srOptOO[offset+(pj+1)] *= dtratio[pi]*dtratio[pj]; 
+    }
+  }
+  /* added by YN */
+
 // search for max and min
   sDiag = r[0];
   sDiagMax=sDiag; sDiagMin=sDiag;
@@ -145,6 +197,7 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
 // optNum = number of parameters 
 // cutNum: number of paramers that are cut
   diagShift = sDiagMax*DSROptConstShiftRatio*x;  /* added by YN */
+  if( ! FlagFTCalc ) diagShift = diagShift + sDiagMax*DSROptRedCut; /* added by YN */
   staDelShift = DSROptStaDelShiftAmp*y;        /* added by YN */
   diagCutThreshold = (sDiagMax+diagShift)*DSROptRedCut; /* modified by YN */
   si = 0;
@@ -173,6 +226,13 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
       cutNum++;
     } else { /* optimized */
       smatOptIdx[si] = pi; // si -> restricted parameters , pi -> full paramer 0 <-> 2*NPara
+      /* added by YN */
+      dtratio[pi] *= (sDiag-diagShift)/sDiag;  
+      if( dtratio[pi] < 0.0 ){
+        fprintf(stderr, " dtratio is wrong \n");
+        MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+      }
+      /* added by YN */
       si += 1;
     }
 // e
@@ -196,6 +256,12 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
   /*** print zqp_SRinfo.dat ***/
   if(rank==0) {
     if(info!=0) fprintf(stderr, "StcOpt: DPOSV info=%d\n",info);
+    /* added by YN */
+    for(si=0;si<nSmat;si++) {
+      pi = smatOptIdx[si];  
+      r[si] *= dtratio[pi];
+    }
+    /* added by YN */
     rmax = r[0]; simax=0;;
     for(si=0;si<nSmat;si++) {
       if(fabs(rmax) < fabs(r[si])) {
