@@ -218,7 +218,8 @@ void VMCMainCal(MPI_Comm comm) {
           x = 0.0;
           for(i=0;i<nNeuronPerSet;i++) {
            rsi = HiddenPhysIntIdx2[idx][i]; 
-           x += cTanh(tmpTheta[i])*(double complex)(2*eleNum[rsi]-1);  /* modified by KI */
+           if( rsi > NSite-1 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+           x += cTanh(tmpTheta[i])*(double complex)(eleNum[rsi]-eleNum[rsi+NSite]);  /* modified by KI */
           }
           srOptO[(tmp_i+1)*2]   = x;               // even real
           srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */

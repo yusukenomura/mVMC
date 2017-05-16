@@ -102,6 +102,7 @@ void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
          it interacts with HiddenPhysIntIdx1[f*NNeuronPerSet+i][j]-th physical variable.    */
       for(j=0;j<nIntPerNeuron;j++) {
         rsi = HiddenPhysIntIdx1[idx][j]; 
+        if( rsi > nSite-1 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
         tmpTheta[i] += HiddenPhysInt[offset2+j] * (double complex)(eleNum[rsi]-eleNum[rsi+nSite]); // TBC 
       }
     }
@@ -122,7 +123,6 @@ void UpdateThetaHidden(const int ri, const int rj, const int s,
   const int nSetHidden=NSetHidden;
   const int nIntPerNeuron=NIntPerNeuron;
   const int nNeuronPerSet=NNeuronPerSet;
-  const int nSite2=Nsite2;
   const int nSite=Nsite;
   
   if(thetaHiddenNew!=thetaHiddenOld) {
@@ -130,8 +130,8 @@ void UpdateThetaHidden(const int ri, const int rj, const int s,
   }
   if(ri==rj) return;
 
-  rsi = ri + s*nSite;
-  rsj = rj + s*nSite; 
+  rsi = ri; //+ s*nSite;
+  rsj = rj; //+ s*nSite; 
   for(f=0;f<nSetHidden;f++) { 
     tmpTheta = thetaHiddenNew + f*nNeuronPerSet; 
     offset1 = f*nNeuronPerSet;
@@ -143,9 +143,9 @@ void UpdateThetaHidden(const int ri, const int rj, const int s,
          i-th neuron in f-th set interacts with rsi-th physical variable 
          through HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]-th type of interaction. */
       j = HiddenPhysIntIdx3[idx][rsi]; 
-      tmpTheta[i] -= 2.0*HiddenPhysInt[offset2+j]; // TBC 
+      tmpTheta[i] -= HiddenPhysInt[offset2+j]*(double complex)(2*s-1); // TBC 
       j = HiddenPhysIntIdx3[idx][rsj]; 
-      tmpTheta[i] += 2.0*HiddenPhysInt[offset2+j]; // TBC
+      tmpTheta[i] += HiddenPhysInt[offset2+j]*(double complex)(2*s-1); // TBC
     }
   }
 
@@ -166,7 +166,7 @@ void CompleteHiddenPhysIntIdx() {
   for(f=1;f<NSetHidden;f++) {
     offset2 = f*NIntPerNeuron;  
     for(j=0;j<NIntPerNeuron;j++) {
-    for(i=0;i<Nsite2;i++) {
+    for(i=0;i<Nsite;i++) {
       HiddenPhysIntIdx2[offset2+j][i] = HiddenPhysIntIdx2[j][i];
     } 
     } 
@@ -193,12 +193,12 @@ void CompleteHiddenPhysIntIdx() {
 /* start checking */
 /* TBC */
 
-  /* Here, we assume that Nsite2 = NIntPerNeuron, i.e., every neuron interacts with all the sites.
+  /* Here, we assume that Nsite = NIntPerNeuron, i.e., every neuron interacts with all the sites.
      If we consider more general interaction, this part should be modified */
 
-  int_chk = (int*)malloc(sizeof(int)*Nsite2);
-  if( Nsite2 != NIntPerNeuron ) {
-    fprintf(stderr, "  Nsite2 != NIntPerNeuron, not implemented .\n");
+  int_chk = (int*)malloc(sizeof(int)*Nsite);
+  if( Nsite != NIntPerNeuron ) {
+    fprintf(stderr, "  Nsite != NIntPerNeuron, not implemented .\n");
     MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
   }
 
@@ -220,9 +220,9 @@ void CompleteHiddenPhysIntIdx() {
 
     /* check for HiddenPhysIntIdx2 */
     for(j=0;j<NIntPerNeuron;j++) {
-      for(i=0;i<Nsite2;i++) int_chk[i] = 0; 
-      for(i=0;i<Nsite2;i++) int_chk[HiddenPhysIntIdx2[offset2+j][i]] += 1;
-      for(i=0;i<Nsite2;i++) { 
+      for(i=0;i<Nsite;i++) int_chk[i] = 0; 
+      for(i=0;i<Nsite;i++) int_chk[HiddenPhysIntIdx2[offset2+j][i]] += 1;
+      for(i=0;i<Nsite;i++) { 
         if( int_chk[i] != 1 ){ 
           fprintf(stderr, "  HiddenPhysIntIdx2 is someting wrong .\n");
 	  MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
@@ -232,9 +232,9 @@ void CompleteHiddenPhysIntIdx() {
 
     /* check for HiddenPhysIntIdx3 */
     for(i=0;i<NNeuronPerSet;i++) { 
-      for(rsi=0;rsi<Nsite2;rsi++) int_chk[rsi] = 0; 
-      for(rsi=0;rsi<Nsite2;rsi++) int_chk[HiddenPhysIntIdx3[offset1+i][rsi]] += 1;
-      for(rsi=0;rsi<Nsite2;rsi++) {
+      for(rsi=0;rsi<Nsite;rsi++) int_chk[rsi] = 0; 
+      for(rsi=0;rsi<Nsite;rsi++) int_chk[HiddenPhysIntIdx3[offset1+i][rsi]] += 1;
+      for(rsi=0;rsi<Nsite;rsi++) {
         if( int_chk[rsi] != 1 ){ 
           fprintf(stderr, "  HiddenPhysIntIdx3 is someting wrong .\n");
 	  MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
@@ -258,10 +258,10 @@ void CompleteHiddenPhysIntIdx() {
       for(j=0;j<NIntPerNeuron;j++) fprintf(file1,"%d %d %d \n", i, j, HiddenPhysIntIdx1[offset1+i][j]);
     }
     for(j=0;j<NIntPerNeuron;j++) {
-      for(i=0;i<Nsite2;i++) fprintf(file2,"%d %d %d \n", j, i, HiddenPhysIntIdx2[offset2+j][i]);
+      for(i=0;i<Nsite;i++) fprintf(file2,"%d %d %d \n", j, i, HiddenPhysIntIdx2[offset2+j][i]);
     }
     for(i=0;i<NNeuronPerSet;i++) { 
-      for(rsi=0;rsi<Nsite2;rsi++) fprintf(file3,"%d %d %d \n", i, rsi, HiddenPhysIntIdx3[offset1+i][rsi]);
+      for(rsi=0;rsi<Nsite;rsi++) fprintf(file3,"%d %d %d \n", i, rsi, HiddenPhysIntIdx3[offset1+i][rsi]);
     }
   fprintf(file1,"\n");fprintf(file2,"\n");fprintf(file3,"\n");
   }
