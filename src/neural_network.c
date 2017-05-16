@@ -103,6 +103,7 @@ void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
       for(j=0;j<nIntPerNeuron;j++) {
         rsi = HiddenPhysIntIdx1[idx][j]; 
         if( rsi > nSite-1 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+        if( abs(eleNum[rsi]-eleNum[rsi+nSite]) != 1 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
         tmpTheta[i] += HiddenPhysInt[offset2+j] * (double complex)(eleNum[rsi]-eleNum[rsi+nSite]); // TBC 
       }
     }
@@ -143,9 +144,10 @@ void UpdateThetaHidden(const int ri, const int rj, const int s,
          i-th neuron in f-th set interacts with rsi-th physical variable 
          through HiddenPhysIntIdx3[f*NNeuronPerSet+i][rsi]-th type of interaction. */
       j = HiddenPhysIntIdx3[idx][rsi]; 
-      tmpTheta[i] -= HiddenPhysInt[offset2+j]*(double complex)(2*s-1); // TBC 
+      if( abs(1-2*s) != 1 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+      tmpTheta[i] -= HiddenPhysInt[offset2+j]*(double complex)(1-2*s); // TBC 
       j = HiddenPhysIntIdx3[idx][rsj]; 
-      tmpTheta[i] += HiddenPhysInt[offset2+j]*(double complex)(2*s-1); // TBC
+      tmpTheta[i] += HiddenPhysInt[offset2+j]*(double complex)(1-2*s); // TBC
     }
   }
 
