@@ -83,7 +83,7 @@ void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
   double complex *tmpTheta;
 
   const int nSetHidden=NSetHidden;
-  const int nSite=NSite;
+  const int nSite=Nsite;
   const int nIntPerNeuron=NIntPerNeuron;
   const int nNeuronPerSet=NNeuronPerSet;
 
