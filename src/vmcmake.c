@@ -228,7 +228,7 @@ void VMCMakeSample(MPI_Comm comm) {
         /* recal PfM and InvM */
         //CalculateMAll_fcmp(TmpEleIdx,qpStart,qpEnd); /* modified by YN */
         //printf("DEBUG: maker3: PfM=%lf\n",creal(PfM[0]));
-        //logIpOld = CalculateLogIP_fcmp(PfM,qpStart,qpEnd,comm);/* modified by YN */
+        //logIpOld = CalculateLogIP_fcmp(PfM,qpStart,qpEnd,comm); /* modified by YN */
         /* added by YN, modified by KI */
         CalcThetaHidden(thetaHiddenNew,TmpEleNum); 
         for(i=0;i<NSizeTheta;i++) { 
@@ -377,7 +377,7 @@ void saveEleConfig(const int sample, const double complex logIp,
   
   x = LogProjVal(eleProjCnt);
   y = creal(LogHiddenWeightVal(thetaHidden)); /* added by YN, modified by KI */
-  logSqPfFullSlater[sample] = 2.0*(x+y+creal(logIp));//TBC /* modified by YN */
+  logSqPfFullSlater[sample] = 2.0*(x+y);//TBC /* modified by YN */
   
   return;
 }
