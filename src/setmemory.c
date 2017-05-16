@@ -236,8 +236,9 @@ void SetMemory() {
   /***** Variational Parameters *****/
   Para     = (double complex*)malloc(sizeof(double complex)*(NPara)); 
   Proj     = Para;
-  HiddenMagField = Para + NProj;                    /* added by YN */
-  HiddenPhysInt  = Para + NProj + NHiddenMagField;  /* added by YN */
+  PhysMagField   = Para + NProj;                      /* added by YN */
+  HiddenMagField = PhysMagField   + NPhysMagField;    /* added by YN */
+  HiddenPhysInt  = HiddenMagField + NHiddenMagField;  /* added by YN */
   Slater   = Para + NProj + NHiddenVariable;           /* modified by YN */ 
   OptTrans = Para + NProj + NHiddenVariable + NSlater; /* modified by YN */
 

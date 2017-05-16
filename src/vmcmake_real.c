@@ -53,6 +53,10 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
   SplitLoop(&qpStart,&qpEnd,NQPFull,rank,size);
 
+  /* added by YN */
+    fprintf(stderr, " make real not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
   
   StartTimer(30);
   if(BurnFlag==0) {
