@@ -465,7 +465,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     }
     if( NSROptStaDelShift > 0 ){
       z = pow(DSROptStaDel/DSROptStaDelShiftAmp,1.0/(double)(NSROptStaDelShift));
-      y = pow(z,double(step));
+      y = pow(z,(double)(step));
     } else {
       y = 0.0;
     }
