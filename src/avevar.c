@@ -146,6 +146,13 @@ void OutputOptData() {
     }
 
 /* added by YN */
+    if(NPhysMagField !=0){
+      sprintf(fileName, "%s_phys_mag_field_opt.dat", CParaFileHead);
+      Child_OutputOptData(fp, fileName, "NPhysMagField",
+			  NPhysMagField, NPhysMagField, count_i, n);
+      count_i += NPhysMagField;
+    }
+
     if(NHiddenMagField !=0){
       sprintf(fileName, "%s_hidden_mag_field_opt.dat", CParaFileHead);
       Child_OutputOptData(fp, fileName, "NHiddenMagField",

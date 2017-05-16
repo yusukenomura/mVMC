@@ -38,7 +38,7 @@ static char cKWListOfFileNameList[][D_CharTmpReadDef]={
   "DH2", "DH4", "Orbital", "HiddenPhysInt", /* modified by YN */
   "TransSym", "InGutzwiller", "InJastrow",
   "InDH2", "InDH4", "InOrbital",
-  "InHiddenMagField", "InHiddenPhysInt", /* added by YN */
+  "InPhysMagField", "InHiddenMagField", "InHiddenPhysInt", /* added by YN */
   "OneBodyG", "TwoBodyG", "TwoBodyGEx",
   "InterAll", "OptTrans", "InOptTrans"
 };
@@ -54,7 +54,7 @@ enum KWIdxInt{
   KWDH2, KWDH4, KWOrbital, KWHiddenPhysInt, /* modified by YN */
   KWTransSym, KWInGutzwiller, KWInJastrow,
   KWInDH2, KWInDH4, KWInOrbital,
-  KWInHiddenMagField, KWInHiddenPhysInt, /* added by YN */
+  KWInPhysMagField, KWInHiddenMagField, KWInHiddenPhysInt, /* added by YN */
   KWOneBodyG, KWTwoBodyG, KWTwoBodyGEx,
   KWInterAll, KWOptTrans, KWInOptTrans,
   KWIdxInt_end
@@ -109,4 +109,4 @@ int iComplexFlgJastrow=0;
 int iComplexFlgDH2=0;
 int iComplexFlgDH4=0;
 int iComplexFlgOrbital=0;
-int iComplexFlgHidden=0; /* added by YN */
+int iComplexFlgHidden=1; /* added by YN */

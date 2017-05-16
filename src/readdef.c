@@ -471,9 +471,10 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NPfUpdate0 = (Nsite > 100) ? Nsite : 100; 
   NPfUpdate = NPfUpdate0; 
   NHiddenMagField = NSetHidden; 
+  NPhysMagField = NSetHidden; 
   NIntPerNeuron   = Nsite;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
   NHiddenPhysInt  = NSetHidden * NIntPerNeuron; 
-  NHiddenVariable = NHiddenMagField + NHiddenPhysInt; 
+  NHiddenVariable = NPhysMagField + NHiddenMagField + NHiddenPhysInt; 
   NNeuronPerSet   = (FlagNeuronTrans) ? Nsite : 1;
   NSizeTheta      = NSetHidden * NNeuronPerSet; 
   /* added by YN */ 
@@ -818,7 +819,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
         for(fidx=NProj;fidx<NProj+NHiddenVariable;fidx++) {
           count_idx++; 
 	  OptFlag[2*fidx  ] = 1; 
-	  OptFlag[2*fidx+1] = 0; // TBC imaginary   
+	  OptFlag[2*fidx+1] = 1; // TBC imaginary   
         }
         /* end temporal treatment */
 	break;
@@ -1160,6 +1161,17 @@ int ReadInputParameters(char *xNameListFile, MPI_Comm comm)
         break;
 
       /* added by YN */ 
+      case KWInPhysMagField:
+        if(idx > NPhysMagField){
+          info=1;
+          continue;
+        }
+        for(i=0; i<idx; i++){
+          fscanf(fp, "%d %lf %lf ", &j, &tmp_real,&tmp_comp);
+          PhysMagField[i]=tmp_real+I*tmp_comp;
+        }  
+        break;
+
       case KWInHiddenMagField:
         if(idx > NHiddenMagField){
           info=1;

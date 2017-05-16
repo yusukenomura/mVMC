@@ -127,6 +127,7 @@ int **OrbitalSgn; /* OrbitalSgn[Nsite][Nsite] = +1 or -1 */
 int NSetHidden;          /* Number of the set of Hidden variables = Hidden neuron density       */
                          /* A set consists of magnetic field and hidden-phys interaction        */
 int NHiddenMagField;     /* Total number of magnetic-field variabls in hidden layers            */
+int NPhysMagField;       /* Total number of magnetic-field variabls in physical layers          */
 int NHiddenPhysInt;      /* Total number of (hidden layer)-(physical layer) interactions        */
 int NNeuronPerSet;       /* Number of neurons per one set                                       */
 int FlagNeuronTrans;     /* FlagNeuronTrans=1: use translational symmetry, 0: symmetry not used */
@@ -198,8 +199,9 @@ int NOptTrans; /* the number of weights for OptTrans. This is used only for vari
 double complex *Para;   /* variatonal parameters */
 double complex *Proj;   /* correlation factor (Proj    =Para) */
 /* added by YN */
-double complex *HiddenMagField; /* magnetic field acting on hidden neurons (HiddenMagField=Para+NProj)  */ 
-double complex *HiddenPhysInt;  /* Interaction between hidden and physical variables (HiddenPhysInt=Para+NProj+NHiddenMagField)*/ 
+double complex *PhysMagField;   /* magnetic field acting on physical layers (HiddenMagField=Para+NProj)  */ 
+double complex *HiddenMagField; /* magnetic field acting on hidden neurons (HiddenMagField=PhysMagField+NPhysMagField)  */ 
+double complex *HiddenPhysInt;  /* Interaction between hidden and physical variables (HiddenPhysInt=HiddenMagField+NHiddenMagField)*/ 
 /* added by YN */
 double complex *Slater; /* pair orbital (Slater  =Para+NProj+NHiddenVariable) */         /* modified by YN */
 double complex *OptTrans; /* weights    (OptTrans=Para+NProj+NHiddenVariable+NSlater) */ /* modified by YN */
