@@ -47,6 +47,10 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
   RequestWorkSpaceThreadDouble(NQPFull+2*Nsize);
   RequestWorkSpaceThreadComplex(NSizeTheta); /* added by YN */
   /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
+  /* added by YN */
+    fprintf(stderr, " calham real not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
 
 /* modified by YN */
   #pragma omp parallel default(none) \

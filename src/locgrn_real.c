@@ -48,6 +48,10 @@ double  GreenFunc1_real(const int ri, const int rj, const int s, const double ip
   double  z;
   int mj,msj,rsi,rsj;
   double  *pfMNew_real = buffer; /* NQPFull */
+  /* added by YN */
+    fprintf(stderr, " GreenFunc1 real not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
 
   if(ri==rj) return eleNum[ri+s*Nsite];
   if(eleNum[ri+s*Nsite]==1 || eleNum[rj+s*Nsite]==0) return 0.0;
@@ -89,6 +93,10 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   int rsi,rsj,rtk,rtl;
   double *pfMNew_real = buffer; /* [NQPFull] */
   double *bufV   = buffer+NQPFull; /* 2*Nsize */
+  /* added by YN */
+    fprintf(stderr, " GreenFunc2 real not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
 
   rsi = ri + s*Nsite;
   rsj = rj + s*Nsite;
