@@ -234,7 +234,8 @@ void VMCMainCal(MPI_Comm comm) {
 
       StartTimer(42);
       /* SlaterElmDiff */
-      SlaterElmDiff_fcmp(SROptO+offset1+2,ip,eleIdx); //TBC: using InvM not InvM_real /* modified by YN */
+      //SlaterElmDiff_fcmp(SROptO+offset1+2,ip,eleIdx); //TBC: using InvM not InvM_real /* modified by YN */
+      for(i=offset1+2;i<2*SROptSize;i++) SROptO[i] = 0.0; /* added by YN */
       StopTimer(42);
       
       if(FlagOptTrans>0) { // this part will be not used
