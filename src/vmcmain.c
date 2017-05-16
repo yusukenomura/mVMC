@@ -326,7 +326,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
   int rank;
   int i,tmp_i;//DEBUG
   int iprogress;
-  double x, y; /* added by YN */
+  double x, y, z; /* added by YN */
   FILE *file1,*file2; /* to be deleted */
   double dt_i, dt_f; /* added by IK, modified by YN */
   MPI_Comm_rank(comm_parent, &rank);
@@ -463,8 +463,9 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     } else {
       x = 0.0;
     }
-    if( NSROptStaDelShift > 0 && step < NSROptStaDelShift ) {
-      y = (double)(NSROptStaDelShift-step)/(double)(NSROptStaDelShift);
+    if( NSROptStaDelShift > 0 ){
+      z = pow(DSROptStaDel/DSROptStaDelShiftAmp,1.0/(double)(NSROptStaDelShift));
+      y = pow(z,double(step));
     } else {
       y = 0.0;
     }
