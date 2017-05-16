@@ -83,6 +83,7 @@ void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
   double complex *tmpTheta;
 
   const int nSetHidden=NSetHidden;
+  const int nSite=NSite;
   const int nIntPerNeuron=NIntPerNeuron;
   const int nNeuronPerSet=NNeuronPerSet;
 
@@ -101,7 +102,7 @@ void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
          it interacts with HiddenPhysIntIdx1[f*NNeuronPerSet+i][j]-th physical variable.    */
       for(j=0;j<nIntPerNeuron;j++) {
         rsi = HiddenPhysIntIdx1[idx][j]; 
-        tmpTheta[i] += HiddenPhysInt[offset2+j] * (double complex)(2*eleNum[rsi]-1); // TBC 
+        tmpTheta[i] += HiddenPhysInt[offset2+j] * (double complex)(eleNum[rsi]-eleNum[rsi+nSite]); // TBC 
       }
     }
   } 
