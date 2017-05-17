@@ -326,7 +326,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
   int rank;
   int i,tmp_i;//DEBUG
   int iprogress;
-  double x, y, z; /* added by YN */
+  double x, y; /* added by YN */
   FILE *file1,*file2; /* to be deleted */
   double dt_i, dt_f; /* added by IK, modified by YN */
   MPI_Comm_rank(comm_parent, &rank);
@@ -402,7 +402,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
 #ifdef _DEBUG
       printf("Debug: step %d, MakeSample.\n", step);
 #endif
-     if(AllComplexFlag==0){ /* modified by YN */ /* Warning!! Temporal Treatment */
+     if(iComplexFlgOrbital==0){ /* modified by YN */ /* Warning!! Temporal Treatment */
         // only for real TBC
          StartTimer(69);
          #pragma omp parallel for default(shared) private(tmp_i)
@@ -463,9 +463,8 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     } else {
       x = 0.0;
     }
-    if( NSROptStaDelShift > 0 ){
-      z = pow(DSROptStaDel/DSROptStaDelShiftAmp,1.0/(double)(NSROptStaDelShift));
-      y = pow(z,(double)(step));
+    if( NSROptStaDelShift > 0 && step < NSROptStaDelShift ) {
+      y = (double)(NSROptStaDelShift-step)/(double)(NSROptStaDelShift);
     } else {
       y = 0.0;
     }
@@ -516,7 +515,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     
     StartTimer(3);
 
-    if(AllComplexFlag==0){ /* modified by YN */ /* Warning!! Temporal Treatment */
+    if(iComplexFlgOrbital==0){ /* modified by YN */ /* Warning!! Temporal Treatment */
       // only for real TBC
       StartTimer(69);
 #pragma omp parallel for default(shared) private(tmp_i)
