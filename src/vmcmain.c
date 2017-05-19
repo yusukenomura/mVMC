@@ -574,6 +574,7 @@ void outputData() {
 
   /* zvo_var.dat */
   if(FlagBinary==0) { /* formatted output*/
+    rewind(FileVar); /* added by YN */
     fprintf(FileVar, "% .18e % .18e 0.0 % .18e % .18e 0.0 ", creal(Etot), cimag(Etot), creal(Etot2), cimag(Etot2));
     for(i=0;i<NPara;i++)   fprintf(FileVar, "% .18e % .18e 0.0 ", creal(Para[i]),cimag(Para[i]));
     fprintf(FileVar, "\n");
