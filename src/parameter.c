@@ -44,7 +44,7 @@ void InitParameter() {
   #pragma omp parallel for default(shared) private(i)
   for(i=0;i<NProj;i++) Proj[i] = 0.0;
   /* added by YN */ 
-  for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] = 0.2*(genrand_real2()-0.5);   /* TBC */
+  for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] = 0.1*(genrand_real2()-0.5);   /* TBC */
   //for(i=0;i<NHiddenMagField;i++) HiddenMagField[i] += I*0.1*(genrand_real2()-0.5);   /* TBC */
   for(f=0;f<NSetHidden;f++){
     j = (int)( genrand_real2()*(double)(NIntPerNeuron) );
@@ -59,7 +59,7 @@ void InitParameter() {
       if( i == j ) HiddenPhysInt[f*NIntPerNeuron+i] *= 25.0;
     } 
   } 
-  for(i=0;i<NHiddenHiddenInt;i++) HiddenHiddenInt[i] = 0.3*(genrand_real2()-0.5);   /* TBC */
+  for(i=0;i<NHiddenHiddenInt;i++) HiddenHiddenInt[i] = 0.1*(genrand_real2()-0.5);   /* TBC */
   for(i=0;i<NDeepHiddenMagField;i++) DeepHiddenMagField[i] = 0.1*(genrand_real2()-0.5);   /* TBC */
   /* added by YN */ 
   if(AllComplexFlag==0){
