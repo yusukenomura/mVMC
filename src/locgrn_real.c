@@ -66,10 +66,6 @@ double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
   const double complex *tmpTheta1, *tmpTheta2;
   double x;
   /* added by YN */
-  /* added by YN */
-    fprintf(stderr, " GreenFunc1 real not implemented .\n");
-    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
-  /* added by YN */
 
   if(ri==rj) return eleNum[ri+s*Nsite];
   if(eleNum[ri+s*Nsite]==1 || eleNum[rj+s*Nsite]==0) return 0.0;
@@ -87,8 +83,8 @@ double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
   z = ProjRatio(projCntNew,eleProjCnt);
 
   /* calculate Pfaffian */
-  CalculateNewPfM_real(mj, s, pfMNew_real, eleIdx, 0, NQPFull);
-  z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
+  //CalculateNewPfM_real(mj, s, pfMNew_real, eleIdx, 0, NQPFull); /* modified by YN */
+  //z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF); /* modified by YN */
 
   /* added by YN */
   x = 0.0;
@@ -138,10 +134,6 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   const int *tmpHiddenCfg1, *tmpHiddenCfg2;
   const double complex *tmpTheta1, *tmpTheta2;
   double x;
-  /* added by YN */
-  /* added by YN */
-    fprintf(stderr, " GreenFunc2 real not implemented .\n");
-    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
   /* added by YN */
 
   rsi = ri + s*Nsite;
@@ -212,8 +204,8 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   z = ProjRatio(projCntNew,eleProjCnt);
 
   /* calculate Pfaffian */
-  CalculateNewPfMTwo_real(ml, t, mj, s, pfMNew_real, eleIdx, 0, NQPFull, bufV);
-  z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
+  //CalculateNewPfMTwo_real(ml, t, mj, s, pfMNew_real, eleIdx, 0, NQPFull, bufV); /* modified by YN */
+  //z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF); /* modified by YN */
 
   /* added by YN */
   x = 0.0;

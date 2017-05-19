@@ -479,12 +479,12 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
   NPfUpdate0 = (Nsite > 100) ? Nsite : 100; 
   NPfUpdate = NPfUpdate0; 
   NHiddenMagField     = NSetHidden; 
-  NIntPerNeuron       = Nsite2;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
+  NIntPerNeuron       = Nsite;   /* For the moment, neurons interacts with ( 2*n_{j,\sigma} -1 ) */
   NHiddenPhysInt      = NSetHidden * NIntPerNeuron; 
   NHiddenHiddenInt    = NSetHidden * NSetDeepHidden * NIntPerNeuron; /* TBC */ 
   NDeepHiddenMagField = NSetDeepHidden; 
   NHiddenVariable     = NHiddenMagField + NHiddenPhysInt + NHiddenHiddenInt + NDeepHiddenMagField; 
-  NNeuronPerSet       = (FlagNeuronTrans) ? Nsite2 : 1;
+  NNeuronPerSet       = (FlagNeuronTrans) ? Nsite : 1;
   NSizeTheta          = NSetHidden * NNeuronPerSet; 
   NNeuronSample       = NSetDeepHidden * NIntPerNeuron; 
   NSizeThetaSave      = NSizeTheta * NVMCSampleHidden; 
@@ -508,8 +508,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm){
     + 2*Nsite*NDoublonHolon2siteIdx /* DoublonHolon2siteIdx */
     + 4*Nsite*NDoublonHolon4siteIdx /* DoublonHolon4siteIdx */
     + NSizeTheta*NIntPerNeuron  /* HiddenPhysIntIdx1 */    /* added by YN */
-    + NHiddenPhysInt*Nsite2     /* HiddenPhysIntIdx2 */    /* added by YN */
-    + NSizeTheta*Nsite2         /* HiddenPhysIntIdx3 */    /* added by YN */
+    + NHiddenPhysInt*Nsite      /* HiddenPhysIntIdx2 */    /* added by YN */
+    + NSizeTheta*Nsite          /* HiddenPhysIntIdx3 */    /* added by YN */
     + Nsite*Nsite /* OrbitalIdx */
     + Nsite*Nsite /* OrbitalSgn */
     + Nsite*NQPTrans /* QPTrans */
@@ -823,7 +823,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm){
 	    fscanf(fp, "%d \n", &(HiddenPhysIntIdx2[j][i]));
 	    idx0++;
 	  }
-	  if(idx0!=NIntPerNeuron*Nsite2) info = ReadDefFileError(defname);
+	  if(idx0!=NIntPerNeuron*Nsite) info = ReadDefFileError(defname);
           CompleteHiddenPhysIntIdx();  
 	}
 	fclose(fp);

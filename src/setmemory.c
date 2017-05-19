@@ -104,13 +104,13 @@ void SetMemoryDef() {
   HiddenPhysIntIdx2 = (int**)malloc(sizeof(int*)*NHiddenPhysInt);
   for(i=0;i<NHiddenPhysInt;i++) {
     HiddenPhysIntIdx2[i] = pInt;
-    pInt += Nsite2;
+    pInt += Nsite;
   }
 
   HiddenPhysIntIdx3 = (int**)malloc(sizeof(int*)*NSizeTheta);
   for(i=0;i<NSizeTheta;i++) {
     HiddenPhysIntIdx3[i] = pInt;
-    pInt += Nsite2;
+    pInt += Nsite;
   }
   /* added by YN */ 
 
