@@ -66,6 +66,10 @@ double GreenFunc1_real(const int ri, const int rj, const int s, const double ip,
   const double complex *tmpTheta1, *tmpTheta2;
   double x;
   /* added by YN */
+  /* added by YN */
+    fprintf(stderr, " GreenFunc1 real not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
 
   if(ri==rj) return eleNum[ri+s*Nsite];
   if(eleNum[ri+s*Nsite]==1 || eleNum[rj+s*Nsite]==0) return 0.0;
@@ -134,6 +138,10 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   const int *tmpHiddenCfg1, *tmpHiddenCfg2;
   const double complex *tmpTheta1, *tmpTheta2;
   double x;
+  /* added by YN */
+  /* added by YN */
+    fprintf(stderr, " GreenFunc2 real not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
   /* added by YN */
 
   rsi = ri + s*Nsite;

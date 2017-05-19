@@ -83,8 +83,8 @@ double complex GreenFunc1(const int ri, const int rj, const int s, const double 
   z = ProjRatio(projCntNew,eleProjCnt);
 
   /* calculate Pfaffian */
-  CalculateNewPfM(mj, s, pfMNew, eleIdx, 0, NQPFull);
-  z *= CalculateIP_fcmp(pfMNew, 0, NQPFull, MPI_COMM_SELF);
+  //CalculateNewPfM(mj, s, pfMNew, eleIdx, 0, NQPFull); /* modified by YN */
+  //z *= CalculateIP_fcmp(pfMNew, 0, NQPFull, MPI_COMM_SELF); /* modified by YN */
 
   /* added by YN */
   x = 0.0;
@@ -204,8 +204,8 @@ double complex GreenFunc2(const int ri, const int rj, const int rk, const int rl
   z = ProjRatio(projCntNew,eleProjCnt);
 
   /* calculate Pfaffian */
-  CalculateNewPfMTwo_fcmp(ml, t, mj, s, pfMNew, eleIdx, 0, NQPFull, bufV);
-  z *= CalculateIP_fcmp(pfMNew, 0, NQPFull, MPI_COMM_SELF);
+  //CalculateNewPfMTwo_fcmp(ml, t, mj, s, pfMNew, eleIdx, 0, NQPFull, bufV); /* modified by YN */
+  //z *= CalculateIP_fcmp(pfMNew, 0, NQPFull, MPI_COMM_SELF); /* modified by YN */
 
   /* added by YN */
   x = 0.0;
