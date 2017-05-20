@@ -148,7 +148,11 @@ int StochasticOpt(MPI_Comm comm, const double x, const double y) { /* modified b
   /* added by YN */
   /* Warning!! we do not consider usual projection here */
   for(pi=0;pi<srOptSmatDim;pi++) dtratio[pi] = 1.0;
-  if(AllComplexFlag==0){
+  if(AllComplexFlag<0){
+  /* added by YN */
+    fprintf(stderr, " rescale parameters not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
 
     if( srOptSmatDim != nPara ) {
       fprintf(stderr, "error: srOptSmatDim != nPara \n");
