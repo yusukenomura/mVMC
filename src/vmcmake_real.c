@@ -118,7 +118,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN */
+        y = LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden);  /* added by YN */
         w = exp(2.0*(x+y+(logIpNew-logIpOld)));                   /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
@@ -179,7 +179,7 @@ void VMCMakeSample_real(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN */
+        y = LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden);  /* added by YN */
         w = exp(2.0*(x+y+(logIpNew-logIpOld))); //TBC             /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
