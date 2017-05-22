@@ -38,9 +38,9 @@ void CompleteHiddenPhysIntIdx();
 
 
 
-inline double LogHiddenWeightVal(const double complex *thetaHidden){
+inline double LogHiddenWeightVal(const double complex *thetaHidden) {
   int idx;
-  double complex z=0;
+  double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
     z += log(cosh(creal(thetaHidden[idx])));
   }
@@ -48,7 +48,7 @@ inline double LogHiddenWeightVal(const double complex *thetaHidden){
 }
 
 
-inline double LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld){
+inline double LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
   int idx;
   double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
@@ -58,7 +58,7 @@ inline double LogHiddenWeightRatio(const double complex *thetaHiddenNew, const d
 }
 
 
-inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld){
+inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
   int idx;
   double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
