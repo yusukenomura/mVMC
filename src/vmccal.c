@@ -49,9 +49,9 @@ void calculateQCACAQ(double *qcacaq, const double *lslca, const double w,
 void VMCMainCal(MPI_Comm comm) {
   int *eleIdx,*eleCfg,*eleNum,*eleProjCnt;
 /* added by YN */ 
-  int f,j,offset,idx,rsi;
+  int f,ff,j,offset,idx,rsi;
   double complex *thetaHidden,*tmpTheta; /* modified by KI */
-  double complex x,y;  /* modified by KI */
+  double complex x,y,z;  /* modified by KI */
   int nFail = 0; 
 /* added by YN */ 
   double complex we,e,ip; /* modified by YN */
@@ -195,14 +195,24 @@ void VMCMainCal(MPI_Comm comm) {
       /* Hidden-layer magnetic field 
          This part assumes that the magnetic field is uniform for each set of Hidden variables. 
          In this case, NHiddenMagField = NSetHidden */
+      z = HiddenWeightVal(thetaHidden);
       tmp_i = nProj; 
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(f=0;f<nSetHidden;f++){ 
-        tmpTheta = thetaHidden + f*nNeuronPerSet; 
         x = 0.0;
-        for(i=0;i<nNeuronPerSet;i++) x += tanh(creal(tmpTheta[i]));  /* modified by KI */
-        srOptO[(tmp_i+1)*2]   = x;         // even real
-        srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp   /* modified by KI */
+        for(i=0;i<nNeuronPerSet;i++) { 
+          y = 1.0;
+          for(ff=0;ff<nSetHidden;ff++) { 
+            if( ff == f ) { 
+              y *= sinh(creal(thetaHidden[ff*NNeuronPerSet+i]));
+            } else {
+              y *= cosh(creal(thetaHidden[ff*NNeuronPerSet+i]));
+            }
+          }
+          x += y; 
+        }
+        srOptO[(tmp_i+1)*2]   = x/z;         // even real
+        srOptO[(tmp_i+1)*2+1] = (x/z)*I;       // odd  comp   /* modified by KI */
         tmp_i++;
       }
 
@@ -211,18 +221,26 @@ void VMCMainCal(MPI_Comm comm) {
          HiddenPhysIntIdx2[f*NIntPerNeuron+j][i]-th physical variable. */
       // #pragma loop noalias  /* comment by YN: is this line needed? */
       for(f=0;f<nSetHidden;f++){ 
-        tmpTheta = thetaHidden + f*nNeuronPerSet; 
         offset = f*NIntPerNeuron;
         for(j=0;j<nIntPerNeuron;j++) {
           idx = offset + j; 
           x = 0.0;
           for(i=0;i<nNeuronPerSet;i++) {
-           rsi = HiddenPhysIntIdx2[idx][i]; 
-           if( rsi > Nsite-1 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
-           x += tanh(creal(tmpTheta[i]))*(double complex)(eleNum[rsi]-eleNum[rsi+Nsite]);  /* modified by KI */
+            rsi = HiddenPhysIntIdx2[idx][i]; 
+            if( rsi > Nsite-1 ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+            y = 1.0;
+            for(ff=0;ff<nSetHidden;ff++) { 
+              if( ff == f ) { 
+                y *= sinh(creal(thetaHidden[ff*nNeuronPerSet+i]))
+                    *(double complex)(eleNum[rsi]-eleNum[rsi+Nsite]);  /* modified by KI */
+              } else { 
+                y *= cosh(creal(thetaHidden[ff*NNeuronPerSet+i]));
+              } 
+            }
+            x += y; 
           }
-          srOptO[(tmp_i+1)*2]   = x;               // even real
-          srOptO[(tmp_i+1)*2+1] = x*I;       // odd  comp  /* modified by KI */
+          srOptO[(tmp_i+1)*2]   = x/z;               // even real
+          srOptO[(tmp_i+1)*2+1] = (x/z)*I;       // odd  comp  /* modified by KI */
           tmp_i++;
         }
       }

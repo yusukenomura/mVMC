@@ -27,6 +27,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  *-------------------------------------------------------------*/
 
 inline double LogHiddenWeightVal(const double complex *thetaHidden);
+inline double HiddenWeightVal(const double complex *thetaHidden);
 inline double LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld);
 inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld);
 void CalcThetaHidden(double complex *thetaHidden, const int *eleNum);
@@ -49,32 +50,54 @@ inline double LogHiddenWeightVal(const double complex *thetaHidden) {
   return log(z);
 }
 
-inline double LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
-  int i,f;
-  double z=0;
-  for(i=0;i<NNeuronPerSet;i++) { 
-    x = 1.0;
-    for(f=0;f<NSetHidden;f++) { 
-      x *= cosh(creal(thetaHiddenNew[f*NNeuronPerSet+i])) 
-      x /= cosh(creal(thetaHiddenOld[f*NNeuronPerSet+i]));
-    }
-    z += x; 
-  }
-  return log(z);
-}
 
-inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
+inline double HiddenWeightVal(const double complex *thetaHidden) {
   int i,f;
   double z=0;
+  double x; 
   for(i=0;i<NNeuronPerSet;i++) { 
     x = 1.0;
     for(f=0;f<NSetHidden;f++) { 
-      x *= cosh(creal(thetaHiddenNew[f*NNeuronPerSet+i])) 
-      x /= cosh(creal(thetaHiddenOld[f*NNeuronPerSet+i]));
+      x *= cosh(creal(thetaHidden[f*NNeuronPerSet+i]));
     }
     z += x; 
   }
   return z;
+}
+
+
+inline double LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
+  int i,f;
+  double z1=0,z2=0;
+  double x1,x2; 
+  for(i=0;i<NNeuronPerSet;i++) { 
+    x1 = 1.0;
+    x2 = 1.0;
+    for(f=0;f<NSetHidden;f++) { 
+      x1 *= cosh(creal(thetaHiddenNew[f*NNeuronPerSet+i])); 
+      x2 *= cosh(creal(thetaHiddenOld[f*NNeuronPerSet+i]));
+    }
+    z1 += x1; 
+    z2 += x2; 
+  }
+  return log(z1/z2);
+}
+
+inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
+  int i,f;
+  double z1=0,z2=0;
+  double x1,x2; 
+  for(i=0;i<NNeuronPerSet;i++) { 
+    x1 = 1.0;
+    x2 = 1.0;
+    for(f=0;f<NSetHidden;f++) { 
+      x1 *= cosh(creal(thetaHiddenNew[f*NNeuronPerSet+i])); 
+      x2 *= cosh(creal(thetaHiddenOld[f*NNeuronPerSet+i]));
+    }
+    z1 += x1; 
+    z2 += x2; 
+  }
+  return z1/z2;
 }
 
 void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
