@@ -88,6 +88,10 @@ void VMCMakeSample_real(MPI_Comm comm) {
       updateType = getUpdateType(NExUpdatePath);
 
       if(updateType==HOPPING) { /* hopping */
+         /* added by YN */
+          fprintf(stderr, " hopping not implemented .\n");
+          MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+         /* added by YN */
         Counter[0]++;
 
         StartTimer(31);

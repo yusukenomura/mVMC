@@ -72,6 +72,10 @@ void VMCMakeSample(MPI_Comm comm) {
   MPI_Comm_rank(comm,&rank);
 
   SplitLoop(&qpStart,&qpEnd,NQPFull,rank,size);
+  /* added by YN */
+    fprintf(stderr, " make not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
 
   StartTimer(30);
   if(BurnFlag==0) {

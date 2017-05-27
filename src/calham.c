@@ -47,6 +47,10 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
   double complex *myThetaHiddenNew; /* added by YN, modified by KI */
   double complex *myBuffer;
   double complex myEnergy;
+  /* added by YN */
+    fprintf(stderr, " calham not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
   RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+NSizeTheta); /* modified by KI  */
