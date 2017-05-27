@@ -377,7 +377,7 @@ void saveEleConfig(const int sample, const double complex logIp,
   
   x = LogProjVal(eleProjCnt);
   y = LogHiddenWeightVal(thetaHidden); /* added by YN, modified by KI */
-  logSqPfFullSlater[sample] = 2.0*(x+y+creal(logIp));//TBC /* modified by YN */
+  logSqPfFullSlater[sample] = 2.0*(x+y);//TBC /* modified by YN */
   
   return;
 }

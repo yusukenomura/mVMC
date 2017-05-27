@@ -172,29 +172,29 @@ void VMCMakeSample_real(MPI_Comm comm) {
         StopTimer(65);
         StartTimer(66);
 
-        CalculateNewPfMTwo2_real(mi, s, mj, t, pfMNew_real, TmpEleIdx, qpStart, qpEnd);
+        //CalculateNewPfMTwo2_real(mi, s, mj, t, pfMNew_real, TmpEleIdx, qpStart, qpEnd); /* modified by YN */
         StopTimer(66);
         StartTimer(67);
 
         /* calculate inner product <phi|L|x> */
-        logIpNew = CalculateLogIP_real(pfMNew_real,qpStart,qpEnd,comm);
+        //logIpNew = CalculateLogIP_real(pfMNew_real,qpStart,qpEnd,comm); /* modified by YN */
 
         StopTimer(67);
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
         y = LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden);  /* added by YN */
-        w = exp(2.0*(x+y+(logIpNew-logIpOld))); //TBC             /* modified by YN */
+        w = exp(2.0*(x+y)); //TBC             /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
         if(w > genrand_real2()) { /* accept */
           StartTimer(68);
-          UpdateMAllTwo_real(mi, s, mj, t, ri, rj, TmpEleIdx,qpStart,qpEnd);
+          //UpdateMAllTwo_real(mi, s, mj, t, ri, rj, TmpEleIdx,qpStart,qpEnd); /* modified by YN */
           StopTimer(68);
 
           for(i=0;i<NProj;i++) TmpEleProjCnt[i] = projCntNew[i];
           for(i=0;i<NSizeTheta;i++) TmpThetaHidden[i] = thetaHiddenNew[i]; /* added by YN */
-          logIpOld = logIpNew;
+          //logIpOld = logIpNew; /* modified by YN */
           nAccept++;
           Counter[3]++;
         } else { /* reject */
@@ -207,9 +207,9 @@ void VMCMakeSample_real(MPI_Comm comm) {
       if(nAccept>NPfUpdate) { /* modified by YN */
         StartTimer(34);
         /* recal PfM and InvM */
-        CalculateMAll_real(TmpEleIdx,qpStart,qpEnd);
+        //CalculateMAll_real(TmpEleIdx,qpStart,qpEnd); /* modified by YN */
         //printf("DEBUG: maker3: PfM=%lf\n",creal(PfM[0]));
-        logIpOld = CalculateLogIP_real(PfM_real,qpStart,qpEnd,comm);
+        //logIpOld = CalculateLogIP_real(PfM_real,qpStart,qpEnd,comm); /* modified by YN */
         /* added by YN */
         CalcThetaHidden(thetaHiddenNew,TmpEleNum); 
         for(i=0;i<NSizeTheta;i++) { 
