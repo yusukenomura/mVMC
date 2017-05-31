@@ -141,7 +141,7 @@ void VMCMakeSample(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN, modified by KI */
+        y = LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden);  /* added by YN, modified by KI */
         w = exp(2.0*(x+y+creal(logIpNew-logIpOld)));              /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
@@ -202,7 +202,7 @@ void VMCMakeSample(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN, modified by KI */
+        y = LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden);  /* added by YN, modified by KI */
         w = exp(2.0*(x+y)); //TBC        /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
@@ -376,7 +376,7 @@ void saveEleConfig(const int sample, const double complex logIp,
   /* added by YN */
   
   x = LogProjVal(eleProjCnt);
-  y = creal(LogHiddenWeightVal(thetaHidden)); /* added by YN, modified by KI */
+  y = LogHiddenWeightVal(thetaHidden); /* added by YN, modified by KI */
   logSqPfFullSlater[sample] = 2.0*(x+y);//TBC /* modified by YN */
   
   return;
