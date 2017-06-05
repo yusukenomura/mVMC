@@ -26,55 +26,40 @@ along with this program. If not, see http://www.gnu.org/licenses/.
  * by Yusuke Nomura
  *-------------------------------------------------------------*/
 
-inline double complex cCosh(const double complex x);
-inline double complex cTanh(const double complex x);
-inline double complex LogHiddenWeightVal(const double complex *thetaHidden);
-inline double complex LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld);
-inline double complex HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld);
+inline double LogHiddenWeightVal(const double complex *thetaHidden);
+inline double LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld);
+inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld);
 void CalcThetaHidden(double complex *thetaHidden, const int *eleNum);
 void UpdateThetaHidden(const int ri, const int rj, const int s,
                        double complex *thetaHiddenNew, const double complex *thetaHiddenOld );
 void CompleteHiddenPhysIntIdx();  
 
-inline double complex cCosh(const double complex x) {
-  double complex z=0;
-  
-  z = cexp(x)+cexp(-x);
-  return 0.5*z;
-}
 
-inline double complex cTanh(const double complex x) {
-  double complex z=0;
-  
-  z = (cexp(x)-cexp(-x))/(cexp(x)+cexp(-x));
-  return z;
-}
-
-inline double complex LogHiddenWeightVal(const double complex *thetaHidden) {
+inline double LogHiddenWeightVal(const double complex *thetaHidden) {
   int idx;
-  double complex z=0;
+  double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
-    z += clog(cCosh(thetaHidden[idx]));
+    z += log(cosh(creal(thetaHidden[idx])));
   }
   return z;
 }
 
-inline double complex LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
+inline double LogHiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
   int idx;
-  double complex z=0;
+  double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
-    z += clog(cCosh(thetaHiddenNew[idx])) - clog(cCosh(thetaHiddenOld[idx]));
+    z += log(cosh(creal(thetaHiddenNew[idx]))) - log(cosh(creal(thetaHiddenOld[idx])));
   }
   return z;
 }
 
-inline double complex HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
+inline double HiddenWeightRatio(const double complex *thetaHiddenNew, const double complex *thetaHiddenOld) {
   int idx;
-  double complex z=0;
+  double z=0;
   for(idx=0;idx<NSizeTheta;idx++) {
-    z += clog(cCosh(thetaHiddenNew[idx])) - clog(cCosh(thetaHiddenOld[idx]));
+    z += log(cosh(creal(thetaHiddenNew[idx]))) - log(cosh(creal(thetaHiddenOld[idx])));
   }
-  return cexp(z);
+  return exp(z);
 }
 
 void CalcThetaHidden(double complex *thetaHidden, const int *eleNum) {
