@@ -67,8 +67,8 @@ double  GreenFunc1_real(const int ri, const int rj, const int s, const double ip
   z *= HiddenWeightRatio(thetaHiddenNew,thetaHidden);  /* added by YN */
 
   /* calculate Pfaffian */
-  CalculateNewPfM_real(mj, s, pfMNew_real, eleIdx, 0, NQPFull);
-  z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
+  //CalculateNewPfM_real(mj, s, pfMNew_real, eleIdx, 0, NQPFull); /* modified by YN */
+  //z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF); /* modified by YN */
 
   /* revert hopping */
   eleIdx[msj] = rj;
@@ -155,8 +155,8 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
   z *= HiddenWeightRatio(thetaHiddenNew,thetaHidden);  /* added by YN */
 
   /* calculate Pfaffian */
-  CalculateNewPfMTwo_real(ml, t, mj, s, pfMNew_real, eleIdx, 0, NQPFull, bufV);
-  z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
+  //CalculateNewPfMTwo_real(ml, t, mj, s, pfMNew_real, eleIdx, 0, NQPFull, bufV); /* modified by YN */
+  //z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF); /* modified by YN */
 
   /* revert hopping */
   eleIdx[mtl] = rl;

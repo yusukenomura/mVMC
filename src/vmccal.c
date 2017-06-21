@@ -103,31 +103,34 @@ void VMCMainCal(MPI_Comm comm) {
 #ifdef _DEBUG
     printf("  Debug: sample=%d: CalculateMAll \n",sample);
 #endif
-    if(iComplexFlgOrbital==0){ /* modified by YN */ /* Warning !! Temporal Treatment */
-       info = CalculateMAll_real(eleIdx,qpStart,qpEnd); // InvM_real,PfM_real will change
-       #pragma omp parallel for default(shared) private(tmp_i)
-       for(tmp_i=0;tmp_i<NQPFull*(Nsize*Nsize+1);tmp_i++)  InvM[tmp_i]= InvM_real[tmp_i]; // InvM will be used in  SlaterElmDiff_fcmp
-       /* added by YN */ /* Warning!! Temporal Treatment */
-       #pragma omp parallel for default(shared) private(tmp_i)
-       for(tmp_i=0;tmp_i<qpEnd-qpStart;tmp_i++)  PfM[tmp_i]= PfM_real[tmp_i]; 
-       /* added by YN */ /* Warning!! Temporal Treatment */
-    }else{
-      info = CalculateMAll_fcmp(eleIdx,qpStart,qpEnd); // InvM,PfM will change
-    }
+/* modified by YN */
+//    if(iComplexFlgOrbital==0){ /* modified by YN */ /* Warning !! Temporal Treatment */
+//       info = CalculateMAll_real(eleIdx,qpStart,qpEnd); // InvM_real,PfM_real will change
+//       #pragma omp parallel for default(shared) private(tmp_i)
+//       for(tmp_i=0;tmp_i<NQPFull*(Nsize*Nsize+1);tmp_i++)  InvM[tmp_i]= InvM_real[tmp_i]; // InvM will be used in  SlaterElmDiff_fcmp
+//       /* added by YN */ /* Warning!! Temporal Treatment */
+//       #pragma omp parallel for default(shared) private(tmp_i)
+//       for(tmp_i=0;tmp_i<qpEnd-qpStart;tmp_i++)  PfM[tmp_i]= PfM_real[tmp_i]; 
+//       /* added by YN */ /* Warning!! Temporal Treatment */
+//    }else{
+//      info = CalculateMAll_fcmp(eleIdx,qpStart,qpEnd); // InvM,PfM will change
+//    }
     StopTimer(40);
 
-    if(info!=0) {
-      fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d info:%d (CalculateMAll)\n",rank,sample,info);
-      continue;
-    }
+//    if(info!=0) {
+//      fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d info:%d (CalculateMAll)\n",rank,sample,info);
+//      continue;
+//    }
 #ifdef _DEBUG
     printf("  Debug: sample=%d: CalculateIP \n",sample);
 #endif
-    if(AllComplexFlag==0){
-      ip = CalculateIP_real(PfM_real,qpStart,qpEnd,MPI_COMM_SELF);
-    }else{
-      ip = CalculateIP_fcmp(PfM,qpStart,qpEnd,MPI_COMM_SELF);
-    } 
+//    if(AllComplexFlag==0){
+//      ip = CalculateIP_real(PfM_real,qpStart,qpEnd,MPI_COMM_SELF);
+//    }else{
+//      ip = CalculateIP_fcmp(PfM,qpStart,qpEnd,MPI_COMM_SELF);
+//    } 
+      ip = 1.0;
+/* modified by YN */
 
     //x = LogProjVal(eleProjCnt);
 #ifdef _DEBUG
@@ -137,7 +140,7 @@ void VMCMainCal(MPI_Comm comm) {
     x = LogProjVal(eleProjCnt);
     y = LogHiddenWeightVal(thetaHidden);
     /* calculate reweight */
-    w = 2.0*(log(fabs(ip))+creal(x+y)) - logSqPfFullSlater[sample];
+    w = 2.0*(creal(x+y)) - logSqPfFullSlater[sample]; /* modified by YN */
     if( fabs(w) > 0.0001 ){
       if( fabs(w) > 1.0 && sample == sampleStart) printf("warning: VMCMainCal rank:%d sample:%d difference=%e\n",rank,sample,w);
       nFail++; 
@@ -233,7 +236,8 @@ void VMCMainCal(MPI_Comm comm) {
 
       StartTimer(42);
       /* SlaterElmDiff */
-      SlaterElmDiff_fcmp(SROptO+offset1+2,ip,eleIdx); //TBC: using InvM not InvM_real /* modified by YN */
+      //SlaterElmDiff_fcmp(SROptO+offset1+2,ip,eleIdx); //TBC: using InvM not InvM_real /* modified by YN */
+      for(i=offset1+2;i<2*SROptSize;i++) SROptO[i] = 0.0; /* added by YN */
       StopTimer(42);
       
       if(FlagOptTrans>0) { // this part will be not used

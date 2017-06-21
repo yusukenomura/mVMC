@@ -72,6 +72,10 @@ void VMCMakeSample(MPI_Comm comm) {
   MPI_Comm_rank(comm,&rank);
 
   SplitLoop(&qpStart,&qpEnd,NQPFull,rank,size);
+  /* added by YN */
+    fprintf(stderr, " make not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
 
   StartTimer(30);
   if(BurnFlag==0) {
@@ -373,7 +377,7 @@ void saveEleConfig(const int sample, const double complex logIp,
   
   x = LogProjVal(eleProjCnt);
   y = LogHiddenWeightVal(thetaHidden); /* added by YN, modified by KI */
-  logSqPfFullSlater[sample] = 2.0*(x+y+creal(logIp));//TBC /* modified by YN */
+  logSqPfFullSlater[sample] = 2.0*(x+y);//TBC /* modified by YN */
   
   return;
 }
