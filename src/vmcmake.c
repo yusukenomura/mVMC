@@ -430,7 +430,7 @@ void makeCandidate_hopping(int *mi_, int *ri_, int *rj_, int *s_, int *rejectFla
   int idx; /* added by YN */
 
   flag = 0; // FALSE
-  if(genrand_real2()<0.6){ /* added by YN */
+  if(genrand_real2()<0.5){ /* added by YN */
   do {
     mi = gen_rand32()%Ne;
     s = (genrand_real2()<0.5) ? 0 : 1;
@@ -448,20 +448,20 @@ void makeCandidate_hopping(int *mi_, int *ri_, int *rj_, int *s_, int *rejectFla
   } while (eleCfg[rj+s*Nsite] != -1 || LocSpn[rj]==1);
   /* added by YN */
   } else { 
-    icnt = 0;
     do {
       idx = gen_rand32()%NTransfer; 
       rj = Transfer[idx][0];
       ri = Transfer[idx][2];
       s  = Transfer[idx][3];
       mi = eleCfg[ri+s*Nsite];
-      if(icnt > icnt_max){
-        flag = 1; // TRUE
-        break;
-      }
-      icnt+=1;
-    } while (eleCfg[rj+s*Nsite] != -1 || LocSpn[rj] == 1 
-             || eleCfg[ri+s*Nsite] == -1 || LocSpn[ri] == 1 );
+    } while ( mi == -1 || LocSpn[ri] == 1 );
+    if ( eleCfg[rj+s*Nsite] == -1 && mi != -1 && LocSpn[rj] != 1 ) {
+      flag = 0;
+    } else {
+      flag = 1; //reject
+      *rejectFlag_ = flag;
+      return;
+    }
     if( flag == 0 && ri != eleIdx[mi+s*Ne] ) MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
   }
   /* added by YN */
