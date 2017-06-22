@@ -63,8 +63,14 @@ double complex GreenFunc1(const int ri, const int rj, const int s, const double 
   eleNum[rsi] = 1;
   /* added by YN */
   sgn = 1;
-  for(i=rsi+1;i<rsj;i++){
-    if( eleNum[i] == 1 ) sgn *= -1;
+  if( rsj > rsi ) {
+    for(i=rsi+1;i<rsj;i++){
+      if( eleNum[i] == 1 ) sgn *= -1;
+    } 
+  } else {
+    for(i=rsj+1;i<rsi;i++){
+      if( eleNum[i] == 1 ) sgn *= -1;
+    } 
   } 
   /* added by YN */
   UpdateProjCnt(rj, ri, s, projCntNew, eleProjCnt, eleNum);
