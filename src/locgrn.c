@@ -46,7 +46,7 @@ double complex GreenFunc1(const int ri, const int rj, const int s, const double 
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
                   int *projCntNew, const double complex *thetaHidden, double complex *thetaHiddenNew, complex double *buffer) { /* modified by YN, modified by KI */
   double complex z;
-  int mj,msj,rsi,rsj;
+  int i,sgn,mj,msj,rsi,rsj; /* modified by YN */
   double complex *pfMNew = buffer; /* NQPFull */
 
   if(ri==rj) return eleNum[ri+s*Nsite];
@@ -61,10 +61,16 @@ double complex GreenFunc1(const int ri, const int rj, const int s, const double 
   eleIdx[msj] = ri;
   eleNum[rsj] = 0;
   eleNum[rsi] = 1;
+  /* added by YN */
+  sgn = 1;
+  for(i=rsi+1;i<rsj;i++){
+    if( eleNum[i] == 1 ) sgn *= -1;
+  } 
+  /* added by YN */
   UpdateProjCnt(rj, ri, s, projCntNew, eleProjCnt, eleNum);
   UpdateThetaHidden(rj, ri, s, thetaHiddenNew, thetaHidden); /* added by YN */
   z = ProjRatio(projCntNew,eleProjCnt);
-  z *= HiddenWeightRatio(thetaHiddenNew,thetaHidden);  /* added by YN */
+  z *= (double)(sgn)*HiddenWeightRatio(thetaHiddenNew,thetaHidden);  /* added by YN */
 
   /* calculate Pfaffian */
   //CalculateNewPfM(mj, s, pfMNew, eleIdx, 0, NQPFull); /* modified by YN */
