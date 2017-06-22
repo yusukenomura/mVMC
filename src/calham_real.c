@@ -42,6 +42,10 @@ double CalculateHamiltonian_real(const double ip, int *eleIdx, const int *eleCfg
   double complex *myThetaHiddenNew; /* added by YN */
   double  *myBuffer;
   double  myEnergy;
+  /* added by YN */
+    fprintf(stderr, " calham real not implemented .\n");
+    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+  /* added by YN */
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
   RequestWorkSpaceThreadDouble(NQPFull+2*Nsize);

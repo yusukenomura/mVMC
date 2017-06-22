@@ -88,7 +88,7 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
     #pragma omp for private(idx,ri) nowait
     for(idx=0;idx<NCoulombIntra;idx++) {
       ri = CoulombIntra[idx];
-      myEnergy += ParaCoulombIntra[idx] * n0[ri] * n1[ri];
+      myEnergy += ParaCoulombIntra[idx] * (n0[ri]-0.5) * (n1[ri]-0.5);
     }
   
     /* CoulombInter */

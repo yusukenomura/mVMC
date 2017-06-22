@@ -125,32 +125,32 @@ void VMCMakeSample(MPI_Comm comm) {
           StopTimer(60);
           StartTimer(61);
         //CalculateNewPfM2(mi,s,pfMNew,TmpEleIdx,qpStart,qpEnd);
-        CalculateNewPfM2(mi,s,pfMNew,TmpEleIdx,qpStart,qpEnd);
+        //CalculateNewPfM2(mi,s,pfMNew,TmpEleIdx,qpStart,qpEnd); /* modified by YN */
         //printf("DEBUG: out %d in %d pfMNew=%lf \n",outStep,inStep,creal(pfMNew[0]));
           StopTimer(61);
 
           StartTimer(62);
         /* calculate inner product <phi|L|x> */
         //logIpNew = CalculateLogIP_fcmp(pfMNew,qpStart,qpEnd,comm);
-        logIpNew = CalculateLogIP_fcmp(pfMNew,qpStart,qpEnd,comm);
+        //logIpNew = CalculateLogIP_fcmp(pfMNew,qpStart,qpEnd,comm); /* modified by YN */
           StopTimer(62);
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
         y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN, modified by KI */
-        w = exp(2.0*(x+y+creal(logIpNew-logIpOld)));              /* modified by YN */
+        w = exp(2.0*(x+y)); /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
         if(w > genrand_real2()) { /* accept */
             // UpdateMAll will change SlaterElm, InvM (including PfM)
             StartTimer(63);
-            UpdateMAll(mi,s,TmpEleIdx,qpStart,qpEnd);
+            //UpdateMAll(mi,s,TmpEleIdx,qpStart,qpEnd); /* modified by YN */
 //            UpdateMAll(mi,s,TmpEleIdx,qpStart,qpEnd);
             StopTimer(63);
 
           for(i=0;i<NProj;i++) TmpEleProjCnt[i] = projCntNew[i];
           for(i=0;i<NSizeTheta;i++) TmpThetaHidden[i] = thetaHiddenNew[i]; /* added by YN */
-          logIpOld = logIpNew;
+          //logIpOld = logIpNew; /* modified by YN */
           nAccept++;
           Counter[1]++;
         } else { /* reject */
@@ -187,29 +187,29 @@ void VMCMakeSample(MPI_Comm comm) {
         StopTimer(65);
         StartTimer(66);
 
-        CalculateNewPfMTwo2_fcmp(mi, s, mj, t, pfMNew, TmpEleIdx, qpStart, qpEnd);
+        //CalculateNewPfMTwo2_fcmp(mi, s, mj, t, pfMNew, TmpEleIdx, qpStart, qpEnd); /* modified by YN */
         StopTimer(66);
         StartTimer(67);
 
         /* calculate inner product <phi|L|x> */
-        logIpNew = CalculateLogIP_fcmp(pfMNew,qpStart,qpEnd,comm);
+        //logIpNew = CalculateLogIP_fcmp(pfMNew,qpStart,qpEnd,comm); /* modified by YN */
 
         StopTimer(67);
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
         y = creal(LogHiddenWeightRatio(thetaHiddenNew,TmpThetaHidden));  /* added by YN, modified by KI */
-        w = exp(2.0*(x+y+creal(logIpNew-logIpOld))); //TBC        /* modified by YN */
+        w = exp(2.0*(x+y)); //TBC        /* modified by YN */
         if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
         if(w > genrand_real2()) { /* accept */
           StartTimer(68);
-          UpdateMAllTwo_fcmp(mi, s, mj, t, ri, rj, TmpEleIdx,qpStart,qpEnd);
+          //UpdateMAllTwo_fcmp(mi, s, mj, t, ri, rj, TmpEleIdx,qpStart,qpEnd); /* modified by YN */
           StopTimer(68);
 
           for(i=0;i<NProj;i++) TmpEleProjCnt[i] = projCntNew[i];
           for(i=0;i<NSizeTheta;i++) TmpThetaHidden[i] = thetaHiddenNew[i]; /* added by YN */
-          logIpOld = logIpNew;
+          //logIpOld = logIpNew; /* modified by YN */
           nAccept++;
           Counter[3]++;
         } else { /* reject */
@@ -222,9 +222,9 @@ void VMCMakeSample(MPI_Comm comm) {
       if(nAccept>NPfUpdate) { /* modified by YN */
         StartTimer(34);
         /* recal PfM and InvM */
-        CalculateMAll_fcmp(TmpEleIdx,qpStart,qpEnd);
+        //CalculateMAll_fcmp(TmpEleIdx,qpStart,qpEnd); /* modified by YN */
         //printf("DEBUG: maker3: PfM=%lf\n",creal(PfM[0]));
-        logIpOld = CalculateLogIP_fcmp(PfM,qpStart,qpEnd,comm);
+        //logIpOld = CalculateLogIP_fcmp(PfM,qpStart,qpEnd,comm); /* modified by YN */
         /* added by YN, modified by KI */
         CalcThetaHidden(thetaHiddenNew,TmpEleNum); 
         for(i=0;i<NSizeTheta;i++) { 
@@ -373,7 +373,7 @@ void saveEleConfig(const int sample, const double complex logIp,
   
   x = LogProjVal(eleProjCnt);
   y = creal(LogHiddenWeightVal(thetaHidden)); /* added by YN, modified by KI */
-  logSqPfFullSlater[sample] = 2.0*(x+y+creal(logIp));//TBC /* modified by YN */
+  logSqPfFullSlater[sample] = 2.0*(x+y);//TBC /* modified by YN */
   
   return;
 }
